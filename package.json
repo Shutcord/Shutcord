@@ -3,15 +3,15 @@
     "version": "1.15.18",
     "private": "true",
     "description": "The cutest Discord client mod",
-    "homepage": "https://github.com/shut-wtf/Shutcord#readme",
+    "homepage": "https://github.com/Shutcord/Shutcord#readme",
     "bugs": {
-        "url": "https://github.com/shut-wtf/Shutcord/issues"
+        "url": "https://github.com/Shutcord/Shutcord/issues"
     },
     "license": "GPL-3.0-or-later",
     "author": "shut.wtf",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/shut-wtf/Shutcord.git"
+        "url": "git+https://github.com/Shutcord/Shutcord.git"
     },
     "scripts": {
         "build": "node --require=./scripts/suppressExperimentalWarnings.js scripts/build/build.mjs",

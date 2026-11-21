@@ -1,5 +1,5 @@
 /*
- * Vencord, a modification for Discord's desktop app
+ * Shutcord, a modification for Discord's desktop app
  * Copyright (c) 2023 Vendicated and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import { Readable } from "stream";
 import { finished } from "stream/promises";
 import { fileURLToPath } from "url";
 
-const BASE_URL = "https://github.com/Vencord/Installer/releases/latest/download/";
+const BASE_URL = "https://github.com/Shutcord/ShutcordInstaller/releases/latest/download/";
 
 const BASE_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FILE_DIR = join(BASE_DIR, "dist", "Installer");
@@ -34,11 +34,11 @@ const ETAG_FILE = join(FILE_DIR, "etag.txt");
 function getFilename() {
     switch (process.platform) {
         case "win32":
-            return "VencordInstallerCli.exe";
+            return "ShutcordInstallerCli.exe";
         case "darwin":
-            return "VencordInstallerCli-darwin";
+            return "ShutcordInstallerCli-darwin";
         case "linux":
-            return "VencordInstallerCli-linux";
+            return "ShutcordInstallerCli-linux";
         default:
             throw new Error("Unsupported platform: " + process.platform);
     }
@@ -46,6 +46,14 @@ function getFilename() {
 
 async function ensureBinary() {
     const filename = getFilename();
+
+    // Prefer the installer bundled in ./installer so no download is needed
+    const bundled = join(BASE_DIR, "installer", filename);
+    if (existsSync(bundled)) {
+        console.log("Using bundled installer " + bundled);
+        return bundled;
+    }
+
     console.log("Downloading " + filename);
 
     mkdirSync(FILE_DIR, { recursive: true });
@@ -58,7 +66,7 @@ async function ensureBinary() {
 
     const res = await fetch(BASE_URL + filename, {
         headers: {
-            "User-Agent": "Shutcord (https://github.com/shut-wtf/Shutcord)",
+            "User-Agent": "Shutcord (https://github.com/Shutcord/Shutcord)",
             "If-None-Match": etag
         }
     });
@@ -97,8 +105,8 @@ try {
         stdio: "inherit",
         env: {
             ...process.env,
-            VENCORD_USER_DATA_DIR: BASE_DIR,
-            VENCORD_DEV_INSTALL: "1"
+            SHUTCORD_USER_DATA_DIR: BASE_DIR,
+            SHUTCORD_DEV_INSTALL: "1"
         }
     });
 } catch {

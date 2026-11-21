@@ -84,7 +84,7 @@ async function generateDebugInfoMessage() {
 
     const info = {
         Shutcord:
-            `v${VERSION} • [${gitHash}](<https://github.com/shut-wtf/Shutcord/commit/${gitHash}>)` +
+            `v${VERSION} • [${gitHash}](<https://github.com/Shutcord/Shutcord/commit/${gitHash}>)` +
             `${SettingsPlugin.additionalInfo} - ${Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(BUILD_TIMESTAMP)}`,
         Client: `${RELEASE_CHANNEL} ~ ${client}`,
         Platform: navigator.platform

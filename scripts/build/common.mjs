@@ -47,7 +47,15 @@ export const IS_ANTI_CRASH_TEST = process.argv.includes("--anti-crash-test");
 export const IS_STANDALONE = process.argv.includes("--standalone");
 
 export const IS_UPDATER_DISABLED = process.argv.includes("--disable-updater");
-export const gitHash = process.env.SHUTCORD_HASH || execSync("git rev-parse --short HEAD", { encoding: "utf-8" }).trim();
+function tryGit(cmd, fallback) {
+    try {
+        return execSync(cmd, { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] }).trim() || fallback;
+    } catch {
+        return fallback;
+    }
+}
+
+export const gitHash = process.env.SHUTCORD_HASH || tryGit("git rev-parse --short HEAD", "local");
 
 export const banner = {
     js: `
@@ -242,8 +250,7 @@ export const gitRemotePlugin = {
         build.onLoad({ filter, namespace: "git-remote" }, async () => {
             let remote = process.env.SHUTCORD_REMOTE;
             if (!remote) {
-                const res = await promisify(exec)("git remote get-url origin", { encoding: "utf-8" });
-                remote = res.stdout.trim()
+                remote = tryGit("git remote get-url origin", "Shutcord/Shutcord")
                     .replace("https://github.com/", "")
                     .replace("git@github.com:", "")
                     .replace(/.git$/, "");

@@ -6,7 +6,7 @@ Shutcord is a rebrand of Vencord (GPL-3.0). Keep `LICENSE` and the copyright hea
 
 | What | Placeholder used | File(s) |
 |---|---|---|
-| GitHub repo | `github.com/shut-wtf/Shutcord` | `package.json` (homepage, bugs, repository), `packages/*/package.json`, `browser/manifest.json`, `browser/manifestv2.json`, `browser/userscript.meta.js` (4 lines), `browser/ShutcordNativeStub.ts:76`, `scripts/runInstaller.mjs:61`, `src/main/utils/extensions.ts:86`, `src/plugins/_core/supportHelper.tsx:87`, `.github/*`, `.github/workflows/build.yml:57` |
+| GitHub repo | `github.com/Shutcord/Shutcord` | `package.json` (homepage, bugs, repository), `packages/*/package.json`, `browser/manifest.json`, `browser/manifestv2.json`, `browser/userscript.meta.js` (4 lines), `browser/ShutcordNativeStub.ts:76`, `scripts/runInstaller.mjs:61`, `src/main/utils/extensions.ts:86`, `src/plugins/_core/supportHelper.tsx:87`, `.github/*`, `.github/workflows/build.yml:57` |
 | Website / download | `https://shut.wtf/download` | `src/plugins/_core/supportHelper.tsx` (155, 156, 248) |
 | Plugin pages | `https://shut.wtf/plugins/<name>`, `/source`, `/cloud/privacy` | `PluginModal.tsx:186`, `ContributorModal.tsx:55`, `CloudTab.tsx:72` (these pages don't exist until you build them, or point them elsewhere) |
 | Discord server | `https://shut.wtf/discord` | `.github/ISSUE_TEMPLATE/*`, `README.md`, `CONTRIBUTING.md` (make this a redirect to your invite) |
@@ -68,3 +68,14 @@ pnpm build
 pnpm inject      # asks which Discord to patch
 ```
 Settings are stored in a `Shutcord` folder (next to Discord's data dir), separate from any existing Vencord settings.
+
+## 5. Installer (ShutcordInstaller)
+- `installer/ShutcordInstallerCli.exe` (Windows) and `installer/ShutcordInstallerCli-linux` are prebuilt. `pnpm inject` / `pnpm uninject` use them automatically, with no download.
+- Go source is in `installer/source`. It is a rebrand of Vencord/Installer (GPL-3.0). Build it with:
+  - CLI: `make PLATFORM=windows ARCH=amd64` (needs Go).
+  - GUI (Windows only): `make PLATFORM=windows GUI=1` (needs MSYS2/mingw and go-winres, see the Makefile).
+- Things to change in `installer/source/constants.go` and `self_updater.go`:
+  - `ReleaseUrl` and `ReleaseUrlFallback`: where the installer downloads Shutcord's `patcher.js`, `preload.js`, `renderer.js` and `renderer.css`. Currently the latest GitHub release of `Shutcord/Shutcord`. The release title must end with the build hash, e.g. "DevBuild abc1234". `.github/workflows/build.yml` does this.
+  - `InstallerReleaseUrl` and the self-updater `BaseUrl`: where the installer updates itself. Currently `Shutcord/ShutcordInstaller` releases. Upload the installer binaries there.
+- Standalone installs (without the repo) go to `%APPDATA%\Shutcord\dist`.
+- If Discord shows "Cannot find module ...\dist\patcher.js", run `pnpm build` and then `pnpm inject` again.

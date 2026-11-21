@@ -7,7 +7,7 @@
     "author": "Shutcord Contributors",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/shut-wtf/Shutcord.git",
+        "url": "git+https://github.com/Shutcord/Shutcord.git",
         "directory": "packages/discord-types"
     },
     "type": "module",

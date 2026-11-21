@@ -1,0 +1,6 @@
+shutcordinstaller
+*.exe
+*.syso
+*.old
+build
+.DS_Store

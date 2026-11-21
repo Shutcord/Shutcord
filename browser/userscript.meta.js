@@ -2,10 +2,10 @@
 // @name            Shutcord
 // @description     A Discord client mod - Web version
 // @version         %version%
-// @author          shut.wtf (https://github.com/shut-wtf)
-// @namespace       https://github.com/shut-wtf/Shutcord
-// @supportURL      https://github.com/shut-wtf/Shutcord
-// @icon            https://raw.githubusercontent.com/shut-wtf/Shutcord/refs/heads/main/browser/icon.png
+// @author          shut.wtf (https://github.com/Shutcord)
+// @namespace       https://github.com/Shutcord/Shutcord
+// @supportURL      https://github.com/Shutcord/Shutcord
+// @icon            https://raw.githubusercontent.com/Shutcord/Shutcord/refs/heads/main/browser/icon.png
 // @license         GPL-3.0
 // @match           *://*.discord.com/*
 // @grant           GM_xmlhttpRequest

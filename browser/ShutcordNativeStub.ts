@@ -73,7 +73,7 @@ window.ShutcordNative = {
     },
 
     updater: {
-        getRepo: async () => ({ ok: true, value: "https://github.com/shut-wtf/Shutcord" }),
+        getRepo: async () => ({ ok: true, value: "https://github.com/Shutcord/Shutcord" }),
         getUpdates: async () => ({ ok: true, value: [] }),
         update: async () => ({ ok: true, value: false }),
         rebuild: async () => ({ ok: true, value: true }),
