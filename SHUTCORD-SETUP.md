@@ -70,12 +70,18 @@ pnpm inject      # asks which Discord to patch
 Settings are stored in a `Shutcord` folder (next to Discord's data dir), separate from any existing Vencord settings.
 
 ## 5. Installer (ShutcordInstaller)
-- `installer/ShutcordInstallerCli.exe` (Windows) and `installer/ShutcordInstallerCli-linux` are prebuilt. `pnpm inject` / `pnpm uninject` use them automatically, with no download.
-- Go source is in `installer/source`. It is a rebrand of Vencord/Installer (GPL-3.0). Build it with:
-  - CLI: `make PLATFORM=windows ARCH=amd64` (needs Go).
-  - GUI (Windows only): `make PLATFORM=windows GUI=1` (needs MSYS2/mingw and go-winres, see the Makefile).
-- Things to change in `installer/source/constants.go` and `self_updater.go`:
-  - `ReleaseUrl` and `ReleaseUrlFallback`: where the installer downloads Shutcord's `patcher.js`, `preload.js`, `renderer.js` and `renderer.css`. Currently the latest GitHub release of `Shutcord/Shutcord`. The release title must end with the build hash, e.g. "DevBuild abc1234". `.github/workflows/build.yml` does this.
-  - `InstallerReleaseUrl` and the self-updater `BaseUrl`: where the installer updates itself. Currently `Shutcord/ShutcordInstaller` releases. Upload the installer binaries there.
-- Standalone installs (without the repo) go to `%APPDATA%\Shutcord\dist`.
-- If Discord shows "Cannot find module ...\dist\patcher.js", run `pnpm build` and then `pnpm inject` again.
+Prebuilt in `installer/`:
+- `ShutcordInstaller.exe`: double-click. It opens the Shutcord installer window in your browser (served only on 127.0.0.1, with a random token). Pick a Discord, press Install.
+- `ShutcordInstallerCli.exe`: command line, used by `pnpm inject` / `pnpm uninject`.
+- `ShutcordInstallerCli-linux`: Linux CLI.
+
+Go source: `installer/source`, UI: `installer/source/web/index.html`. Build commands are in `installer/source/README.md`.
+
+How it detects installs: Shutcord writes a marker (`SHUTCORD_PATCH`) into Discord's `app.asar`. A Discord patched by Vencord and the like shows as "Vencord installed" and is replaced when you install Shutcord. Uninstalling Shutcord restores the original Discord, not Vencord.
+
+Where to change URLs (`installer/source`):
+- `constants.go` `ReleaseUrl` / `ReleaseUrlFallback`: where it downloads `patcher.js`, `preload.js`, `renderer.js`, `renderer.css`. Currently the latest release of `Shutcord/Shutcord`. The release title must end with the build hash, e.g. "DevBuild abc1234".
+- `constants.go` `InstallerReleaseUrl` and `self_updater.go` `BaseUrl`: self-update source (`Shutcord/ShutcordInstaller`).
+- Both repos must be public or the installer gets a 404.
+
+Standalone installs go to `%APPDATA%\Shutcord\dist`. If Discord shows "Cannot find module ...\dist\patcher.js", run `pnpm build` and then `pnpm inject` again.

@@ -106,6 +106,13 @@ func (di *DiscordInstall) patch() error {
 
 	PreparePatch(di)
 
+	if other := di.foreignMod(); other != "" {
+		Log.Info(di.path, "is patched by "+other+". Replacing it with Shutcord...")
+		if err := unpatchAppAsar(di.resourcesPath); err != nil {
+			return errors.New("patch: Failed to remove " + other + " from '" + di.path + "':\n" + err.Error())
+		}
+	}
+
 	if di.isPatched {
 		Log.Info(di.path, "is already patched. Unpatching first...")
 		if err := di.unpatch(); err != nil {
@@ -216,6 +223,13 @@ func unpatchAppAsar(dir string) (errOut error) {
 
 func (di *DiscordInstall) unpatch() error {
 	Log.Info("Unpatching " + di.path + "...")
+
+	if !di.isPatched {
+		if other := di.foreignMod(); other != "" {
+			return errors.New("this Discord is patched by " + other + ", not Shutcord. Nothing was changed")
+		}
+		return errors.New("Shutcord is not installed on this Discord")
+	}
 
 	PreparePatch(di)
 

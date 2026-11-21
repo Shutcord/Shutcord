@@ -29,7 +29,7 @@ func WriteAppAsar(outFile string, patcherPath string) error {
 	fileContents := ""
 
 	patcherPathB, _ := json.Marshal(patcherPath)
-	indexJsContents := "require(" + string(patcherPathB) + ")"
+	indexJsContents := "/*" + PatchMarker + "*/require(" + string(patcherPathB) + ")"
 	indexJsBytes := len([]byte(indexJsContents))
 	fileContents += indexJsContents
 	files["index.js"] = asarEntry{

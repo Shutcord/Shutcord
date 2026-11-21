@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shutcord Installer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c5cff'/%3E%3Cpath d='M8 11h16M8 16h16M8 21h10' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root {
+    --bg: #0a0a0f;
+    --panel: #111119;
+    --panel-2: #171722;
+    --line: #232334;
+    --text: #ececf4;
+    --muted: #8a8aa3;
+    --accent: #7c5cff;
+    --accent-2: #a58bff;
+    --ok: #3ddc97;
+    --warn: #ffb454;
+    --bad: #ff6b81;
+    --radius: 16px;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body {
+    background:
+        radial-gradient(900px 500px at 85% -10%, rgba(124, 92, 255, .22), transparent 60%),
+        radial-gradient(700px 400px at -10% 110%, rgba(61, 220, 151, .08), transparent 60%),
+        var(--bg);
+    color: var(--text);
+    font: 15px/1.5 "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px;
+}
+.shell { width: min(720px, 100%); }
+
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.logo { width: 46px; height: 46px; border-radius: 13px; background: linear-gradient(145deg, #8f73ff, #5b3de0); display: grid; place-items: center; box-shadow: 0 8px 30px rgba(124, 92, 255, .45); }
+.logo svg { width: 26px; height: 26px; }
+.brand { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.brand small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.ver { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+
+h1 { font-size: 34px; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 8px; }
+h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent-2), #7cf0c3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { color: var(--muted); margin-bottom: 24px; max-width: 52ch; }
+
+.banner { display: none; border: 1px solid; border-radius: 12px; padding: 11px 14px; margin-bottom: 16px; font-size: 13.5px; }
+.banner.show { display: block; }
+.banner.warn { border-color: rgba(255, 180, 84, .35); background: rgba(255, 180, 84, .08); color: #ffd9a3; }
+.banner.bad { border-color: rgba(255, 107, 129, .4); background: rgba(255, 107, 129, .08); color: #ffb8c3; }
+
+.list { display: grid; gap: 12px; }
+.card {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    transition: border-color .15s, transform .15s;
+}
+.card:hover { border-color: #34344d; transform: translateY(-1px); }
+.dot { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 17px; color: #fff; }
+.b-stable { background: linear-gradient(145deg, #7c5cff, #5b3de0); }
+.b-ptb { background: linear-gradient(145deg, #3aa0ff, #2167d8); }
+.b-canary { background: linear-gradient(145deg, #ffb454, #e8801a); }
+.b-dev, .b-other { background: linear-gradient(145deg, #5f6178, #3d3e52); }
+.info b { font-size: 16px; text-transform: capitalize; }
+.path { color: var(--muted); font-size: 12.5px; word-break: break-all; margin-top: 1px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 10px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; border: 1px solid var(--line); color: var(--muted); }
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); border-color: rgba(61, 220, 151, .35); background: rgba(61, 220, 151, .08); }
+.pill.warn { color: var(--warn); border-color: rgba(255, 180, 84, .35); background: rgba(255, 180, 84, .08); }
+.actions { display: flex; gap: 8px; }
+
+button {
+    font: inherit; font-weight: 600; cursor: pointer; border: 1px solid transparent; border-radius: 11px; padding: 9px 16px; color: var(--text);
+    transition: filter .15s, background .15s, opacity .15s, transform .08s;
+}
+button:active { transform: scale(.97); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.primary { background: linear-gradient(145deg, #8f73ff, #6a47f0); box-shadow: 0 6px 20px rgba(124, 92, 255, .35); }
+.primary:hover:not(:disabled) { filter: brightness(1.1); }
+.ghost { background: transparent; border-color: var(--line); color: var(--muted); }
+.ghost:hover:not(:disabled) { color: var(--text); border-color: #3b3b57; }
+.danger:hover:not(:disabled) { color: var(--bad); border-color: rgba(255, 107, 129, .5); }
+
+.empty { text-align: center; padding: 34px 20px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); }
+
+.custom { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.custom button.link { background: none; border: none; color: var(--accent-2); padding: 6px 0; font-weight: 500; }
+.custom input { flex: 1; min-width: 220px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 9px 12px; font: inherit; }
+.custom input:focus { outline: none; border-color: var(--accent); }
+.custom .row { display: none; width: 100%; gap: 8px; }
+.custom.open .row { display: flex; }
+
+footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--muted); font-size: 12.5px; }
+footer b { color: var(--text); font-weight: 600; }
+footer .grow { margin-left: auto; }
+footer a { color: var(--muted); }
+
+.toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 30px); opacity: 0; pointer-events: none;
+    background: #1b1b29; border: 1px solid var(--line); border-radius: 12px; padding: 12px 18px; font-size: 14px; box-shadow: 0 14px 50px rgba(0, 0, 0, .55);
+    transition: .25s; max-width: min(560px, calc(100% - 32px));
+    display: flex; gap: 10px; align-items: flex-start;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+.toast.ok { border-color: rgba(61, 220, 151, .45); }
+.toast.bad { border-color: rgba(255, 107, 129, .5); }
+.spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .2); border-top-color: var(--accent-2); animation: sp .8s linear infinite; margin-top: 3px; flex: none; }
+@keyframes sp { to { transform: rotate(360deg); } }
+
+.closed { text-align: center; padding: 60px 10px; display: none; }
+.closed h1 { font-size: 28px; }
+
+@media (max-width: 560px) {
+    .card { grid-template-columns: auto 1fr; }
+    .actions { grid-column: 1 / -1; }
+    .actions button { flex: 1; }
+    h1 { font-size: 27px; }
+}
+</style>
+</head>
+<body>
+<div class="shell" id="app">
+    <header>
+        <div class="logo">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M6 10h20M6 16h20M6 22h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="brand">Shutcord<small>installer &middot; shut.wtf</small></div>
+        <div class="ver" id="ver">v&hellip;</div>
+    </header>
+
+    <h1>Put <em>Shutcord</em> into your Discord.</h1>
+    <p class="lead">Pick the Discord you use. We close it, patch it, and next time you open it Shutcord is there. You can undo it any time.</p>
+
+    <div class="banner warn" id="bWarn"></div>
+    <div class="banner bad" id="bBad"></div>
+
+    <div class="list" id="list"></div>
+
+    <div class="custom" id="custom">
+        <button class="link" id="customToggle">+ Use a custom Discord folder</button>
+        <div class="row">
+            <input id="customPath" placeholder="C:\Users\you\AppData\Local\Discord" spellcheck="false">
+            <button class="primary" id="customAdd">Add</button>
+        </div>
+    </div>
+
+    <footer>
+        <span>Files: <b id="dataDir">&hellip;</b></span>
+        <span>Build: <b id="build">&hellip;</b></span>
+        <span class="grow"><button class="ghost" id="quit">Close installer</button></span>
+    </footer>
+</div>
+
+<div class="closed" id="closed">
+    <h1>You can close this tab.</h1>
+    <p class="lead" style="margin:10px auto 0">Installer stopped. Start Discord to use Shutcord.</p>
+</div>
+
+<div class="toast" id="toast"><span class="spin" id="toastSpin"></span><span id="toastText"></span></div>
+
+<script>
+const token = new URLSearchParams(location.search).get("t") || "";
+const $ = id => document.getElementById(id);
+let busy = false;
+
+async function api(path, body) {
+    const r = await fetch("/api/" + path, {
+        method: body ? "POST" : "GET",
+        headers: { "X-Token": token, "Content-Type": "application/json" },
+        body: body ? JSON.stringify(body) : undefined
+    });
+    if (!r.ok) throw new Error("Installer connection lost");
+    return r.json();
+}
+
+let toastTimer;
+function toast(text, kind = "", spinning = false, ms = 5000) {
+    clearTimeout(toastTimer);
+    const t = $("toast");
+    t.className = "toast show " + kind;
+    $("toastSpin").style.display = spinning ? "" : "none";
+    $("toastText").textContent = text;
+    if (!spinning) toastTimer = setTimeout(() => t.classList.remove("show"), ms);
+}
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function card(i) {
+    const letter = (i.branch || "?")[0].toUpperCase();
+    let pill = "";
+    if (i.shutcord) pill = '<span class="pill ok"><i></i>Shutcord installed</span>';
+    else if (i.other) pill = `<span class="pill warn"><i></i>${esc(i.other)} installed</span>`;
+    const label = i.shutcord ? "Reinstall / update" : (i.other ? `Replace ${esc(i.other)}` : "Install");
+    return `
+    <div class="card" data-id="${esc(i.id)}">
+        <div class="dot b-${esc(i.branch)}">${letter}</div>
+        <div class="info">
+            <b>${esc(i.branch === "stable" ? "Discord" : "Discord " + i.branch)}</b>${pill}
+            <div class="path">${esc(i.path)}</div>
+        </div>
+        <div class="actions">
+            <button class="primary" data-act="install">${label}</button>
+            <button class="ghost danger" data-act="uninstall" ${i.shutcord ? "" : "disabled"}>Uninstall</button>
+        </div>
+    </div>`;
+}
+
+async function refresh() {
+    const s = await api("state");
+    $("ver").textContent = "v" + (s.version && s.version !== "Unknown" ? s.version : "dev");
+    $("dataDir").textContent = s.dataDir;
+    $("build").textContent = s.dev ? "local (dev)" : (s.latest && s.latest !== "Unknown" ? s.latest : "latest");
+
+    const bad = $("bBad");
+    if (!s.latestOk && s.latestErr && s.latestErr !== "checking") {
+        bad.textContent = "Couldn't reach the Shutcord release (" + s.latestErr + "). Installing won't work until the repo is public and has a release.";
+        bad.classList.add("show");
+    } else bad.classList.remove("show");
+
+    const warn = $("bWarn");
+    const others = s.installs.filter(i => i.other);
+    if (others.length) {
+        warn.textContent = "Another mod (" + [...new Set(others.map(i => i.other))].join(", ") + ") is installed on one of these. Installing Shutcord replaces it. Uninstalling Shutcord won't bring it back.";
+        warn.classList.add("show");
+    } else warn.classList.remove("show");
+
+    $("list").innerHTML = s.installs.length
+        ? s.installs.map(card).join("")
+        : '<div class="empty">No Discord found. Install Discord first, or add its folder below.</div>';
+    applyBusy();
+}
+
+function applyBusy() {
+    document.querySelectorAll(".card button").forEach(b => { if (busy) b.disabled = true; });
+}
+
+$("list").addEventListener("click", async e => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn || busy) return;
+    const id = btn.closest(".card").dataset.id;
+    const act = btn.dataset.act;
+    busy = true; applyBusy();
+    toast(act === "install" ? "Downloading and patching… Discord will close." : "Removing Shutcord…", "", true);
+    try {
+        const r = await api(act, { id });
+        if (r.ok) toast(act === "install" ? "Done. Start Discord and open Settings." : "Shutcord removed.", "ok");
+        else toast(r.message || "Something went wrong.", "bad", false, 12000);
+    } catch (err) {
+        toast(err.message, "bad", false, 12000);
+    }
+    busy = false;
+    try { await refresh(); } catch {}
+});
+
+$("customToggle").onclick = () => { $("custom").classList.toggle("open"); $("customPath").focus(); };
+$("customAdd").onclick = async () => {
+    const p = $("customPath").value.trim();
+    if (!p) return;
+    const r = await api("custom", { path: p });
+    if (r.ok) { $("customPath").value = ""; $("custom").classList.remove("open"); toast("Added.", "ok"); await refresh(); }
+    else toast(r.message, "bad", false, 7000);
+};
+$("customPath").addEventListener("keydown", e => { if (e.key === "Enter") $("customAdd").click(); });
+
+$("quit").onclick = async () => {
+    try { await api("quit", {}); } catch {}
+    $("app").style.display = "none"; $("closed").style.display = "block";
+    clearInterval(pingTimer);
+    window.close();
+};
+
+const pingTimer = setInterval(() => api("ping").catch(() => {}), 3000);
+api("ping").catch(() => {});
+refresh().catch(e => toast(e.message, "bad", false, 10000));
+// keep "checking release" state fresh for the first moments
+let n = 0; const poll = setInterval(() => { if (++n > 8 || busy) return clearInterval(poll); refresh().catch(() => {}); }, 1500);
+</script>
+</body>
+</html>

@@ -1,66 +1,20 @@
 # Shutcord Installer
 
-The Shutcord Installer allows you to install [Shutcord, the cutest Discord Desktop client mod](https://github.com/Shutcord/Shutcord)
+Installer for [Shutcord](https://github.com/Shutcord/Shutcord). Based on Vencord's installer (GPL-3.0), with a new window UI.
 
-![image](https://user-images.githubusercontent.com/45497981/226734476-5fb42420-844d-4e27-ae06-4799118e086e.png)
+- Double-click `ShutcordInstaller.exe`: a window opens in your browser (served from 127.0.0.1 only, protected by a random token).
+- `ShutcordInstallerCli.exe --install|--uninstall|--repair [--branch stable|ptb|canary]`: command line.
+- `--menu`: the old text menu.
 
-## Usage
+It detects Shutcord installs by a marker in Discord's `app.asar`. Another mod such as Vencord is shown as such and replaced on install.
 
-See https://shut.wtf/download
-
-## Building from source
-
-### Prerequisites 
-
-You need to install the [Go programming language](https://go.dev/doc/install) and GCC, the GNU Compiler Collection (MinGW on Windows)
-
-<details>
-<summary>Additionally, if you're using Linux, you have to install some additional dependencies:</summary>
-
-#### Base dependencies
+## Build
 ```sh
-apt install -y pkg-config libsdl2-dev libglx-dev libgl1-mesa-dev
-dnf install pkg-config libGL-devel libXxf86vm-devel
+# console version (what `pnpm inject` uses)
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -tags "static cli" -ldflags "-s -w" -o ShutcordInstallerCli.exe .
+# windowed version, no console window
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -tags "static cli" -ldflags "-s -w -H=windowsgui" -o ShutcordInstaller.exe .
 ```
+The UI is `web/index.html` (embedded into the exe at build time).
 
-#### X11 dependencies
-```sh
-apt install -y xorg-dev
-dnf install libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
-```
-
-#### Wayland dependencies
-```sh
-apt install -y libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
-dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules
-```
-
-</details>
-
-### Building
-
-#### Install dependencies
-
-```sh
-go mod tidy
-```
-
-#### Build the GUI
-
-##### Windows / Mac / Linux X11
-```sh
-make GUI=1
-```
-
-##### Linux Wayland
-```sh
-make GUI=1 WAYLAND=1
-```
-
-#### Build the CLI
-```sh
-make
-```
-
-You might want to pass some flags to this command to get a better build.
-See [the GitHub workflow](https://github.com/Shutcord/ShutcordInstaller/blob/main/.github/workflows/release.yml) for what flags I pass or if you want more precise instructions
+Where it downloads Shutcord from: `constants.go` (`ReleaseUrl`). Self-update: `self_updater.go`.

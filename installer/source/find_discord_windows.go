@@ -96,23 +96,24 @@ func PreparePatch(di *DiscordInstall) {
 
 	name := windowsNames[di.branch]
 	Log.Debug("Trying to kill", name)
-	pid := findProcessIdByName(name + ".exe")
-	if pid == 0 {
-		Log.Debug("Didn't find process matching name")
-		return
-	}
+	// Discord runs many processes, kill every one of them or app.asar stays locked
+	for i := 0; i < 40; i++ {
+		pid := findProcessIdByName(name + ".exe")
+		if pid == 0 {
+			Log.Debug("No (more) processes matching name")
+			return
+		}
 
-	proc, err := os.FindProcess(int(pid))
-	if err != nil {
-		Log.Warn("Failed to find process with pid", pid)
-		return
-	}
+		proc, err := os.FindProcess(int(pid))
+		if err != nil {
+			Log.Warn("Failed to find process with pid", pid)
+			return
+		}
 
-	err = proc.Kill()
-	if err != nil {
-		Log.Warn("Failed to kill", name+":", err)
-	} else {
-		Log.Debug("Waiting for", name, "to exit")
+		if err = proc.Kill(); err != nil {
+			Log.Warn("Failed to kill", name+":", err)
+			return
+		}
 		_, _ = proc.Wait()
 	}
 }

@@ -53,6 +53,7 @@ func main() {
 	var uninstallFlag = flag.Bool("uninstall", false, "Uninstall Shutcord")
 	var installOpenAsarFlag = flag.Bool("install-openasar", false, "Install OpenAsar")
 	var uninstallOpenAsarFlag = flag.Bool("uninstall-openasar", false, "Uninstall OpenAsar")
+	var menuFlag = flag.Bool("menu", false, "Use the old text menu instead of the installer window")
 	var locationFlag = flag.String("location", "", "The location of the Discord install to modify")
 	var branchFlag = flag.String("branch", "", "The branch of Discord to modify [auto|stable|ptb|canary]")
 	flag.Parse()
@@ -96,6 +97,10 @@ func main() {
 
 	install, uninstall, update, installOpenAsar, uninstallOpenAsar := *installFlag, *uninstallFlag, *updateFlag, *installOpenAsarFlag, *uninstallOpenAsarFlag
 	switches := []*bool{&install, &update, &uninstall, &installOpenAsar, &uninstallOpenAsar}
+	if !SliceContainsFunc(switches, func(b *bool) bool { return *b }) && !*menuFlag {
+		runWebUI()
+		return
+	}
 	if !SliceContainsFunc(switches, func(b *bool) bool { return *b }) {
 		interactive = true
 
