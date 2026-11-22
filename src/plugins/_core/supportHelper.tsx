@@ -152,8 +152,8 @@ function DevBuildConfirmModal(props: RenderModalProps) {
                 <Paragraph>You are using a custom build of Shutcord, which we do not provide support for!</Paragraph>
 
                 <Paragraph className={Margins.top8}>
-                    We only provide support for <Link href="https://shut.wtf/download">official builds</Link>.
-                    Either <Link href="https://shut.wtf/download">switch to an official build</Link> or figure your issue out yourself.
+                    We only provide support for <Link href="https://github.com/Shutcord/Shutcord/releases">official builds</Link>.
+                    Either <Link href="https://github.com/Shutcord/Shutcord/releases">switch to an official build</Link> or figure your issue out yourself.
                 </Paragraph>
 
                 <Paragraph size="md" weight="bold" className={Margins.top8}>You will be banned from receiving support if you ignore this rule.</Paragraph>
@@ -245,7 +245,7 @@ export default definePlugin({
                         <div>
                             <Paragraph>You are using an externally updated Shutcord version, which we do not provide support for!</Paragraph>
                             <Paragraph className={Margins.top8}>
-                                Please either switch to an <Link href="https://shut.wtf/download">officially supported version of Shutcord</Link>, or
+                                Please either switch to an <Link href="https://github.com/Shutcord/Shutcord/releases">officially supported version of Shutcord</Link>, or
                                 contact your package maintainer for support instead.
                             </Paragraph>
                         </div>

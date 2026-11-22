@@ -69,7 +69,7 @@ function CloudSetupSection() {
 
             <Paragraph size="md" className={Margins.bottom20}>
                 Shutcord comes with a cloud integration that adds goodies like settings sync across devices.
-                It <Link href="https://shut.wtf/cloud/privacy">respects your privacy</Link>, and
+                It <Link href="https://github.com/Shutcord/Shutcord">respects your privacy</Link>, and
                 the <Link href="https://github.com/Vencord/Backend">source code</Link> is AGPL 3.0 licensed so you
                 can host it yourself.
             </Paragraph>

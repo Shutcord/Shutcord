@@ -126,7 +126,7 @@ func InstallLatestBuilds() (err error) {
 
 	err = installLatestBuilds()
 	if err != nil {
-		ShowErrorModal("Failed to install the latest Shutcord builds from GitHub", err.Error(), "https://shut.wtf/support/#Failed-to-install-the-latest-Shutcord-builds-from-GitHub")
+		ShowErrorModal("Failed to install the latest Shutcord builds from GitHub", err.Error(), "https://github.com/Shutcord/Shutcord")
 	}
 	return
 }
@@ -188,7 +188,7 @@ func handleErr(di *DiscordInstall, err error, action string) {
 		}
 	}
 
-	ShowErrorModal("Failed to "+action+" this Install.", err.Error(), "https://shut.wtf/support/#Failed-to-patch-this-Install")
+	ShowErrorModal("Failed to "+action+" this Install.", err.Error(), "https://github.com/Shutcord/Shutcord")
 }
 
 func HandleScuffedInstall() {
@@ -511,7 +511,7 @@ func renderInstaller() g.Widget {
 			renderErrorCard(
 				DiscordYellow,
 				color.Black,
-				"**Github** and **shut.wtf** are the only official places to get Shutcord. Any other site claiming to be us is malicious.\n"+
+				"**GitHub** is the only official place to get Shutcord. Any other site claiming to be us is malicious.\n"+
 					"If you downloaded from any other source, you should delete / uninstall everything immediately, run a malware scan and change your Discord password.",
 				90,
 			),
@@ -748,7 +748,7 @@ func loop() {
 			&CondWidget{
 				GithubError != nil,
 				func() g.Widget {
-					return g.Style().SetFontSize(20).To(renderErrorCard(DiscordRed, color.White, "Failed to fetch Info from GitHub. If this issue persists, visit https://shut.wtf/support for help.", 40))
+					return g.Style().SetFontSize(20).To(renderErrorCard(DiscordRed, color.White, "Failed to fetch Info from GitHub. If this issue persists, visit https://github.com/Shutcord/Shutcord for help.", 40))
 				},
 				nil,
 			},

@@ -63,7 +63,7 @@ async function loadBadges(noCache = false) {
         init.cache = "no-cache";
 
     try {
-        DonorBadges = await fetch("https://badges.shut.wtf/badges.json", init)
+        DonorBadges = await fetch("https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges.json", init)
             .then(r => r.json());
     } catch (err) {
         console.warn("[Shutcord] Failed to load donor badges, continuing without them", err);
@@ -281,7 +281,7 @@ export default definePlugin({
                     openModal(props => (
                         <ErrorBoundary noop onError={() => {
                             props.onClose();
-                            ShutcordNative.native.openExternal("https://shut.wtf/donate");
+                            ShutcordNative.native.openExternal("https://github.com/Shutcord/Shutcord");
                         }}>
                             <Modal
                                 {...props}

@@ -12,9 +12,9 @@ import (
 )
 
 const ReleaseUrl = "https://api.github.com/repos/Shutcord/Shutcord/releases/latest"
-const ReleaseUrlFallback = "https://shut.wtf/releases/shutcord"
+const ReleaseUrlFallback = "https://api.github.com/repos/Shutcord/Shutcord/releases/latest"
 const InstallerReleaseUrl = "https://api.github.com/repos/Shutcord/ShutcordInstaller/releases/latest"
-const InstallerReleaseUrlFallback = "https://shut.wtf/releases/installer"
+const InstallerReleaseUrlFallback = "https://api.github.com/repos/Shutcord/Shutcord/releases/latest"
 
 var UserAgent = "ShutcordInstaller/" + buildinfo.InstallerGitHash + " (https://github.com/Shutcord/ShutcordInstaller)"
 

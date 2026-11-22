@@ -20,7 +20,6 @@ export async function checkCloudUrlCsp() {
     if (IS_WEB) return true;
 
     const { host } = getCloudUrl();
-    if (host === "api.shut.wtf") return true;
 
     if (await ShutcordNative.csp.isDomainAllowed(Settings.cloud.url, ["connect-src"])) {
         return true;

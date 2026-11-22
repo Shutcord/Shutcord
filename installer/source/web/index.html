@@ -4,283 +4,242 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shutcord Installer</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c5cff'/%3E%3Cpath d='M8 11h16M8 16h16M8 21h10' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20512%20512%22%20width=%22512%22%20height=%22512%22%3E%3Crect%20width=%22512%22%20height=%22512%22%20rx=%2296%22%20fill=%22%2318181b%22/%3E%3Cpath%20fill=%22%23d4d4d8%22%20d=%22M87%20165h130v26h-130zM295%20165h130v26h-130zM61%20191h52v26h-52zM191%20191h52v26h-52zM269%20191h52v26h-52zM399%20191h52v26h-52zM61%20217h52v26h-52zM269%20217h52v26h-52zM87%20243h130v26h-130zM269%20243h52v26h-52zM191%20269h52v26h-52zM269%20269h52v26h-52zM61%20295h52v26h-52zM191%20295h52v26h-52zM269%20295h52v26h-52zM399%20295h52v26h-52zM87%20321h130v26h-130zM295%20321h130v26h-130z%22/%3E%3C/svg%3E">
 <style>
 :root {
-    --bg: #0a0a0f;
-    --panel: #111119;
-    --panel-2: #171722;
-    --line: #232334;
-    --text: #ececf4;
-    --muted: #8a8aa3;
-    --accent: #7c5cff;
-    --accent-2: #a58bff;
-    --ok: #3ddc97;
-    --warn: #ffb454;
-    --bad: #ff6b81;
-    --radius: 16px;
+    --bg: #0f0f10;
+    --panel: #151518;
+    --line: #26262a;
+    --line-hi: #3a3a41;
+    --text: #e4e4e8;
+    --muted: #84848e;
+    --dim: #5a5a63;
+    --btn: #e4e4e8;
+    --btn-text: #0f0f10;
 }
 * { box-sizing: border-box; margin: 0; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); }
 body {
-    background:
-        radial-gradient(900px 500px at 85% -10%, rgba(124, 92, 255, .22), transparent 60%),
-        radial-gradient(700px 400px at -10% 110%, rgba(61, 220, 151, .08), transparent 60%),
-        var(--bg);
     color: var(--text);
-    font: 15px/1.5 "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
-    display: grid;
-    place-items: center;
-    padding: 24px 16px;
+    font: 14px/1.45 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    display: flex; flex-direction: column;
+    padding: 26px 30px 20px;
 }
-.shell { width: min(720px, 100%); }
 
-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
-.logo { width: 46px; height: 46px; border-radius: 13px; background: linear-gradient(145deg, #8f73ff, #5b3de0); display: grid; place-items: center; box-shadow: 0 8px 30px rgba(124, 92, 255, .45); }
-.logo svg { width: 26px; height: 26px; }
-.brand { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
-.brand small { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
-.ver { margin-left: auto; font-size: 12px; color: var(--muted); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; }
+header { display: flex; align-items: center; gap: 14px; }
+.mark { width: 66px; height: 31px; flex: none; }
+.title b { display: block; font-size: 20px; font-weight: 650; letter-spacing: -.01em; }
+.title span { color: var(--muted); font-size: 12.5px; }
+.ver { margin-left: auto; color: var(--dim); font-size: 12px; font-variant-numeric: tabular-nums; }
 
-h1 { font-size: 34px; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 8px; }
-h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent-2), #7cf0c3); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.lead { color: var(--muted); margin-bottom: 24px; max-width: 52ch; }
+.rule { height: 1px; background: var(--line); margin: 20px 0 18px; }
 
-.banner { display: none; border: 1px solid; border-radius: 12px; padding: 11px 14px; margin-bottom: 16px; font-size: 13.5px; }
-.banner.show { display: block; }
-.banner.warn { border-color: rgba(255, 180, 84, .35); background: rgba(255, 180, 84, .08); color: #ffd9a3; }
-.banner.bad { border-color: rgba(255, 107, 129, .4); background: rgba(255, 107, 129, .08); color: #ffb8c3; }
+.view { display: none; flex: 1; min-height: 0; flex-direction: column; }
+.view.show { display: flex; animation: fade .18s ease-out; }
+@keyframes fade { from { opacity: 0; } }
 
-.list { display: grid; gap: 12px; }
-.card {
-    background: linear-gradient(180deg, var(--panel-2), var(--panel));
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 16px;
-    align-items: center;
-    transition: border-color .15s, transform .15s;
-}
-.card:hover { border-color: #34344d; transform: translateY(-1px); }
-.dot { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 17px; color: #fff; }
-.b-stable { background: linear-gradient(145deg, #7c5cff, #5b3de0); }
-.b-ptb { background: linear-gradient(145deg, #3aa0ff, #2167d8); }
-.b-canary { background: linear-gradient(145deg, #ffb454, #e8801a); }
-.b-dev, .b-other { background: linear-gradient(145deg, #5f6178, #3d3e52); }
-.info b { font-size: 16px; text-transform: capitalize; }
-.path { color: var(--muted); font-size: 12.5px; word-break: break-all; margin-top: 1px; }
-.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 10px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; border: 1px solid var(--line); color: var(--muted); }
-.pill i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.pill.ok { color: var(--ok); border-color: rgba(61, 220, 151, .35); background: rgba(61, 220, 151, .08); }
-.pill.warn { color: var(--warn); border-color: rgba(255, 180, 84, .35); background: rgba(255, 180, 84, .08); }
-.actions { display: flex; gap: 8px; }
+.label { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+.note { border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; margin-bottom: 10px; color: var(--muted); font-size: 12.5px; display: none; }
+.note.show { display: block; }
 
-button {
-    font: inherit; font-weight: 600; cursor: pointer; border: 1px solid transparent; border-radius: 11px; padding: 9px 16px; color: var(--text);
-    transition: filter .15s, background .15s, opacity .15s, transform .08s;
-}
-button:active { transform: scale(.97); }
-button:disabled { opacity: .45; cursor: not-allowed; }
-.primary { background: linear-gradient(145deg, #8f73ff, #6a47f0); box-shadow: 0 6px 20px rgba(124, 92, 255, .35); }
-.primary:hover:not(:disabled) { filter: brightness(1.1); }
-.ghost { background: transparent; border-color: var(--line); color: var(--muted); }
-.ghost:hover:not(:disabled) { color: var(--text); border-color: #3b3b57; }
-.danger:hover:not(:disabled) { color: var(--bad); border-color: rgba(255, 107, 129, .5); }
+.list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 0; }
+.list::-webkit-scrollbar { width: 8px; } .list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+.row { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); transition: border-color .12s; }
+.row:hover { border-color: var(--line-hi); }
+.badge { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line-hi); display: grid; place-items: center; font-weight: 700; font-size: 14px; color: var(--muted); flex: none; }
+.info { min-width: 0; flex: 1; }
+.info b { font-weight: 600; font-size: 14.5px; }
+.state { color: var(--muted); font-size: 12px; margin-left: 8px; }
+.state::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--muted); margin-right: 6px; vertical-align: 1px; }
+.state.on { color: var(--text); } .state.on::before { background: var(--text); border-color: var(--text); }
+.path { color: var(--dim); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; user-select: text; }
+.acts { display: flex; gap: 8px; flex: none; }
 
-.empty { text-align: center; padding: 34px 20px; border: 1px dashed var(--line); border-radius: var(--radius); color: var(--muted); }
+button { font: inherit; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 8px; padding: 7px 15px; border: 1px solid var(--line-hi); background: transparent; color: var(--text); transition: background .12s, border-color .12s, opacity .12s; }
+button:hover:not(:disabled) { background: rgba(255,255,255,.06); border-color: #52525a; }
+button:disabled { opacity: .3; cursor: not-allowed; }
+button:focus-visible { outline: 2px solid var(--muted); outline-offset: 2px; }
+button.solid { background: var(--btn); color: var(--btn-text); border-color: var(--btn); }
+button.solid:hover:not(:disabled) { background: #fff; border-color: #fff; }
 
-.custom { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.custom button.link { background: none; border: none; color: var(--accent-2); padding: 6px 0; font-weight: 500; }
-.custom input { flex: 1; min-width: 220px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 9px 12px; font: inherit; }
-.custom input:focus { outline: none; border-color: var(--accent); }
-.custom .row { display: none; width: 100%; gap: 8px; }
-.custom.open .row { display: flex; }
+.empty { padding: 26px; text-align: center; color: var(--muted); border: 1px dashed var(--line-hi); border-radius: 10px; }
 
-footer { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--muted); font-size: 12.5px; }
-footer b { color: var(--text); font-weight: 600; }
-footer .grow { margin-left: auto; }
-footer a { color: var(--muted); }
+.custom { margin-top: 12px; }
+.custom .link { border: 0; padding: 4px 0; color: var(--muted); font-weight: 500; }
+.custom .link:hover { background: none; color: var(--text); }
+.custom .in { display: none; gap: 8px; margin-top: 6px; }
+.custom.open .in { display: flex; }
+.custom input { flex: 1; background: var(--panel); border: 1px solid var(--line-hi); color: var(--text); border-radius: 8px; padding: 8px 12px; font: inherit; user-select: text; }
+.custom input:focus { outline: none; border-color: var(--muted); }
 
-.toast {
-    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 30px); opacity: 0; pointer-events: none;
-    background: #1b1b29; border: 1px solid var(--line); border-radius: 12px; padding: 12px 18px; font-size: 14px; box-shadow: 0 14px 50px rgba(0, 0, 0, .55);
-    transition: .25s; max-width: min(560px, calc(100% - 32px));
-    display: flex; gap: 10px; align-items: flex-start;
-}
-.toast.show { transform: translate(-50%, 0); opacity: 1; }
-.toast.ok { border-color: rgba(61, 220, 151, .45); }
-.toast.bad { border-color: rgba(255, 107, 129, .5); }
-.spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .2); border-top-color: var(--accent-2); animation: sp .8s linear infinite; margin-top: 3px; flex: none; }
-@keyframes sp { to { transform: rotate(360deg); } }
+footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 14px; color: var(--dim); font-size: 12px; }
+footer .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+footer b { color: var(--muted); font-weight: 500; user-select: text; }
+footer a { color: var(--muted); text-decoration: none; cursor: pointer; }
+footer a:hover { color: var(--text); text-decoration: underline; }
 
-.closed { text-align: center; padding: 60px 10px; display: none; }
-.closed h1 { font-size: 28px; }
-
-@media (max-width: 560px) {
-    .card { grid-template-columns: auto 1fr; }
-    .actions { grid-column: 1 / -1; }
-    .actions button { flex: 1; }
-    h1 { font-size: 27px; }
-}
+/* progress + result */
+.center { margin: auto; width: 100%; max-width: 420px; }
+.center h2 { font-size: 19px; font-weight: 650; letter-spacing: -.01em; }
+.center p { color: var(--muted); margin-top: 4px; }
+.steps { list-style: none; padding: 0; margin: 22px 0 0; }
+.steps li { display: flex; align-items: center; gap: 12px; padding: 8px 0; color: var(--dim); }
+.steps li.active, .steps li.done { color: var(--text); }
+.steps li.error { color: var(--text); }
+.dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-hi); flex: none; display: grid; place-items: center; }
+.steps li.active .dot { border-color: var(--line-hi); border-top-color: var(--text); animation: spin .8s linear infinite; }
+.steps li.done .dot { background: var(--text); border-color: var(--text); }
+.steps li.error .dot { border-color: var(--text); }
+.dot svg { width: 10px; height: 10px; display: none; fill: none; stroke: var(--bg); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.steps li.done .dot .ck { display: block; }
+.steps li.error .dot .x { display: block; stroke: var(--text); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.bar { height: 3px; background: var(--line); border-radius: 3px; margin-top: 18px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--text); transition: width .35s ease; }
+.err { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--line-hi); border-radius: 8px; color: var(--text); font-size: 12.5px; user-select: text; word-break: break-word; }
+.btns { display: flex; gap: 8px; margin-top: 22px; }
+.tick { width: 46px; height: 46px; border-radius: 50%; border: 1.5px solid var(--text); display: grid; place-items: center; margin-bottom: 16px; }
+.tick svg { width: 22px; height: 22px; fill: none; stroke: var(--text); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.closed { position: fixed; inset: 0; background: var(--bg); display: none; place-items: center; color: var(--muted); }
+.closed.show { display: grid; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-<div class="shell" id="app">
-    <header>
-        <div class="logo">
-            <svg viewBox="0 0 32 32" fill="none"><path d="M6 10h20M6 16h20M6 22h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg>
-        </div>
-        <div class="brand">Shutcord<small>installer &middot; shut.wtf</small></div>
-        <div class="ver" id="ver">v&hellip;</div>
-    </header>
+<header>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 224" class="mark" shape-rendering="crispEdges"><path fill="#d4d4d8" d="M32 0h160v32h-160zM288 0h160v32h-160zM0 32h64v32h-64zM160 32h64v32h-64zM256 32h64v32h-64zM416 32h64v32h-64zM0 64h64v32h-64zM256 64h64v32h-64zM32 96h160v32h-160zM256 96h64v32h-64zM160 128h64v32h-64zM256 128h64v32h-64zM0 160h64v32h-64zM160 160h64v32h-64zM256 160h64v32h-64zM416 160h64v32h-64zM32 192h160v32h-160zM288 192h160v32h-160z"/></svg>
+    <div class="title"><b>Shutcord</b><span>Installer</span></div>
+    <div class="ver" id="ver"></div>
+</header>
+<div class="rule"></div>
 
-    <h1>Put <em>Shutcord</em> into your Discord.</h1>
-    <p class="lead">Pick the Discord you use. We close it, patch it, and next time you open it Shutcord is there. You can undo it any time.</p>
-
-    <div class="banner warn" id="bWarn"></div>
-    <div class="banner bad" id="bBad"></div>
-
+<section class="view show" id="vPick">
+    <div class="label">Choose a Discord to patch</div>
+    <div class="note" id="note"></div>
     <div class="list" id="list"></div>
-
     <div class="custom" id="custom">
-        <button class="link" id="customToggle">+ Use a custom Discord folder</button>
-        <div class="row">
-            <input id="customPath" placeholder="C:\Users\you\AppData\Local\Discord" spellcheck="false">
-            <button class="primary" id="customAdd">Add</button>
+        <button class="link" id="customToggle">+ Custom folder</button>
+        <div class="in"><input id="customPath" placeholder="C:\Users\you\AppData\Local\Discord" spellcheck="false"><button class="solid" id="customAdd">Add</button></div>
+    </div>
+</section>
+
+<section class="view" id="vWork">
+    <div class="center">
+        <h2 id="wTitle">Installing</h2>
+        <p>Discord will close.</p>
+        <ul class="steps" id="wSteps"></ul>
+        <div class="bar"><i id="wBar"></i></div>
+    </div>
+</section>
+
+<section class="view" id="vDone">
+    <div class="center">
+        <div class="tick" id="dTick"><svg viewBox="0 0 24 24" id="dIcon"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2 id="dTitle"></h2>
+        <p id="dSub"></p>
+        <div class="err" id="dErr" style="display:none"></div>
+        <div class="btns">
+            <button class="solid" id="dLaunch">Launch Discord</button>
+            <button id="dBack">Back</button>
+            <button id="dQuit">Close</button>
         </div>
     </div>
+</section>
 
-    <footer>
-        <span>Files: <b id="dataDir">&hellip;</b></span>
-        <span>Build: <b id="build">&hellip;</b></span>
-        <span class="grow"><button class="ghost" id="quit">Close installer</button></span>
-    </footer>
-</div>
-
-<div class="closed" id="closed">
-    <h1>You can close this tab.</h1>
-    <p class="lead" style="margin:10px auto 0">Installer stopped. Start Discord to use Shutcord.</p>
-</div>
-
-<div class="toast" id="toast"><span class="spin" id="toastSpin"></span><span id="toastText"></span></div>
+<footer>
+    <span class="grow">Build <b id="fBuild">...</b> &middot; <span id="fStatus"></span></span>
+    <a data-href="https://github.com/Shutcord/Shutcord">GitHub</a>
+</footer>
+<div class="closed" id="closed">You can close this window.</div>
 
 <script>
 const token = new URLSearchParams(location.search).get("t") || "";
 const $ = id => document.getElementById(id);
-let busy = false;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let state = null, busy = false, lastTarget = null;
 
 async function api(path, body) {
-    const r = await fetch("/api/" + path, {
-        method: body ? "POST" : "GET",
-        headers: { "X-Token": token, "Content-Type": "application/json" },
-        body: body ? JSON.stringify(body) : undefined
-    });
-    if (!r.ok) throw new Error("Installer connection lost");
+    const r = await fetch("/api/" + path, { method: body ? "POST" : "GET", headers: { "X-Token": token, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+    if (!r.ok) throw new Error("Lost connection to the installer");
     return r.json();
 }
+const show = id => { for (const v of ["vPick", "vWork", "vDone"]) $(v).classList.toggle("show", v === id); };
+const niceName = b => b === "stable" ? "Discord" : b === "ptb" ? "Discord PTB" : "Discord " + (b || "").replace(/^./, c => c.toUpperCase());
 
-let toastTimer;
-function toast(text, kind = "", spinning = false, ms = 5000) {
-    clearTimeout(toastTimer);
-    const t = $("toast");
-    t.className = "toast show " + kind;
-    $("toastSpin").style.display = spinning ? "" : "none";
-    $("toastText").textContent = text;
-    if (!spinning) toastTimer = setTimeout(() => t.classList.remove("show"), ms);
-}
-
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-function card(i) {
-    const letter = (i.branch || "?")[0].toUpperCase();
-    let pill = "";
-    if (i.shutcord) pill = '<span class="pill ok"><i></i>Shutcord installed</span>';
-    else if (i.other) pill = `<span class="pill warn"><i></i>${esc(i.other)} installed</span>`;
-    const label = i.shutcord ? "Reinstall / update" : (i.other ? `Replace ${esc(i.other)}` : "Install");
-    return `
-    <div class="card" data-id="${esc(i.id)}">
-        <div class="dot b-${esc(i.branch)}">${letter}</div>
-        <div class="info">
-            <b>${esc(i.branch === "stable" ? "Discord" : "Discord " + i.branch)}</b>${pill}
-            <div class="path">${esc(i.path)}</div>
-        </div>
-        <div class="actions">
-            <button class="primary" data-act="install">${label}</button>
-            <button class="ghost danger" data-act="uninstall" ${i.shutcord ? "" : "disabled"}>Uninstall</button>
-        </div>
+function row(i) {
+    let st = '<span class="state">Not installed</span>';
+    if (i.shutcord) st = '<span class="state on">Shutcord installed</span>';
+    else if (i.other) st = `<span class="state">${esc(i.other)} installed</span>`;
+    const label = i.shutcord ? (state && state.update ? "Update" : "Reinstall") : (i.other ? "Replace " + esc(i.other) : "Install");
+    return `<div class="row" data-id="${esc(i.id)}">
+        <div class="badge">${esc((i.branch || "?")[0].toUpperCase())}</div>
+        <div class="info"><b>${esc(niceName(i.branch))}</b>${st}<div class="path" title="${esc(i.path)}">${esc(i.path)}</div></div>
+        <div class="acts"><button class="solid" data-act="install">${label}</button><button data-act="uninstall" ${i.shutcord ? "" : "disabled"}>Uninstall</button></div>
     </div>`;
 }
 
 async function refresh() {
-    const s = await api("state");
+    const s = await api("state"); state = s;
     $("ver").textContent = "v" + (s.version && s.version !== "Unknown" ? s.version : "dev");
-    $("dataDir").textContent = s.dataDir;
-    $("build").textContent = s.dev ? "local (dev)" : (s.latest && s.latest !== "Unknown" ? s.latest : "latest");
+    $("fBuild").textContent = s.dev ? "local" : (s.latest && s.latest !== "Unknown" ? s.latest : "none");
+    $("fStatus").textContent = s.dev ? "developer mode" : s.latestErr === "checking" ? "checking..." : !s.latestOk ? "no release found" : s.update ? "update available" : "up to date";
 
-    const bad = $("bBad");
-    if (!s.latestOk && s.latestErr && s.latestErr !== "checking") {
-        bad.textContent = "Couldn't reach the Shutcord release (" + s.latestErr + "). Installing won't work until the repo is public and has a release.";
-        bad.classList.add("show");
-    } else bad.classList.remove("show");
+    const note = $("note"); let msg = "";
+    if (!s.latestOk && s.latestErr && s.latestErr !== "checking") msg = "Couldn't find a Shutcord release (" + s.latestErr + "). The repo must be public and have a published release.";
+    const others = [...new Set(s.installs.filter(i => i.other).map(i => i.other))];
+    if (others.length) msg += (msg ? " " : "") + others.join(", ") + " is installed on one of these. Installing replaces it.";
+    note.textContent = msg; note.classList.toggle("show", !!msg);
 
-    const warn = $("bWarn");
-    const others = s.installs.filter(i => i.other);
-    if (others.length) {
-        warn.textContent = "Another mod (" + [...new Set(others.map(i => i.other))].join(", ") + ") is installed on one of these. Installing Shutcord replaces it. Uninstalling Shutcord won't bring it back.";
-        warn.classList.add("show");
-    } else warn.classList.remove("show");
-
-    $("list").innerHTML = s.installs.length
-        ? s.installs.map(card).join("")
-        : '<div class="empty">No Discord found. Install Discord first, or add its folder below.</div>';
-    applyBusy();
+    $("list").innerHTML = s.installs.length ? s.installs.map(row).join("") : '<div class="empty">No Discord found. Install Discord first or add its folder.</div>';
 }
 
-function applyBusy() {
-    document.querySelectorAll(".card button").forEach(b => { if (busy) b.disabled = true; });
+const CK = '<svg class="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+function renderSteps(steps) {
+    $("wSteps").innerHTML = steps.map(s => `<li class="${s.state}"><span class="dot">${CK}</span>${esc(s.label)}</li>`).join("");
+    $("wBar").style.width = Math.max(6, steps.filter(s => s.state === "done").length / steps.length * 100) + "%";
 }
 
-$("list").addEventListener("click", async e => {
-    const btn = e.target.closest("button[data-act]");
-    if (!btn || busy) return;
-    const id = btn.closest(".card").dataset.id;
-    const act = btn.dataset.act;
-    busy = true; applyBusy();
-    toast(act === "install" ? "Downloading and patching… Discord will close." : "Removing Shutcord…", "", true);
-    try {
-        const r = await api(act, { id });
-        if (r.ok) toast(act === "install" ? "Done. Start Discord and open Settings." : "Shutcord removed.", "ok");
-        else toast(r.message || "Something went wrong.", "bad", false, 12000);
-    } catch (err) {
-        toast(err.message, "bad", false, 12000);
+async function run(kind, id) {
+    busy = true; lastTarget = id;
+    $("wTitle").textContent = kind === "install" ? "Installing Shutcord" : "Removing Shutcord";
+    $("wSteps").innerHTML = ""; $("wBar").style.width = "6%"; show("vWork");
+    let j;
+    try { j = await api(kind, { id }); } catch (e) { return finish(kind, { success: false, error: e.message }); }
+    if (!j.ok) return finish(kind, { success: false, error: j.message });
+    for (;;) {
+        await new Promise(r => setTimeout(r, 260));
+        let s; try { s = await api("job?id=" + j.job); } catch (e) { return finish(kind, { success: false, error: e.message }); }
+        if (!s.ok) return finish(kind, { success: false, error: s.message });
+        renderSteps(s.steps);
+        if (s.done) { await new Promise(r => setTimeout(r, 450)); return finish(kind, s); }
     }
+}
+
+function finish(kind, s) {
     busy = false;
-    try { await refresh(); } catch {}
-});
+    const ok = !!s.success, inst = kind === "install";
+    $("dIcon").innerHTML = ok ? '<path d="M5 12.5l4.5 4.5L19 7.5"/>' : '<path d="M6 6l12 12M18 6L6 18"/>';
+    $("dTitle").textContent = ok ? (inst ? "Shutcord is installed" : "Shutcord removed") : (inst ? "Install failed" : "Couldn't remove it");
+    $("dSub").textContent = ok ? (inst ? "Start Discord and open User Settings. Shutcord is at the top of the sidebar." : "Discord is back to normal.") : "Your Discord was left as it was.";
+    const err = $("dErr"); err.style.display = ok ? "none" : "block"; err.textContent = s.error || "";
+    $("dLaunch").style.display = ok && state && state.os === "windows" ? "" : "none";
+    show("vDone"); refresh().catch(() => {});
+}
 
+$("list").addEventListener("click", e => { const b = e.target.closest("button[data-act]"); if (b && !busy) run(b.dataset.act, b.closest(".row").dataset.id); });
+$("dBack").onclick = () => { show("vPick"); refresh().catch(() => {}); };
+$("dLaunch").onclick = async () => { const b = $("dLaunch"); b.disabled = true; b.textContent = "Starting..."; try { await api("launch", { id: lastTarget }); b.textContent = "Started"; } catch { b.textContent = "Couldn't start"; } setTimeout(() => { b.disabled = false; b.textContent = "Launch Discord"; }, 4000); };
 $("customToggle").onclick = () => { $("custom").classList.toggle("open"); $("customPath").focus(); };
-$("customAdd").onclick = async () => {
-    const p = $("customPath").value.trim();
-    if (!p) return;
-    const r = await api("custom", { path: p });
-    if (r.ok) { $("customPath").value = ""; $("custom").classList.remove("open"); toast("Added.", "ok"); await refresh(); }
-    else toast(r.message, "bad", false, 7000);
-};
+$("customAdd").onclick = async () => { const p = $("customPath").value.trim(); if (!p) return; const r = await api("custom", { path: p }); if (r.ok) { $("customPath").value = ""; $("custom").classList.remove("open"); await refresh(); } else alert(r.message); };
 $("customPath").addEventListener("keydown", e => { if (e.key === "Enter") $("customAdd").click(); });
+document.querySelectorAll("[data-href]").forEach(a => a.onclick = () => api("open", { url: a.dataset.href }).catch(() => {}));
+async function quit() { try { await api("quit", {}); } catch {} clearInterval(pt); $("closed").classList.add("show"); window.close(); }
+$("dQuit").onclick = quit;
 
-$("quit").onclick = async () => {
-    try { await api("quit", {}); } catch {}
-    $("app").style.display = "none"; $("closed").style.display = "block";
-    clearInterval(pingTimer);
-    window.close();
-};
-
-const pingTimer = setInterval(() => api("ping").catch(() => {}), 3000);
-api("ping").catch(() => {});
-refresh().catch(e => toast(e.message, "bad", false, 10000));
-// keep "checking release" state fresh for the first moments
+const pt = setInterval(() => api("ping").catch(() => {}), 3000); api("ping").catch(() => {});
+refresh().catch(e => { $("note").textContent = e.message; $("note").classList.add("show"); });
 let n = 0; const poll = setInterval(() => { if (++n > 8 || busy) return clearInterval(poll); refresh().catch(() => {}); }, 1500);
 </script>
 </body>

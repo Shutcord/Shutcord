@@ -124,7 +124,7 @@ const DefaultSettings: Settings = {
 
     cloud: {
         authenticated: false,
-        url: "https://api.shut.wtf/",
+        url: "https://cloud.shutcord.invalid/",
         settingsSync: false,
         settingsSyncVersion: 0
     }

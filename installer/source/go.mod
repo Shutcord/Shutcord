@@ -7,6 +7,7 @@ require (
 	github.com/AllenDang/imgui-go v1.12.1-0.20221124025851-59b862ca5a0c
 	github.com/fatih/color v1.16.0
 	github.com/manifoldco/promptui v0.9.0
+	github.com/jchv/go-webview2 v0.0.0-20260205173254-56598839c808
 	golang.org/x/sys v0.15.0
 )
 
@@ -23,3 +24,5 @@ require (
 	golang.org/x/image v0.14.0 // indirect
 	gopkg.in/eapache/queue.v1 v1.1.0 // indirect
 )
+
+require github.com/jchv/go-winloader v0.0.0-20250406163304-c1995be93bd1 // indirect

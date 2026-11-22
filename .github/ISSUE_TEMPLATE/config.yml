@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
     - name: 💬 Discord Community
-      url: https://shut.wtf/discord
-      about: For plugin requests, support questions, and general help - join our Discord server
+      url: https://github.com/Shutcord/Shutcord
+      about: For plugin requests, support questions, and general help - join GitHub Discussions
     - name: 🔌 Plugin Requests
-      url: https://shut.wtf/discord
-      about: Want a new plugin? Request it in our Discord community, not here
+      url: https://github.com/Shutcord/Shutcord
+      about: Want a new plugin? Request it in our GitHub community, not here
     - name: ❓ Support & Questions
-      url: https://shut.wtf/discord
-      about: Need help? Ask in our Discord server for faster responses
+      url: https://github.com/Shutcord/Shutcord
+      about: Need help? Ask in GitHub Discussions for faster responses

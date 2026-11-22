@@ -91,7 +91,7 @@ func main() {
 
 	if *installFlag || *updateFlag {
 		if !<-GithubDoneChan {
-			die("Not " + Ternary(*installFlag, "installing", "updating") + " as fetching release data failed. If this issue persists, see https://shut.wtf/support")
+			die("Not " + Ternary(*installFlag, "installing", "updating") + " as fetching release data failed. If this issue persists, see https://github.com/Shutcord/Shutcord")
 		}
 	}
 
@@ -200,7 +200,7 @@ func exitSuccess() {
 }
 
 func exitFailure() {
-	color.HiRed("❌ Failed! If this issue persists, see https://shut.wtf/support")
+	color.HiRed("❌ Failed! If this issue persists, see https://github.com/Shutcord/Shutcord")
 	exit(1)
 }
 

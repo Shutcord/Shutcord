@@ -1,5 +1,5 @@
 name: Feature Request
-description: Have an idea for a new feature? Request it here! No plugin requests, go to our Discord server for that
+description: Have an idea for a new feature? Request it here! No plugin requests, go to GitHub Discussions for that
 labels: [enhancement]
 title: "[Feature] <title>"
 
@@ -8,8 +8,8 @@ body:
       attributes:
           value: |
               This form is not for any of the following:
-              - Plugin requests — Go to our [Discord server](https://shut.wtf/discord) for that
-              - Feature requests for plugins — Go to our [Discord server](https://shut.wtf/discord) for that
+              - Plugin requests — Go to our [GitHub Discussions](https://github.com/Shutcord/Shutcord/discussions) for that
+              - Feature requests for plugins — Go to our [GitHub Discussions](https://github.com/Shutcord/Shutcord/discussions) for that
 
     - type: textarea
       id: feature-description

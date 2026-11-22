@@ -1,6 +1,6 @@
 # Shutcord
 
-A Discord client mod by [shut.wtf](https://shut.wtf).
+A Discord client mod. Home: https://github.com/Shutcord/Shutcord
 
 Shutcord is a fork of [Vencord](https://github.com/Vendicated/Vencord) by Vendicated and contributors,
 licensed under GPL-3.0-or-later. Original copyright notices are kept in the source files as the license requires.
@@ -13,7 +13,7 @@ licensed under GPL-3.0-or-later. Original copyright notices are kept in the sour
 -   Works on any Discord branch: Stable, Canary or PTB all work
 -   Custom CSS and Themes: Inbuilt css editor with support to import any css files (including BetterDiscord themes)
 -   Privacy friendly: blocks Discord analytics & crash reporting out of the box and has no telemetry
--   Settings sync between devices (optional, needs a backend at api.shut.wtf)
+-   Settings sync between devices (optional, needs a backend you host yourself)
 
 ## Building from source
 
@@ -24,11 +24,9 @@ pnpm buildWeb         # browser extension / userscript
 pnpm inject           # patch your Discord install
 ```
 
-Downloads: https://shut.wtf/download
+Downloads: https://github.com/Shutcord/Shutcord/releases
 
-Community: https://shut.wtf/discord
-
-Donate: https://shut.wtf/donate
+Issues and discussions: https://github.com/Shutcord/Shutcord
 
 ## Disclaimer
 

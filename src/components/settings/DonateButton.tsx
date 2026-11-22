@@ -22,7 +22,7 @@ import { Heart } from "@components/Heart";
 export default function DonateButton({ variant, ...props }: Omit<ButtonProps, "children" | "onClick" | "className">) {
     const commonProps = {
         ...props,
-        onClick: () => ShutcordNative.native.openExternal("https://shut.wtf/donate"),
+        onClick: () => ShutcordNative.native.openExternal("https://github.com/Shutcord/Shutcord"),
         className: "vc-donate-button",
         children: <><Heart />Donate</>
     };

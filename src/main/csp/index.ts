@@ -60,7 +60,7 @@ export const CspPolicies: PolicyMap = {
     "archive.org": ConnectSrc,
     "*.archive.org": ConnectSrc,
     "translate-pa.googleapis.com": ConnectSrc, // Google Translate API
-    "*.shut.wtf": ImageSrc, // ShutCloud (api.shut.wtf) and Badges (badges.shut.wtf)
+    "raw.githubusercontent.com": ImageSrc, // Badges (badges.json in the Shutcord repo)
     "manti.vendicated.dev": ImageSrc, // ReviewDB API
     "decor.fieryflames.dev": ConnectSrc, // Decor API
     "ugc.decor.fieryflames.dev": ImageSrc, // Decor CDN

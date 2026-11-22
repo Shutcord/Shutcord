@@ -52,7 +52,7 @@ function ContributorModal({ user, modalProps }: { user: User; modalProps: Render
             .sort((a, b) => Number(a.required ?? false) - Number(b.required ?? false));
     }, [user.id, user.username]);
 
-    const ContributedHyperLink = <Link href="https://shut.wtf/source">contributed</Link>;
+    const ContributedHyperLink = <Link href="https://github.com/Shutcord/Shutcord">contributed</Link>;
 
     return (
         <Modal

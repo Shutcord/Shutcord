@@ -2,7 +2,7 @@
 
 Shutcord is a community project and welcomes any kind of contribution from anyone!
 
-We have development documentation for new contributors, which can be found at <https://docs.shut.wtf>.
+We have development documentation for new contributors, which can be found at <https://github.com/Shutcord/Shutcord>.
 
 ## AI Policy
 
@@ -31,7 +31,7 @@ Pull requests can be made either to the `main` or the `dev` branch. However, unl
 This is because the dev branch might contain unstable changes and be force pushed frequently, which could cause conflicts in your pull request.
 
 Before working on a major change, I highly recommend opening a feature request for it, making sure to check "I am willing to work on this myself",
-so we can discuss before you invest time. Alternatively, you can also do so in our Discord server's development
+so we can discuss before you invest time. Alternatively, you can also do so in GitHub Discussions's development
 channels. This saves you a lot of time in case your feature is considered too niche or rejected for any other reason.
 
 ## Write a plugin
@@ -70,7 +70,7 @@ The source code of our documentation is available at <https://github.com/Vencord
 If you see anything outdated, incorrect or lacking, please fix it!
 If you think a new page should be added, feel free to suggest it via an issue and we can discuss.
 
-## Help out users in our Discord community
+## Help out users in our GitHub community
 
-We have an open support channel in our [Discord community](https://shut.wtf/discord).
+We have an open support channel in our [GitHub community](https://github.com/Shutcord/Shutcord).
 Helping out users there is always appreciated! The more, the merrier.

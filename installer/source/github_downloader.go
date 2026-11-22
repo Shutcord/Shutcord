@@ -62,7 +62,7 @@ func GetGithubRelease(url, fallbackUrl string) (*GithubRelease, error) {
 		triedFallback := url == fallbackUrl
 
 		// GitHub has a very strict 60 req/h rate limit and some (mostly indian) isps block github for some reason.
-		// If that is the case, try our fallback at https://shut.wtf/releases/project
+		// If that is the case, try our fallback
 		if isRateLimitedOrBlocked && !triedFallback {
 			Log.Error(fmt.Sprintf("Failed to fetch %s (status code %d). Trying fallback url %s", url, res.StatusCode, fallbackUrl))
 			return GetGithubRelease(fallbackUrl, fallbackUrl)

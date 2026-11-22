@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"sync"
@@ -42,6 +43,8 @@ type apiState struct {
 	Latest    string       `json:"latest"`
 	Installed string       `json:"installed"`
 	OS        string       `json:"os"`
+	Release   string       `json:"release"`
+	Update    bool         `json:"update"`
 }
 
 type apiResult struct {
@@ -168,6 +171,8 @@ func runWebUI() {
 		if !ready {
 			st.LatestErr = "checking"
 		}
+		st.Release = ReleaseData.Name
+		st.Update = !IsDevInstall && ready && githubOK && InstalledHash != "" && InstalledHash != "None" && InstalledHash != LatestHash
 		if ready && GithubError != nil {
 			st.LatestErr = GithubError.Error()
 		}
@@ -196,30 +201,6 @@ func runWebUI() {
 		reply(w, apiResult{true, di.path})
 	}))
 
-	action := func(name string, fn func(di *DiscordInstall) error) http.HandlerFunc {
-		return guard(func(w http.ResponseWriter, r *http.Request) {
-			var body struct{ ID string }
-			_ = json.NewDecoder(r.Body).Decode(&body)
-			di := findInstall(body.ID)
-			if di == nil {
-				fail(w, "Couldn't find that Discord install anymore.")
-				return
-			}
-			opLock.Lock()
-			defer opLock.Unlock()
-			if err := fn(di); err != nil {
-				Log.Error(name+" failed:", err)
-				msg := err.Error()
-				if errors.Is(err, os.ErrPermission) {
-					msg = "Permission denied. Close Discord completely and run the installer again (as administrator if Discord is installed system-wide)."
-				}
-				fail(w, msg)
-				return
-			}
-			reply(w, apiResult{true, "done"})
-		})
-	}
-
 	prepareFiles := func() error {
 		if IsDevInstall {
 			return nil
@@ -234,19 +215,65 @@ func runWebUI() {
 			if GithubError != nil {
 				msg += " (" + GithubError.Error() + ")"
 			}
-			return errors.New(msg + ". Make sure the Shutcord repo is public and has a release.")
+			return errors.New(msg + ". Make sure the Shutcord repo is public and has a published release.")
 		}
 		return installLatestBuilds()
 	}
 
-	mux.HandleFunc("/api/install", action("install", func(di *DiscordInstall) error {
-		if err := prepareFiles(); err != nil {
-			return err
+	startJob := func(kind string) http.HandlerFunc {
+		return guard(func(w http.ResponseWriter, r *http.Request) {
+			var body struct{ ID string }
+			_ = json.NewDecoder(r.Body).Decode(&body)
+			di := findInstall(body.ID)
+			if di == nil {
+				fail(w, "Couldn't find that Discord install anymore.")
+				return
+			}
+			j := newJob(kind)
+			go func() {
+				opLock.Lock()
+				defer opLock.Unlock()
+				runJob(j, kind, di, prepareFiles)
+			}()
+			reply(w, map[string]any{"ok": true, "job": j.id})
+		})
+	}
+	mux.HandleFunc("/api/install", startJob("install"))
+	mux.HandleFunc("/api/uninstall", startJob("uninstall"))
+
+	mux.HandleFunc("/api/job", guard(func(w http.ResponseWriter, r *http.Request) {
+		j := getJob(r.URL.Query().Get("id"))
+		if j == nil {
+			fail(w, "unknown job")
+			return
 		}
-		return di.patch()
+		reply(w, j.snapshot())
 	}))
-	mux.HandleFunc("/api/uninstall", action("uninstall", func(di *DiscordInstall) error {
-		return di.unpatch()
+
+	mux.HandleFunc("/api/launch", guard(func(w http.ResponseWriter, r *http.Request) {
+		var body struct{ ID string }
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		di := findInstall(body.ID)
+		if di == nil {
+			fail(w, "Couldn't find that Discord install anymore.")
+			return
+		}
+		if err := launchDiscord(di); err != nil {
+			fail(w, err.Error())
+			return
+		}
+		reply(w, apiResult{true, "launched"})
+	}))
+
+	mux.HandleFunc("/api/open", guard(func(w http.ResponseWriter, r *http.Request) {
+		var body struct{ URL string }
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		if !strings.HasPrefix(body.URL, "https://github.com/Shutcord/") {
+			fail(w, "not allowed")
+			return
+		}
+		openDefaultBrowser(body.URL)
+		reply(w, apiResult{true, "opened"})
 	}))
 
 	mux.HandleFunc("/api/quit", guard(func(w http.ResponseWriter, r *http.Request) {
@@ -259,7 +286,22 @@ func runWebUI() {
 
 	url := fmt.Sprintf("http://%s/?t=%s", allowedHost, token)
 	fmt.Println("Shutcord Installer is running at", url)
-	openBrowser(url)
+	if os.Getenv("SHUTCORD_BROWSER") == "" && runNativeWindow(url) {
+		_ = srv.Close()
+		return
+	}
+
+	started := time.Now()
+	win := openAppWindow(url)
+	if win != nil {
+		// closing the window closes the installer
+		go func() {
+			_ = win.Wait()
+			if time.Since(started) > 4*time.Second {
+				doQuit()
+			}
+		}()
+	}
 
 	// exit once the browser tab is closed
 	go func() {
@@ -273,10 +315,78 @@ func runWebUI() {
 	}()
 
 	<-quit
+	if win != nil && win.Process != nil {
+		_ = win.Process.Kill()
+	}
 	_ = srv.Close()
 }
 
-func openBrowser(url string) {
+// browserCandidates returns Chromium-based browsers that can open an app-style window
+func browserCandidates() []string {
+	var c []string
+	if v := os.Getenv("SHUTCORD_BROWSER"); v != "" {
+		c = append(c, v)
+	}
+	switch runtime.GOOS {
+	case "windows":
+		pf, pf86, local := os.Getenv("ProgramFiles"), os.Getenv("ProgramFiles(x86)"), os.Getenv("LocalAppData")
+		for _, base := range []string{pf86, pf, local} {
+			if base == "" {
+				continue
+			}
+			c = append(c,
+				base+`\Microsoft\Edge\Application\msedge.exe`,
+				base+`\Google\Chrome\Application\chrome.exe`,
+				base+`\BraveSoftware\Brave-Browser\Application\brave.exe`,
+				base+`\Chromium\Application\chrome.exe`,
+			)
+		}
+	case "darwin":
+		c = append(c,
+			"/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+			"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+			"/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+		)
+	default:
+		for _, n := range []string{"microsoft-edge", "google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "brave-browser"} {
+			if p, err := exec.LookPath(n); err == nil {
+				c = append(c, p)
+			}
+		}
+	}
+	return c
+}
+
+// openAppWindow opens the UI in its own standalone window (no tabs, no address bar).
+// Returns the browser process, or nil if it had to fall back to a normal browser tab.
+func openAppWindow(url string) *exec.Cmd {
+	profile := filepath.Join(os.TempDir(), "shutcord-installer-profile")
+	for _, exe := range browserCandidates() {
+		if !ExistsFile(exe) {
+			continue
+		}
+		cmd := exec.Command(exe,
+			"--app="+url,
+			"--user-data-dir="+profile, // own instance, so the process lives exactly as long as the window
+			"--window-size=1040,700",
+			"--no-first-run",
+			"--no-default-browser-check",
+			"--disable-extensions",
+			"--disable-features=Translate",
+		)
+		if err := cmd.Start(); err != nil {
+			Log.Debug("Failed to start", exe, err)
+			continue
+		}
+		Log.Debug("Opened app window with", exe)
+		return cmd
+	}
+
+	openDefaultBrowser(url)
+	return nil
+}
+
+func openDefaultBrowser(url string) {
 	var cmd *exec.Cmd
 	switch runtime.GOOS {
 	case "windows":
@@ -287,7 +397,7 @@ func openBrowser(url string) {
 		cmd = exec.Command("xdg-open", url)
 	}
 	if err := cmd.Start(); err != nil {
-		Log.Warn("Couldn't open your browser automatically. Open this link yourself:", url)
+		Log.Warn("Couldn't open a window automatically. Open this link yourself:", url)
 	}
 }
 

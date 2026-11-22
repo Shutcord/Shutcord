@@ -2,7 +2,7 @@
 // @name            Shutcord
 // @description     A Discord client mod - Web version
 // @version         %version%
-// @author          shut.wtf (https://github.com/Shutcord)
+// @author          Shutcord (https://github.com/Shutcord)
 // @namespace       https://github.com/Shutcord/Shutcord
 // @supportURL      https://github.com/Shutcord/Shutcord
 // @icon            https://raw.githubusercontent.com/Shutcord/Shutcord/refs/heads/main/browser/icon.png
