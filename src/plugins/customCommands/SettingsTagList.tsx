@@ -23,7 +23,7 @@ export function SettingsTagList() {
             <Heading tag="h4">Registered Tags</Heading>
             <Flex flexDirection="column" gap="0.5em" className={Margins.top8}>
                 {Object.values(tagsList).map(tag => (
-                    <Card key={tag.name} className="vc-customCommands-card">
+                    <Card key={tag.name} className="sc-customCommands-card">
                         <Paragraph size="md" weight="medium">{tag.name}</Paragraph>
 
                         <Button variant="secondary" size="iconOnly" onClick={() => openCreateTagModal(tag)}>

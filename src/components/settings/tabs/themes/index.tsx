@@ -45,18 +45,18 @@ function ThemesTab() {
             <TabBar
                 type="top"
                 look="brand"
-                className="vc-settings-tab-bar"
+                className="sc-settings-tab-bar"
                 selectedItem={currentTab}
                 onItemSelect={setCurrentTab}
             >
                 <TabBar.Item
-                    className="vc-settings-tab-bar-item"
+                    className="sc-settings-tab-bar-item"
                     id={ThemeTab.LOCAL}
                 >
                     Local Themes
                 </TabBar.Item>
                 <TabBar.Item
-                    className="vc-settings-tab-bar-item"
+                    className="sc-settings-tab-bar-item"
                     id={ThemeTab.ONLINE}
                 >
                     Online Themes

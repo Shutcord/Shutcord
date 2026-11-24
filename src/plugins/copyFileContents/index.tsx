@@ -50,7 +50,7 @@ export default definePlugin({
                 {tooltipProps => (
                     <div
                         {...tooltipProps}
-                        className="vc-cfc-button"
+                        className="sc-cfc-button"
                         role="button"
                         onClick={() => {
                             if (!recentlyCopied && bytesLeft <= 0) {

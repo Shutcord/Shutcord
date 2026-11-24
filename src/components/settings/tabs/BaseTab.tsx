@@ -24,7 +24,7 @@ import type { ComponentType, PropsWithChildren } from "react";
 
 export function SettingsTab({ children }: PropsWithChildren) {
     return (
-        <section className="vc-settings-tab">{children}</section>
+        <section className="sc-settings-tab">{children}</section>
     );
 }
 

@@ -7,7 +7,7 @@
 import { classNameFactory } from "@utils/css";
 import { extractAndLoadChunksLazy, findCssClassesLazy } from "@webpack";
 
-export const cl = classNameFactory("vc-decor-");
+export const cl = classNameFactory("sc-decor-");
 export const DecorationModalClasses = findCssClassesLazy("modalPreview", "modalCloseButton", "spinner", "modal");
 
 export const requireAvatarDecorationModal = extractAndLoadChunksLazy(["initialSelectedDecoration:", /initialSelectedDecoration:\i,.{0,300}\i\.e\(/]);

@@ -138,7 +138,7 @@ export const ChatBarButton = ErrorBoundary.wrap((props: ChatBarButtonProps) => {
     return (
         <Tooltip text={props.tooltip}>
             {({ onMouseEnter, onMouseLeave }) => (
-                <div className={`expression-picker-chat-input-button ${ChannelTextAreaClasses?.buttonContainer ?? ""} vc-chatbar-button`}>
+                <div className={`expression-picker-chat-input-button ${ChannelTextAreaClasses?.buttonContainer ?? ""} sc-chatbar-button`}>
                     <Clickable
                         aria-label={props.tooltip}
                         onMouseEnter={onMouseEnter}
@@ -172,12 +172,12 @@ addContextMenuPatch("textarea-context", (children, args) => {
     if (idx === -1) return;
 
     group.splice(idx, 0,
-        <Menu.MenuItem id="vc-chat-buttons" key="shutcord-chat-buttons" label="Shutcord Buttons">
+        <Menu.MenuItem id="sc-chat-buttons" key="shutcord-chat-buttons" label="Shutcord Buttons">
             {buttons.map(([id]) => (
                 <Menu.MenuCheckboxItem
                     label={id}
                     key={id}
-                    id={`vc-chat-button-${id}`}
+                    id={`sc-chat-button-${id}`}
                     checked={chatBarButtons[id]?.enabled !== false}
                     action={() => {
                         const wasEnabled = chatBarButtons[id]?.enabled !== false;

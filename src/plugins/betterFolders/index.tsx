@@ -137,7 +137,7 @@ export const settings = definePluginSettings({
 
 const IS_BETTER_FOLDERS_VAR = "typeof isBetterFolders!=='undefined'?isBetterFolders:arguments[0]?.isBetterFolders";
 const BETTER_FOLDERS_EXPANDED_IDS_VAR = "typeof betterFoldersExpandedIds!=='undefined'?betterFoldersExpandedIds:arguments[0]?.betterFoldersExpandedIds";
-const GRID_STYLE_NAME = "vc-betterFolders-sidebar-grid";
+const GRID_STYLE_NAME = "sc-betterFolders-sidebar-grid";
 
 export default definePlugin({
     name: "BetterFolders",
@@ -269,7 +269,7 @@ export default definePlugin({
                 {
                     // Channels resize slider uses hardcoded offset which is wrong when the Better Folders sidebar is opened
                     match: /(?<="aria-valuemax":\d+,className:\i\.\i,onClick:\i,onMouseDown:)(\i)/,
-                    replace: "vcEvent=>$1($self.fixChannelsResizeSliderOffset(vcEvent))"
+                    replace: "scEvent=>$1($self.fixChannelsResizeSliderOffset(scEvent))"
                 }
             ]
         },
@@ -404,7 +404,7 @@ export default definePlugin({
     },
 
     fixChannelsResizeSliderOffset(event: MouseEvent) {
-        const betterFoldersSidebar = document.querySelector<HTMLElement>(".vc-betterFolders-sidebar");
+        const betterFoldersSidebar = document.querySelector<HTMLElement>(".sc-betterFolders-sidebar");
 
         if (betterFoldersSidebar != null) {
             // @ts-expect-error Readonly, but browser doesn't care

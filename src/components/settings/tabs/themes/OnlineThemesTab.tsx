@@ -48,7 +48,7 @@ export function OnlineThemesTab() {
                 <TextArea
                     value={themeText}
                     onChange={setThemeText}
-                    className={"vc-settings-theme-links"}
+                    className={"sc-settings-theme-links"}
                     placeholder="Enter Theme Links..."
                     spellCheck={false}
                     onBlur={onBlur}

@@ -24,7 +24,7 @@ import type { ComponentType, Ref, SyntheticEvent } from "react";
 
 import { ThemeCard } from "./ThemeCard";
 
-const cl = classNameFactory("vc-settings-theme-");
+const cl = classNameFactory("sc-settings-theme-");
 
 type FileInput = ComponentType<{
     ref: Ref<HTMLInputElement>;

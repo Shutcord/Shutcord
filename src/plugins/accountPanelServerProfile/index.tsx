@@ -29,11 +29,11 @@ const AccountPanelContextMenu = ErrorBoundary.wrap(() => {
 
     return (
         <Menu.Menu
-            navId="vc-ap-server-profile"
+            navId="sc-ap-server-profile"
             onClose={ContextMenuApi.closeContextMenu}
         >
             <Menu.MenuItem
-                id="vc-ap-view-alternate-popout"
+                id="sc-ap-view-alternate-popout"
                 label={prioritizeServerProfile ? "View Account Profile" : "View Server Profile"}
                 disabled={getCurrentChannel()?.getGuildId() == null}
                 action={e => {
@@ -42,7 +42,7 @@ const AccountPanelContextMenu = ErrorBoundary.wrap(() => {
                 }}
             />
             <Menu.MenuCheckboxItem
-                id="vc-ap-prioritize-server-profile"
+                id="sc-ap-prioritize-server-profile"
                 label="Prioritize Server Profile"
                 checked={prioritizeServerProfile}
                 action={() => settings.store.prioritizeServerProfile = !prioritizeServerProfile}

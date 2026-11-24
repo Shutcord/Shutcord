@@ -41,12 +41,12 @@
     cursor: pointer;
 }
 
-.vc-ml-modal-timestamp {
+.sc-ml-modal-timestamp {
     cursor: unset;
     height: unset;
 }
 
-.vc-ml-modal-tab-bar {
+.sc-ml-modal-tab-bar {
     flex-wrap: wrap;
     gap: 16px;
 }

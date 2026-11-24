@@ -32,7 +32,7 @@ const enum Methods {
     Timestamp,
 }
 
-const ANONYMISE_UPLOAD_SYMBOL = Symbol("vcAnonymise");
+const ANONYMISE_UPLOAD_SYMBOL = Symbol("scAnonymise");
 const tarExtMatcher = /\.tar\.\w+$/;
 
 const settings = definePluginSettings({

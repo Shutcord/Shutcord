@@ -33,7 +33,7 @@ export function VerifiedIcon() {
             forcedIconColor={forcedIconColor}
             size={16}
             tooltipText={getIntlMessage("CONNECTION_VERIFIED")}
-            className="vc-sc-tooltip-icon"
+            className="sc-sc-tooltip-icon"
         />
     );
 }

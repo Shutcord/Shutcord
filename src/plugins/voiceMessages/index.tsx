@@ -43,7 +43,7 @@ import { VoicePreview } from "./VoicePreview";
 import { VoiceRecorderWeb } from "./WebRecorder";
 
 const CloudUpload: typeof TCloudUpload = findLazy(m => m.prototype?.trackUploadFinished);
-export const cl = classNameFactory("vc-vmsg-");
+export const cl = classNameFactory("sc-vmsg-");
 export type VoiceRecorder = ComponentType<{
     setAudioBlob(blob: Blob): void;
     onRecordingChange(recording: boolean): void;
@@ -62,7 +62,7 @@ const ctxMenuPatch: NavContextMenuPatchCallback = (children, props) => {
 
     children.push(
         <Menu.MenuItem
-            id="vc-send-vmsg"
+            id="sc-send-vmsg"
             iconLeft={Microphone}
             leadingAccessory={{
                 type: "icon",

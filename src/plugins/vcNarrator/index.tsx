@@ -158,7 +158,7 @@ function playSample(type: string) {
 }
 
 export default definePlugin({
-    name: "VcNarrator",
+    name: "ScNarrator",
     description: "Announces when users join, leave, or move voice channels via narrator",
     tags: ["Voice", "Accessibility"],
     authors: [Devs.Ven],
@@ -219,7 +219,7 @@ export default definePlugin({
 
     start() {
         if (typeof speechSynthesis === "undefined" || speechSynthesis.getVoices().length === 0) {
-            new Logger("VcNarrator").warn(
+            new Logger("ScNarrator").warn(
                 "SpeechSynthesis not supported or no Narrator voices found. Thus, this plugin will not work. Check my Settings for more info"
             );
             return;
@@ -267,7 +267,7 @@ export default definePlugin({
                                 gridTemplateColumns: "repeat(4, 1fr)",
                                 gap: "1rem",
                             }}
-                            className={"vc-narrator-buttons"}
+                            className={"sc-narrator-buttons"}
                         >
                             {types.map(t => (
                                 <Button key={t} onClick={() => playSample(t)}>

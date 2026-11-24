@@ -62,7 +62,7 @@ function FriendsIndicator() {
     });
 
     return (
-        <span id="vc-friendcount" style={{
+        <span id="sc-friendcount" style={{
             display: "inline-block",
             width: "100%",
             fontSize: "12px",
@@ -86,7 +86,7 @@ function ServersIndicator() {
     });
 
     return (
-        <span id="vc-guildcount" style={{
+        <span id="sc-guildcount" style={{
             display: "inline-block",
             width: "100%",
             fontSize: "12px",

@@ -201,7 +201,7 @@ export default definePlugin({
                             ref={buttonRef}
                             variant="none"
                             size="min"
-                            className={classes(className, "vc-permviewer-role-button")}
+                            className={classes(className, "sc-permviewer-role-button")}
                         >
                             <SafetyIcon height="16" width="16" />
                         </Button>

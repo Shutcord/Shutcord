@@ -46,7 +46,7 @@ import Plugins, { ExcludedPlugins, PluginMeta } from "~plugins";
 import { PluginCard } from "./PluginCard";
 import { UIElementsButton } from "./UIElements";
 
-export const cl = classNameFactory("vc-plugins-");
+export const cl = classNameFactory("sc-plugins-");
 export const logger = new Logger("PluginSettings", "#a6d189");
 
 function ReloadRequiredCard({ required }: { required: boolean; }) {

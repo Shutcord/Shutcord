@@ -130,9 +130,9 @@ function GameActivityToggleButton(props: { nameplate?: any; }) {
             align="left"
             targetElementRef={buttonRef}
             renderPopout={({ closePopout }) => (
-                <Menu.Menu navId="vc-gameActivityToggle-menu" onClose={closePopout}>
+                <Menu.Menu navId="sc-gameActivityToggle-menu" onClose={closePopout}>
                     <Menu.MenuCheckboxItem
-                        id="vc-toggle-spotify"
+                        id="sc-toggle-spotify"
                         label="Share Spotify Activity"
                         checked={shareSpotifyActivity}
                         action={async () => {

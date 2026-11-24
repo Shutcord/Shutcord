@@ -32,6 +32,7 @@ import { copyWithToast } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { Margins } from "@utils/margins";
 import { shouldShowContributorBadge } from "@utils/misc";
+import { listSponsorIds, resolveSponsorBadges, SponsorBadge, SponsorsFile } from "@utils/sponsors";
 import definePlugin from "@utils/types";
 import { ContextMenuApi, Menu, Modal, openModal, showToast, UserStore } from "@webpack/common";
 
@@ -48,13 +49,8 @@ const ContributorBadge: ProfileBadge = {
 };
 
 
-interface DonorBadge {
-    tooltip?: string;
-    badge: string;
-    "2"?: 1;
-}
-
-let DonorBadges = {} as Record<string, Array<DonorBadge>>;
+let DonorBadges = {} as Record<string, SponsorBadge[]>;
+let SponsorIds = new Set<string>();
 let DirectoryBadges = {} as Record<string, DirectoryBadge>;
 
 async function loadBadges(noCache = false) {
@@ -63,17 +59,19 @@ async function loadBadges(noCache = false) {
         init.cache = "no-cache";
 
     try {
-        DonorBadges = await fetch("https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges.json", init)
+        const data: SponsorsFile = await fetch("https://raw.githubusercontent.com/Shutcord/Shutcord/main/sponsors.json", init)
             .then(r => r.json());
+        DonorBadges = resolveSponsorBadges(data);
+        SponsorIds = listSponsorIds(data);
     } catch (err) {
-        console.warn("[Shutcord] Failed to load donor badges, continuing without them", err);
+        console.warn("[Shutcord] Failed to load sponsors.json, continuing without them", err);
     }
 }
 
 let intervalId: any;
 
 function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
-    const id = `vc-${userId}-${b.id}`;
+    const id = `sc-${userId}-${b.id}`;
 
     return DirectoryBadges[id] ??= {
         badge_id: id,
@@ -94,13 +92,13 @@ function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
 function BadgeContextMenu({ badge }: { badge: Omit<ProfileBadge, "id"> & BadgeUserArgs; }) {
     return (
         <Menu.Menu
-            navId="vc-badge-context"
+            navId="sc-badge-context"
             onClose={ContextMenuApi.closeContextMenu}
             aria-label="Badge Options"
         >
             {badge.description && (
                 <Menu.MenuItem
-                    id="vc-badge-copy-name"
+                    id="sc-badge-copy-name"
                     label="Copy Badge Name"
                     action={() => copyWithToast(badge.description!)}
                     leadingAccessory={{ type: "icon", icon: CopyIcon }}
@@ -108,7 +106,7 @@ function BadgeContextMenu({ badge }: { badge: Omit<ProfileBadge, "id"> & BadgeUs
             )}
             {badge.iconSrc && (
                 <Menu.MenuItem
-                    id="vc-badge-copy-link"
+                    id="sc-badge-copy-link"
                     label="Copy Badge Image Link"
                     action={() => copyWithToast(badge.iconSrc!)}
                     leadingAccessory={{ type: "icon", icon: LinkIcon }}
@@ -178,6 +176,10 @@ export default definePlugin({
     // for access from the console or other plugins
     get DonorBadges() {
         return DonorBadges;
+    },
+
+    isSponsor(userId: string) {
+        return SponsorIds.has(userId);
     },
 
     toolboxActions: {

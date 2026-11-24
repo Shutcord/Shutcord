@@ -62,7 +62,7 @@ export default definePlugin({
 
             children.push(
                 <Menu.MenuItem
-                    id="vc-copy-emoji-markdown"
+                    id="sc-copy-emoji-markdown"
                     label="Copy Emoji Markdown"
                     action={() => {
                         copyWithToast(

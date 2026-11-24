@@ -33,7 +33,7 @@ export const loadGetGuildPermissionSpecMap = extractAndLoadChunksLazy(
 );
 export const { getGuildPermissionSpecMap } = findByPropsLazy("getGuildPermissionSpecMap");
 
-export const cl = classNameFactory("vc-permviewer-");
+export const cl = classNameFactory("sc-permviewer-");
 
 export function getSortedRolesForMember({ id: guildId }: Guild, member: GuildMember) {
     // The guild id is the @everyone role

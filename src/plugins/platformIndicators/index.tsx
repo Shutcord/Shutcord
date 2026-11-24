@@ -165,10 +165,10 @@ function getBadges({ userId }: BadgeUserArgs): ProfileBadge[] {
     if (!status) return [];
 
     return Object.entries(status).map(([platform, status]) => ({
-        key: `vc-platform-indicator-${platform}`,
-        id: `vc-platform-indicator-${platform}`,
+        key: `sc-platform-indicator-${platform}`,
+        id: `sc-platform-indicator-${platform}`,
         component: () => (
-            <span key={platform} className="vc-platform-indicator">
+            <span key={platform} className="sc-platform-indicator">
                 <PlatformIcon
                     platform={platform as DiscordPlatform}
                     status={status}
@@ -193,7 +193,7 @@ function PlatformIndicators({ statusMap, small }: { statusMap: ClientStatusMap; 
 
     return (
         <span
-            className="vc-platform-indicator"
+            className="sc-platform-indicator"
             style={{ gap: "2px" }}
         >
             {icons}

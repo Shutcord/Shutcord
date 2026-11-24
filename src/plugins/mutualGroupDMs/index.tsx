@@ -105,7 +105,7 @@ export default definePlugin({
                 // set the gap to zero to ensure ours stays on screen
                 {
                     match: /className:\i\.\i(?=,type:"top")/,
-                    replace: '$& + " vc-mutual-gdms-modal-tab-bar"'
+                    replace: '$& + " sc-mutual-gdms-modal-tab-bar"'
                 }
             ]
         },
@@ -124,7 +124,7 @@ export default definePlugin({
                 // Make the gap between each item smaller so our tab can fit.
                 {
                     match: /type:"top",/,
-                    replace: '$&className:"vc-mutual-gdms-modal-v2-tab-bar",'
+                    replace: '$&className:"sc-mutual-gdms-modal-v2-tab-bar",'
                 },
             ]
         },
@@ -160,7 +160,7 @@ export default definePlugin({
 
         return (
             <ScrollerThin
-                className={classes(TabBarClasses.tabPanelScroller, !isLegacy && "vc-mutual-gdms-scroller")}
+                className={classes(TabBarClasses.tabPanelScroller, !isLegacy && "sc-mutual-gdms-scroller")}
                 fade={true}
                 onClose={onClose}
             >

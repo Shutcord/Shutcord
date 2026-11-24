@@ -10,7 +10,8 @@ import { DONOR_ROLE_ID, SHUTCORD_GUILD_ID } from "@utils/constants";
 import { GuildMemberStore } from "@webpack/common";
 
 export const isDonor = (userId: string) => !!(
-    (BadgeAPI.getDonorBadges(userId)?.length ?? 0) > 0
+    BadgeAPI.isSponsor(userId)
+    || (BadgeAPI.getDonorBadges(userId)?.length ?? 0) > 0
     || GuildMemberStore?.getMember(SHUTCORD_GUILD_ID, userId)?.roles.includes(DONOR_ROLE_ID)
 );
 

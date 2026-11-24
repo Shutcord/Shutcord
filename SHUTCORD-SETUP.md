@@ -8,7 +8,7 @@ The only website is the GitHub repo, `https://github.com/Shutcord/Shutcord`. If 
 
 | What | File |
 |---|---|
-| Donate button | `src/components/settings/DonateButton.tsx:25` and `src/plugins/_api/badges/index.tsx:284` |
+| Donate button | `src/components/settings/DonateButton.tsx` (and the badge popup in `src/plugins/_api/badges/index.tsx`) |
 | "Official builds" links (support helper) | `src/plugins/_core/supportHelper.tsx` |
 | Issue templates | `.github/ISSUE_TEMPLATE/*` |
 | Installer download URLs | `installer/source/constants.go` |
@@ -18,18 +18,7 @@ The only website is the GitHub repo, `https://github.com/Shutcord/Shutcord`. If 
 The in-app updater uses your real `git remote origin` at build time.
 
 ## Donations
-There is no payment code in the client, only a link plus badges.
-1. The Donate button opens `https://github.com/Shutcord/Shutcord`. When you have GitHub Sponsors, Ko-fi or another page, change that link in the two files above.
-2. Donor badges come from `badges.json` in the root of the repo (`https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges.json`). It is empty (`{}`) now. To give someone a badge, add their Discord ID:
-   ```json
-   {
-     "123456789012345678": [
-       { "tooltip": "Shutcord Donor", "badge": "https://raw.githubusercontent.com/Shutcord/Shutcord/main/assets/icon-64.png" }
-     ]
-   }
-   ```
-3. A user also counts as a donor if they have `DONOR_ROLE_ID` in `SHUTCORD_GUILD_ID` (`src/utils/constants.ts`). Both are `"0"` (off) until you have a Discord server.
-4. If the file can't be loaded, badges are skipped quietly.
+There is no payment code in the client. Money goes through GitHub Sponsors; perks ($1 / $5 / $10 / $25 tiers with 0 / 1 / 2 / 5 badges) are handed out by editing `sponsors.json` with `pnpm sponsors add ...`. Full guide: `docs/SPONSORS.md`.
 
 ## Cloud sync
 Off by default and unavailable: its address is a placeholder (`cloud.shutcord.invalid`, in `src/api/Settings.ts`). To use it you must host a backend (the open-source one is at https://github.com/Vencord/Backend) and put its address there.

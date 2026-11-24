@@ -24,7 +24,7 @@ import { showToast } from "@webpack/common";
 import { DeeplLanguages, deeplLanguageToGoogleLanguage, GoogleLanguages, KagiLanguages } from "./languages";
 import { resetLanguageDefaults, settings } from "./settings";
 
-export const cl = classNameFactory("vc-trans-");
+export const cl = classNameFactory("sc-trans-");
 
 const Native = ShutcordNative.pluginHelpers.Translate as PluginNative<typeof import("./native")>;
 

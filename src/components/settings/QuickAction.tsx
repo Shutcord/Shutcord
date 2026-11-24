@@ -10,7 +10,7 @@ import { Card } from "@components/Card";
 import { classNameFactory } from "@utils/css";
 import type { ComponentType, PropsWithChildren, ReactNode } from "react";
 
-const cl = classNameFactory("vc-settings-quickActions-");
+const cl = classNameFactory("sc-settings-quickActions-");
 
 export interface QuickActionProps {
     Icon: ComponentType<{ className?: string; }>;

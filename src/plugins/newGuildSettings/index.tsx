@@ -87,7 +87,7 @@ const makeContextMenuPatch: (shouldAddIcon: boolean) => NavContextMenuPatchCallb
     group?.push(
         <Menu.MenuItem
             label="Apply NewGuildSettings"
-            id="vc-newguildsettings-apply"
+            id="sc-newguildsettings-apply"
             icon={shouldAddIcon ? CogWheel : void 0}
             leadingAccessory={shouldAddIcon ? { type: "icon", icon: CogWheel } : void 0}
             action={() => applyDefaultSettings(guild.id)}

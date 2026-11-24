@@ -1,4 +1,4 @@
-.vc-betterSessions-footer-buttons {
+.sc-betterSessions-footer-buttons {
     display: flex;
     gap: 0.5em;
     align-items: center;
@@ -6,19 +6,19 @@
     margin-top: 2px;
 }
 
-.vc-betterSessions-rename-btn {
+.sc-betterSessions-rename-btn {
     margin-left: 4px;
     translate: 0 -2px;
 }
 
-.vc-betterSessions-new-btn {
+.sc-betterSessions-new-btn {
     margin-left: 4px;
     translate: 0 -2px;
     pointer-events: none;
     padding: 1px 4px;
 }
 
-.vc-betterSessions-lowerBadge {
+.sc-betterSessions-lowerBadge {
     width: 20px;
     height: 20px;
     display: flex;
@@ -30,11 +30,11 @@
     color: var(--background-base-lower);
 }
 
-.vc-betterSessions-lowerBadge-icon {
+.sc-betterSessions-lowerBadge-icon {
     display: block;
 }
 
-.vc-betterSessions-icon {
+.sc-betterSessions-icon {
     align-items: center;
     border-radius: var(--radius-sm);
     display: flex;
@@ -43,7 +43,7 @@
     width: 48px;
 }
 
-.vc-betterSessions-description {
+.sc-betterSessions-description {
     display: flex;
     gap: 4px;
 }

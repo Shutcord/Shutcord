@@ -19,7 +19,7 @@ import { ColorPicker, ThemeStore, useStateFromStores } from "@webpack/common";
 const saveClientTheme = findByCodeLazy('type:"UNSYNCED_USER_SETTINGS_UPDATE', '"system"===');
 const NitroThemeStore = findStoreLazy("ClientThemesBackgroundStore");
 
-const cl = classNameFactory("vc-clientTheme-");
+const cl = classNameFactory("sc-clientTheme-");
 
 const colorPresets = [
     "#1E1514", "#172019", "#13171B", "#1C1C28", "#402D2D",

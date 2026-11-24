@@ -33,7 +33,7 @@ import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
 import { React, TextInput, useState } from "@webpack/common";
 
-const cl = classNameFactory("vc-textReplace-");
+const cl = classNameFactory("sc-textReplace-");
 
 interface Rule {
     name?: string;

@@ -1,4 +1,4 @@
-.vc-addon-card {
+.sc-addon-card {
     background-color: var(--card-background-default);
     color: var(--interactive-icon-active);
     border: 1px solid var(--border-subtle);
@@ -12,16 +12,16 @@
     box-sizing: border-box;
 }
 
-.vc-addon-card-disabled {
+.sc-addon-card-disabled {
     opacity: 0.6;
 }
 
-.vc-addon-card:hover {
+.sc-addon-card:hover {
     transform: translateY(-1px);
     box-shadow: var(--elevation-high);
 }
 
-.vc-addon-header {
+.sc-addon-header {
     margin-top: auto;
     display: flex;
     width: 100%;
@@ -31,7 +31,7 @@
     margin-bottom: 0.5em;
 }
 
-.vc-addon-note {
+.sc-addon-note {
     height: 36px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -42,11 +42,11 @@
     box-orient: vertical;
 }
 
-.vc-addon-name-author {
+.sc-addon-name-author {
     width: 100%;
 }
 
-.vc-addon-name {
+.sc-addon-name {
     display: flex;
     width: 100%;
     align-items: center;
@@ -54,29 +54,29 @@
     gap: 8px;
 }
 
-.vc-addon-author {
+.sc-addon-author {
     font-size: 0.8em;
 }
 
-.vc-addon-author::before {
+.sc-addon-author::before {
     content: "by ";
 }
 
-.vc-addon-title-container {
+.sc-addon-title-container {
     width: 100%;
     overflow: hidden;
     height: 1.25em;
     position: relative;
 }
 
-.vc-addon-title {
+.sc-addon-title {
     position: absolute;
     inset: 0;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-@keyframes vc-addon-title {
+@keyframes sc-addon-title {
     0% {
         transform: translateX(0);
     }
@@ -90,7 +90,7 @@
     }
 }
 
-.vc-addon-title:hover {
+.sc-addon-title:hover {
     overflow: visible;
-    animation: vc-addon-title var(--duration) linear infinite;
+    animation: sc-addon-title var(--duration) linear infinite;
 }

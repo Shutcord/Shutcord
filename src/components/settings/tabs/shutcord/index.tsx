@@ -230,7 +230,7 @@ function ShutcordSettings() {
                     </a>!
                 </Paragraph>
 
-                <div className="vc-settings-switches">
+                <div className="sc-settings-switches">
                     <Switches />
                 </div>
             </section>

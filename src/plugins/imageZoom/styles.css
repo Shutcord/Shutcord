@@ -1,4 +1,4 @@
-.vc-imgzoom-lens {
+.sc-imgzoom-lens {
     position: absolute;
     inset: 0;
     z-index: 9999;
@@ -14,11 +14,11 @@
     margin: -2px;
 }
 
-.vc-imgzoom-square {
+.sc-imgzoom-square {
     border-radius: 0;
 }
 
-.vc-imgzoom-nearest-neighbor > .vc-imgzoom-image {
+.sc-imgzoom-nearest-neighbor > .sc-imgzoom-image {
     image-rendering: pixelated;
 
     /* https://googlechrome.github.io/samples/image-rendering-pixelated/index.html */

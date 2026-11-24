@@ -55,7 +55,7 @@ function parseTime(time: string) {
 const Formats = ["R", "t", "T", "d", "s", "S", "D", "f", "F"] as const;
 type Format = typeof Formats[number];
 
-const cl = classNameFactory("vc-st-");
+const cl = classNameFactory("sc-st-");
 
 function PickerModal(props: RenderModalProps) {
     const [value, setValue] = useState<string>();

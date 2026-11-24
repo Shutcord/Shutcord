@@ -69,7 +69,7 @@ export function __addDecorationsToMessage(props: MessageDecorationProps): JSX.El
     );
 
     return (
-        <div className="vc-message-decorations-wrapper">
+        <div className="sc-message-decorations-wrapper">
             {decorations}
         </div>
     );

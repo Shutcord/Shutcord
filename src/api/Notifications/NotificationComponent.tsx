@@ -64,7 +64,7 @@ export default ErrorBoundary.wrap(function NotificationComponent({
 
     return (
         <button
-            className={classes("vc-notification-root", className)}
+            className={classes("sc-notification-root", className)}
             style={position === "bottom-right" ? { bottom: "1rem" } : { top: "3rem" }}
             onClick={() => {
                 onClick?.();
@@ -79,13 +79,13 @@ export default ErrorBoundary.wrap(function NotificationComponent({
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
         >
-            <div className="vc-notification">
-                {icon && <img className="vc-notification-icon" src={icon} alt="" />}
-                <div className="vc-notification-content">
-                    <div className="vc-notification-header">
-                        <h2 className="vc-notification-title">{title}</h2>
+            <div className="sc-notification">
+                {icon && <img className="sc-notification-icon" src={icon} alt="" />}
+                <div className="sc-notification-content">
+                    <div className="sc-notification-header">
+                        <h2 className="sc-notification-title">{title}</h2>
                         <button
-                            className="vc-notification-close-btn"
+                            className="sc-notification-close-btn"
                             onClick={e => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -97,20 +97,20 @@ export default ErrorBoundary.wrap(function NotificationComponent({
                                 height="24"
                                 viewBox="0 0 24 24"
                                 role="img"
-                                aria-labelledby="vc-notification-dismiss-title"
+                                aria-labelledby="sc-notification-dismiss-title"
                             >
-                                <title id="vc-notification-dismiss-title">Dismiss Notification</title>
+                                <title id="sc-notification-dismiss-title">Dismiss Notification</title>
                                 <path fill="currentColor" d="M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z" />
                             </svg>
                         </button>
                     </div>
-                    {richBody ?? <p className="vc-notification-p">{body}</p>}
+                    {richBody ?? <p className="sc-notification-p">{body}</p>}
                 </div>
             </div>
-            {image && <img className="vc-notification-img" src={image} alt="" />}
+            {image && <img className="sc-notification-img" src={image} alt="" />}
             {timeout !== 0 && !permanent && (
                 <div
-                    className="vc-notification-progressbar"
+                    className="sc-notification-progressbar"
                     style={{ width: `${(1 - timeoutProgress) * 100}%`, backgroundColor: color || "var(--brand-500)" }}
                 />
             )}

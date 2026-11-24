@@ -18,7 +18,7 @@ const makePatch: (showIcon: boolean) => NavContextMenuPatchCallback = showIcon =
 
     group?.push(
         <Menu.MenuItem
-            id="vc-server-info"
+            id="sc-server-info"
             label="Server Info"
             leadingAccessory={showIcon ? { type: "icon", icon: InfoIcon } : undefined}
             action={() => openGuildInfoModal(guild)}

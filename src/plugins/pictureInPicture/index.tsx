@@ -43,7 +43,7 @@ export default definePlugin({
                 {tooltipProps => (
                     <div
                         {...tooltipProps}
-                        className="vc-pip-button"
+                        className="sc-pip-button"
                         role="button"
                         style={{
                             cursor: "pointer",

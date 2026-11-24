@@ -1,6 +1,6 @@
 # Shutcord logo
 
-One grey, pixel "SC" monogram. Original artwork.
+Two overlapping heavy letters, "S" (mid grey) behind "C" (light/dark), slightly tilted. Letters come from the Archivo Black font (SIL OFL license, free to use). Flat, grey only.
 
 | File | Use |
 |---|---|
@@ -10,6 +10,8 @@ One grey, pixel "SC" monogram. Original artwork.
 | `logo-mark-dark.svg`, `logo-mark-dark.png` | Dark grey mark, transparent background (for light pages) |
 | `icon.ico` | Windows icon (embedded in the installer .exe) |
 | `logo-preview.png` | All four side by side |
+| `pixel/` | The earlier pixel "SC" version, kept in case you want it back |
 
-Colors: `#18181b` / `#e8e8ea` backgrounds, `#d4d4d8` / `#26262a` mark.
-The mark is a 15 x 7 pixel grid. To change the letters, edit the grid in your own copy of the generator or the SVG path directly.
+The old round "S" is not kept; Archivo Black glyphs are converted to paths in the SVGs, so no font install is needed.
+
+Colors: `#18181b` / `#e8e8ea` badges; S `#71717a`; C `#e4e4e7` (dark badge) or `#18181b` (light badge).

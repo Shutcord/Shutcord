@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -31,6 +32,7 @@ type apiInstall struct {
 	Path     string `json:"path"`
 	Shutcord bool   `json:"shutcord"`
 	Other    string `json:"other"`
+	Custom   bool   `json:"custom"`
 }
 
 type apiState struct {
@@ -45,6 +47,7 @@ type apiState struct {
 	OS        string       `json:"os"`
 	Release   string       `json:"release"`
 	Update    bool         `json:"update"`
+	Licensed  bool         `json:"licensed"`
 }
 
 type apiResult struct {
@@ -52,8 +55,22 @@ type apiResult struct {
 	Message string `json:"message"`
 }
 
-var customInstalls []*DiscordInstall
-var opLock sync.Mutex
+var (
+	customInstalls []*DiscordInstall
+	customMu       sync.Mutex
+	opLock         sync.Mutex
+)
+
+func isCustomPath(p string) bool {
+	customMu.Lock()
+	defer customMu.Unlock()
+	for _, c := range customInstalls {
+		if c.path == p {
+			return true
+		}
+	}
+	return false
+}
 
 func toApi(di *DiscordInstall) apiInstall {
 	return apiInstall{
@@ -62,29 +79,82 @@ func toApi(di *DiscordInstall) apiInstall {
 		Path:     di.path,
 		Shutcord: di.isPatched,
 		Other:    di.foreignMod(),
+		Custom:   isCustomPath(di.path),
 	}
+}
+
+// branchRank fixes the order Discord installs are listed in. The installs come out of
+// a Go map, whose iteration order is random, so without this the cards swap places.
+func branchRank(branch string) int {
+	switch branch {
+	case "stable":
+		return 0
+	case "ptb":
+		return 1
+	case "canary":
+		return 2
+	case "dev":
+		return 3
+	}
+	return 4
+}
+
+func sortInstalls(list []*DiscordInstall) {
+	sort.SliceStable(list, func(i, j int) bool {
+		ri, rj := branchRank(list[i].branch), branchRank(list[j].branch)
+		if ri != rj {
+			return ri < rj
+		}
+		return list[i].path < list[j].path
+	})
 }
 
 // re-read install state from disk so the UI never shows stale info
 func refreshedInstalls() []*DiscordInstall {
-	var out []*DiscordInstall
+	var found []*DiscordInstall
 	seen := map[string]bool{}
 	for _, d := range FindDiscords() {
 		di := d.(*DiscordInstall)
-		out = append(out, di)
+		found = append(found, di)
 		seen[di.path] = true
 	}
-	for _, c := range customInstalls {
+	sortInstalls(found)
+
+	// folders the user added by hand come last, in the order they were added
+	customMu.Lock()
+	customs := append([]*DiscordInstall(nil), customInstalls...)
+	customMu.Unlock()
+	for _, c := range customs {
 		if seen[c.path] {
 			continue
 		}
+		seen[c.path] = true
 		if fresh := ParseDiscord(c.path, c.branch); fresh != nil {
-			out = append(out, fresh)
+			found = append(found, fresh)
 		} else if fresh := ParseDiscordNew(c.path, c.branch, c.isFlatpak); fresh != nil {
-			out = append(out, fresh)
+			found = append(found, fresh)
 		}
 	}
-	return out
+	return found
+}
+
+// licenseFile remembers that the license was accepted, so the screen only shows on first run
+func licenseFile() string {
+	dir, err := os.UserConfigDir()
+	if err != nil || dir == "" {
+		dir = BaseDir
+	}
+	return filepath.Join(dir, "Shutcord", "installer-license-accepted-v1")
+}
+
+func licenseAccepted() bool { return ExistsFile(licenseFile()) }
+
+func acceptLicense() error {
+	f := licenseFile()
+	if err := os.MkdirAll(filepath.Dir(f), 0755); err != nil {
+		return err
+	}
+	return os.WriteFile(f, []byte("accepted "+time.Now().UTC().Format(time.RFC3339)+"\n"), 0644)
 }
 
 func findInstall(id string) *DiscordInstall {
@@ -160,6 +230,7 @@ func runWebUI() {
 	mux.HandleFunc("/api/state", guard(func(w http.ResponseWriter, r *http.Request) {
 		st := apiState{Version: buildinfo.InstallerTag, DataDir: BaseDir, Dev: IsDevInstall, OS: runtime.GOOS}
 		st.Installed = InstalledHash
+		st.Licensed = licenseAccepted()
 		st.Latest = LatestHash
 		ready := false
 		select {
@@ -197,8 +268,48 @@ func runWebUI() {
 			fail(w, "That folder isn't a valid Discord install.")
 			return
 		}
-		customInstalls = append(customInstalls, di)
+		customMu.Lock()
+		exists := false
+		for _, c := range customInstalls {
+			if c.path == di.path {
+				exists = true
+			}
+		}
+		if !exists {
+			customInstalls = append(customInstalls, di)
+		}
+		customMu.Unlock()
 		reply(w, apiResult{true, di.path})
+	}))
+
+	// removes a folder the user added; only touches the list, never any files
+	mux.HandleFunc("/api/custom/remove", guard(func(w http.ResponseWriter, r *http.Request) {
+		var body struct{ ID string }
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		customMu.Lock()
+		kept := customInstalls[:0:0]
+		removed := false
+		for _, c := range customInstalls {
+			if c.path == body.ID {
+				removed = true
+				continue
+			}
+			kept = append(kept, c)
+		}
+		customInstalls = kept
+		customMu.Unlock()
+		if !removed {
+			fail(w, "That folder isn't in your custom list.")
+			return
+		}
+		reply(w, apiResult{true, "removed"})
+	}))
+
+	mux.HandleFunc("/api/license/accept", guard(func(w http.ResponseWriter, r *http.Request) {
+		if err := acceptLicense(); err != nil {
+			Log.Warn("Couldn't remember the license acceptance:", err)
+		}
+		reply(w, apiResult{true, "accepted"})
 	}))
 
 	prepareFiles := func() error {

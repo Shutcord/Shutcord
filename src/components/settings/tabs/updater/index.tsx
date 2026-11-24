@@ -81,7 +81,7 @@ function Updater() {
         <SettingsTab>
             <VesktopSection />
 
-            <div className="vc-settings-switches">
+            <div className="sc-settings-switches">
                 <FormSwitch
                     title="Automatically update"
                     description="Automatically update Shutcord without confirmation prompt"

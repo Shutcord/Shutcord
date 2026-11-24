@@ -7,8 +7,8 @@ interface UserAffinity {
     isFriend: boolean;
     dmProbability: number;
     dmRank: number;
-    vcProbability: number;
-    vcRank: number;
+    scProbability: number;
+    scRank: number;
     serverMessageProbability: number;
     serverMessageRank: number;
     communicationProbability: number;
