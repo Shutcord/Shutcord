@@ -123,9 +123,13 @@ export interface Plugin extends PluginDef {
 
 export type IconComponent = (props: IconProps & Record<string, any>) => ReactNode;
 export type IconProps = { height?: number | string; width?: number | string; className?: string; };
+export type PluginOrigin = "vencord" | "equicord" | "shutcord";
+
 export interface PluginDef {
     name: string;
     description: string;
+    /** Where the plugin comes from, shown in the plugin list filter. Defaults to Shutcord for Shutcord-authored plugins and Vencord for everything else */
+    origin?: PluginOrigin;
     /** Additional search terms that will bring up your plugin */
     searchTerms?: string[];
     tags?: PluginTag[];

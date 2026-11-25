@@ -91,3 +91,9 @@
     flex-direction: column;
     gap: 1.25em;
 }
+
+.sc-plugins-source-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
