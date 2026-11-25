@@ -26,7 +26,7 @@ import { Flex } from "@components/Flex";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
 import { Text } from "@components/Text";
-import { getShutcordColors } from "../shutcordProfiles";
+import { getShutcordColors } from "@plugins/shutcordProfiles";
 import { Devs } from "@utils/constants";
 import { copyWithToast, fetchUserProfile } from "@utils/discord";
 import { Margins } from "@utils/margins";
@@ -198,6 +198,7 @@ export default definePlugin({
     description: "Allows profile theming by hiding the colors in your bio thanks to invisible 3y3 encoding",
     tags: ["Appearance", "Customisation"],
     authors: [Devs.Alyxia, Devs.Remty],
+    enabledByDefault: true,
     dependencies: ["ShutcordProfiles"],
     settings,
     settingsAboutComponent: SettingsAboutComponentWrapper,
