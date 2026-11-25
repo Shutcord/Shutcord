@@ -11,7 +11,7 @@ import { classNameFactory } from "@utils/css";
 import { getTheme, Theme } from "@utils/discord";
 import { Clickable, MaskedLink, Tooltip } from "@webpack/common";
 
-const cl = classNameFactory("vc-settings-modal-");
+const cl = classNameFactory("sc-settings-modal-");
 
 const getThemeClass = () => getTheme() !== Theme.Light ? "dark" : "light";
 

@@ -53,8 +53,8 @@ const SectionHeading = ({ text }: { text: string; }) => (
 
 function ButtonWithIcon({ children, Icon, className, ...buttonProps }: ButtonProps & { Icon: IconComponent; }) {
     return (
-        <Button {...buttonProps} className={classes("vc-cloud-icon-with-button", className)}>
-            <Icon className={"vc-cloud-button-icon"} />
+        <Button {...buttonProps} className={classes("sc-cloud-icon-with-button", className)}>
+            <Icon className={"sc-cloud-button-icon"} />
             {children}
         </Button>
     );

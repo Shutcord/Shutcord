@@ -132,7 +132,7 @@ export default definePlugin({
     },
 
     WarningCard: ErrorBoundary.wrap(() => (
-        <ErrorCard id="vc-experiments-warning-card" className={Margins.bottom16}>
+        <ErrorCard id="sc-experiments-warning-card" className={Margins.bottom16}>
             <Flex flexDirection="column" gap={8}>
                 <Heading tag="h3">Hold on!!</Heading>
 

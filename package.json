@@ -33,7 +33,8 @@
         "lint:fix": "pnpm lint --fix",
         "test": "pnpm test:ts && pnpm buildStandalone && pnpm buildWebStandalone && pnpm lint && pnpm fmt:check && pnpm generatePluginJson",
         "test:ts": "tsc --noEmit",
-        "bump": "./scripts/bump.sh"
+        "bump": "./scripts/bump.sh",
+        "sponsors": "node scripts/sponsors/sponsors.mjs"
     },
     "dependencies": {
         "@intrnl/xxhash64": "catalog:",

@@ -35,7 +35,7 @@ export default definePlugin({
             find: "getAvatarDecorationURL:",
             replacement: {
                 match: /(?<=function \i\(\i\){)(?=let{avatarDecoration)/,
-                replace: "const vcDecorDecoration=$self.getDecorAvatarDecorationURL(arguments[0]);if(vcDecorDecoration)return vcDecorDecoration;"
+                replace: "const scDecorDecoration=$self.getDecorAvatarDecorationURL(arguments[0]);if(scDecorDecoration)return scDecorDecoration;"
             }
         },
         // Patch profile customization settings to include Decor section
@@ -72,17 +72,17 @@ export default definePlugin({
                 // Add Decor avatar decoration hook to avatar decoration hook
                 {
                     match: /(?<=\.avatarDecoration,guildId:\i\}\)\),)(?<=user:(\i).+?)/,
-                    replace: "vcDecorAvatarDecoration=$self.useUserDecorAvatarDecoration($1),"
+                    replace: "scDecorAvatarDecoration=$self.useUserDecorAvatarDecoration($1),"
                 },
                 // Use added hook
                 {
                     match: /(?<={avatarDecoration:).{1,20}?(?=,)(?<=avatarDecorationOverride:(\i).+?)/,
-                    replace: "$1??vcDecorAvatarDecoration??($&)"
+                    replace: "$1??scDecorAvatarDecoration??($&)"
                 },
                 // Make memo depend on added hook
                 {
                     match: /(?<=size:\i}\),\[)/,
-                    replace: "vcDecorAvatarDecoration,"
+                    replace: "scDecorAvatarDecoration,"
                 }
             ]
         },

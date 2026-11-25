@@ -101,8 +101,8 @@ export function buildExtraRoleContextMenuItems(role: Role, guild: Guild, popoutR
     const before = [
         PermissionStore.getGuildPermissionProps(guild).canManageRoles && (
             <Menu.MenuItem
-                key="vc-edit-role"
-                id="vc-edit-role"
+                key="sc-edit-role"
+                id="sc-edit-role"
                 label="Edit Role"
                 action={async () => {
                     await GuildSettingsActions.open(guild.id, "ROLES");
@@ -114,8 +114,8 @@ export function buildExtraRoleContextMenuItems(role: Role, guild: Guild, popoutR
         ),
         role.colorString && (
             <Menu.MenuItem
-                key="vc-copy-role-color"
-                id="vc-copy-role-color"
+                key="sc-copy-role-color"
+                id="sc-copy-role-color"
                 label="Copy Role Color"
                 action={() => copyToClipboard(role.colorString!)}
                 icon={AppearanceIcon}
@@ -127,8 +127,8 @@ export function buildExtraRoleContextMenuItems(role: Role, guild: Guild, popoutR
     const after = [
         role.icon && (
             <Menu.MenuItem
-                key="vc-view-role-icon"
-                id="vc-view-role-icon"
+                key="sc-view-role-icon"
+                id="sc-view-role-icon"
                 label="View Role Icon"
                 action={() => {
                     openImageModal({
@@ -143,8 +143,8 @@ export function buildExtraRoleContextMenuItems(role: Role, guild: Guild, popoutR
         ),
         popoutRef && (
             <Menu.MenuItem
-                key="vc-view-role-members"
-                id="vc-view-role-members"
+                key="sc-view-role-members"
+                id="sc-view-role-members"
                 label="View Role Members"
                 render={() => (
                     <Popout
@@ -192,15 +192,15 @@ export function openRoleContextMenu(event: React.MouseEvent<HTMLElement>, { guil
 
         return (
             <Menu.Menu
-                navId="vc-better-role-context-member-list"
+                navId="sc-better-role-context-member-list"
                 onClose={ContextMenuApi.closeContextMenu}
                 aria-label="Role Actions"
             >
                 {before}
                 {after}
                 <Menu.MenuItem
-                    key="vc-better-role-context-copy-role-id"
-                    id="vc-better-role-context-copy-role-id"
+                    key="sc-better-role-context-copy-role-id"
+                    id="sc-better-role-context-copy-role-id"
                     label={getIntlMessage("COPY_ID_ROLE")}
                     icon={CopyIdIcon}
                     leadingAccessory={{ type: "icon", icon: CopyIdIcon }}
@@ -240,11 +240,11 @@ export default definePlugin({
             replacement: [
                 {
                     match: /(?=let\{member:)/,
-                    replace: "const vcProfileProps=$self.useMemberProfileProps(arguments[0].member.userId);"
+                    replace: "const scProfileProps=$self.useMemberProfileProps(arguments[0].member.userId);"
                 },
                 {
                     match: /\.id,spacing:14,/,
-                    replace: "$&...(typeof vcProfileProps!=='undefined'?vcProfileProps:undefined),"
+                    replace: "$&...(typeof scProfileProps!=='undefined'?scProfileProps:undefined),"
                 }
             ]
         }

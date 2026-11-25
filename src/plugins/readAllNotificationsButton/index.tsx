@@ -57,7 +57,7 @@ const ReadAllButton = () => (
     <TextButton
         variant="secondary"
         onClick={onClick}
-        className="vc-ranb-button"
+        className="sc-ranb-button"
     >
         Read All
     </TextButton>

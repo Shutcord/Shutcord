@@ -91,7 +91,7 @@ const imageContextMenuPatch: NavContextMenuPatchCallback = (children, props) => 
     children.push(
         <Menu.MenuGroup id="image-zoom">
             <Menu.MenuCheckboxItem
-                id="vc-square"
+                id="sc-square"
                 label="Square Lens"
                 checked={square}
                 action={() => {
@@ -99,7 +99,7 @@ const imageContextMenuPatch: NavContextMenuPatchCallback = (children, props) => 
                 }}
             />
             <Menu.MenuCheckboxItem
-                id="vc-nearest-neighbour"
+                id="sc-nearest-neighbour"
                 label="Nearest Neighbour"
                 checked={nearestNeighbour}
                 action={() => {
@@ -107,7 +107,7 @@ const imageContextMenuPatch: NavContextMenuPatchCallback = (children, props) => 
                 }}
             />
             <Menu.MenuControlItem
-                id="vc-zoom"
+                id="sc-zoom"
                 label="Zoom"
                 control={(props, ref) => (
                     <Menu.MenuSliderControl
@@ -122,7 +122,7 @@ const imageContextMenuPatch: NavContextMenuPatchCallback = (children, props) => 
                 )}
             />
             <Menu.MenuControlItem
-                id="vc-size"
+                id="sc-size"
                 label="Lens Size"
                 control={(props, ref) => (
                     <Menu.MenuSliderControl
@@ -136,7 +136,7 @@ const imageContextMenuPatch: NavContextMenuPatchCallback = (children, props) => 
                 )}
             />
             <Menu.MenuControlItem
-                id="vc-zoom-speed"
+                id="sc-zoom-speed"
                 label="Zoom Speed"
                 control={(props, ref) => (
                     <Menu.MenuSliderControl

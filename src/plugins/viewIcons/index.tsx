@@ -239,7 +239,7 @@ export default definePlugin({
             find: '"--custom-cutout-radius":',
             replacement: {
                 match: /style:{(?=\.\.\.\i,backgroundImage:null!=(\i).{0,20}?\?`url\(\$\{\1\}\)`)/,
-                replace: (_, bannerSrc) => `onClick:vcEvent=>${bannerSrc}!=null&&$self.openBanner(${bannerSrc},vcEvent),style:{cursor:${bannerSrc}!=null?"pointer":void 0,`
+                replace: (_, bannerSrc) => `onClick:scEvent=>${bannerSrc}!=null&&$self.openBanner(${bannerSrc},scEvent),style:{cursor:${bannerSrc}!=null?"pointer":void 0,`
             }
         },
         // Group DMs top small & large icon
@@ -248,7 +248,7 @@ export default definePlugin({
             replacement: {
                 match: /null==\i\.icon\?.+?src:(\(0,\i\.\i\).+?\))(?=[,}])/,
                 // We have to check that icon is not an unread GDM in the server bar
-                replace: (m, iconUrl) => `${m},onClick:vcEvent=>arguments[0]?.size!=="SIZE_40"&&$self.openAvatar(${iconUrl},vcEvent)`
+                replace: (m, iconUrl) => `${m},onClick:scEvent=>arguments[0]?.size!=="SIZE_40"&&$self.openAvatar(${iconUrl},scEvent)`
             }
         },
         // User DMs top small icon
@@ -256,7 +256,7 @@ export default definePlugin({
             find: ".channel.getRecipientId(),",
             replacement: {
                 match: /(?=,src:(\i.getAvatarURL\(.+?[)]))/,
-                replace: (_, avatarUrl) => `,onClick:vcEvent=>$self.openAvatar(${avatarUrl},vcEvent)`
+                replace: (_, avatarUrl) => `,onClick:scEvent=>$self.openAvatar(${avatarUrl},scEvent)`
             }
         },
         // User Dms top large icon
@@ -264,7 +264,7 @@ export default definePlugin({
             find: ".EMPTY_GROUP_DM)",
             replacement: {
                 match: /(?<=SIZE_80,)(?=src:(.+?\))[,}])/,
-                replace: (_, avatarUrl) => `onClick:vcEvent=>$self.openAvatar(${avatarUrl},vcEvent),`
+                replace: (_, avatarUrl) => `onClick:scEvent=>$self.openAvatar(${avatarUrl},scEvent),`
             }
         }
     ]

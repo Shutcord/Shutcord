@@ -23,3 +23,7 @@ src/userplugins
 
 ExtensionCache/
 /settings
+
+# server secrets
+server/.env
+server/data/

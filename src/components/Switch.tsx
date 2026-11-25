@@ -23,7 +23,7 @@ import { classes } from "@utils/misc";
 import { useState } from "@webpack/common";
 import type { FocusEvent } from "react";
 
-const switchCls = classNameFactory("vc-switch-");
+const switchCls = classNameFactory("sc-switch-");
 
 const SWITCH_ON = "var(--brand-500)";
 const SWITCH_OFF = "var(--primary-400)";

@@ -91,7 +91,7 @@ export default definePlugin({
             return <TooltipContainer text={renderTimeout(message, false)}>{children}</TooltipContainer>;
 
         return (
-            <div className="vc-std-wrapper">
+            <div className="sc-std-wrapper">
                 <TooltipContainer text={text}>{children}</TooltipContainer>
                 <Paragraph size="md" style={{ color: "var(--status-danger, var(--text-default))" }}>
                     {renderTimeout(message, true)} timeout remaining

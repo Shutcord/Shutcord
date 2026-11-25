@@ -1,4 +1,4 @@
-.vc-screen-picker-modal {
+.sc-screen-picker-modal {
     display: contents;
 
     header,
@@ -7,13 +7,13 @@
         display: none;
     }
 
-    .vc-screen-picker-option-radios {
+    .sc-screen-picker-option-radios {
         display: grid;
         grid-auto-flow: column;
         grid-auto-columns: minmax(max-content, 1fr);
         width: 100%;
 
-        .vc-screen-picker-option-radio {
+        .sc-screen-picker-option-radio {
             text-align: center;
             padding: 0.3em;
             cursor: pointer;
@@ -41,7 +41,7 @@
             }
         }
 
-        .vc-screen-picker-option-radio[data-checked="true"] {
+        .sc-screen-picker-option-radio[data-checked="true"] {
             background-color: var(--control-primary-background-default);
             color: var(--control-primary-text-default);
 
@@ -56,24 +56,24 @@
         }
     }
 
-    .vc-screen-picker-padding {
+    .sc-screen-picker-padding {
         padding: var(--space-sm, 12px) 0;
     }
 
-    .vc-screen-picker-flex {
+    .sc-screen-picker-flex {
         display: flex;
         gap: 1em;
     }
 
-    .vc-screen-picker-quality-section {
+    .sc-screen-picker-quality-section {
         flex: 1 1 auto;
     }
 
-    .vc-screen-picker-pointer label {
+    .sc-screen-picker-pointer label {
         cursor: pointer;
     }
 
-    .vc-screen-picker-control-content {
+    .sc-screen-picker-control-content {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
@@ -81,26 +81,26 @@
         justify-content: center;
     }
 
-    .vc-screen-picker-summary {
+    .sc-screen-picker-summary {
         display: flex;
         min-width: 0;
         flex-direction: column;
         gap: 2px;
         justify-content: center;
 
-        .vc-screen-picker-source-or-preset-name {
+        .sc-screen-picker-source-or-preset-name {
             min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .vc-screen-picker-summary-detail {
+        .sc-screen-picker-summary-detail {
             align-items: center;
             display: flex;
             gap: var(--space-8);
 
-            .vc-screen-picker-ellipsis {
+            .sc-screen-picker-ellipsis {
                 color: var(--background-mod-subtle);
             }
 

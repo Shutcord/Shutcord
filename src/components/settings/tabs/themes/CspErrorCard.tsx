@@ -54,11 +54,11 @@ export function CspErrorCard() {
             </Paragraph>
 
             <Heading className={classes(Margins.top16, Margins.bottom8)}>Blocked URLs</Heading>
-            <div className="vc-settings-csp-list">
+            <div className="sc-settings-csp-list">
                 {errors.map((url, i) => (
                     <div key={url}>
                         {i !== 0 && <Divider className={Margins.bottom8} />}
-                        <div className="vc-settings-csp-row">
+                        <div className="sc-settings-csp-row">
                             <Link href={url}>{url}</Link>
                             <Button variant="secondary" onClick={() => allowUrl(url)} disabled={isImgurHtmlDomain(url)}>
                                 Allow

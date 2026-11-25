@@ -35,7 +35,7 @@ const formatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
 });
 
-const cl = classNameFactory("vc-sortFriendRequests-");
+const cl = classNameFactory("sc-sortFriendRequests-");
 
 function getSince(user: User) {
     return new Date(RelationshipStore.getSince(user.id));

@@ -14,7 +14,7 @@ export type DividerProps = ComponentPropsWithoutRef<"hr">;
 export function Divider({ className, ...restProps }: DividerProps) {
     return (
         <hr
-            className={classes("vc-divider", className)}
+            className={classes("sc-divider", className)}
             {...restProps}
         />
     );

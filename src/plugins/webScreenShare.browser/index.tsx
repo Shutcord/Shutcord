@@ -22,7 +22,7 @@ import { Checkbox, closeModal, FluxDispatcher, Modal, openModal, useState } from
 
 import managedStyle from "./styles.css?managed";
 
-const cl = classNameFactory("vc-screen-picker-");
+const cl = classNameFactory("sc-screen-picker-");
 
 class NotAllowedError extends Error {
     name = "NotAllowedError";

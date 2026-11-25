@@ -136,6 +136,9 @@ export function _getBadges(args: BadgeUserArgs) {
         }
     }
 
+    const customBadges = BadgeAPIPlugin.getCustomBadges(args.userId);
+    if (customBadges) badges.unshift(...customBadges.map(badge => ({ ...args, ...badge })));
+
     const donorBadges = BadgeAPIPlugin.getDonorBadges(args.userId);
     if (donorBadges) {
         badges.unshift(

@@ -28,7 +28,7 @@ const ColorPickerWithSwatches = findComponentByCodeLazy<ColorPickerWithSwatchesP
 
 export const requireSettingsModal = extractAndLoadChunksLazy(['type:"USER_SETTINGS_MODAL_OPEN"']);
 
-const cl = classNameFactory("vc-pindms-modal-");
+const cl = classNameFactory("sc-pindms-modal-");
 
 interface Props {
     categoryId: string | null;

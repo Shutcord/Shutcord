@@ -19,7 +19,7 @@ export function getCurrentVoice(voices = window.speechSynthesis?.getVoices()) {
         const voice = voices.find(v => v.voiceURI === settings.store.voice);
         if (voice) return voice;
 
-        new Logger("VcNarrator").error(`Voice "${settings.store.voice}" not found. Resetting to default.`);
+        new Logger("ScNarrator").error(`Voice "${settings.store.voice}" not found. Resetting to default.`);
     }
 
     const voice = voices.find(v => v.default);

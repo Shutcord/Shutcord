@@ -57,7 +57,7 @@ export const settings = definePluginSettings({
 
 const sharedIntlNumberFormat = new Intl.NumberFormat();
 export const numberFormat = (value: number) => sharedIntlNumberFormat.format(value);
-export const cl = classNameFactory("vc-membercount-");
+export const cl = classNameFactory("sc-membercount-");
 
 export default definePlugin({
     name: "MemberCount",

@@ -179,7 +179,7 @@ export default definePlugin({
         }
 
         return (
-            <div className="vc-tenorGifSearch-wrapper">
+            <div className="sc-tenorGifSearch-wrapper">
                 <Component placeholder={placeholder} aria-label={ariaLabel} ref={ref} {...props} />
                 <Select
                     placeholder="Provider"

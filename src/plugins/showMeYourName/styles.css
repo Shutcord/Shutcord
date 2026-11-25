@@ -1,13 +1,13 @@
-.vc-smyn-suffix {
+.sc-smyn-suffix {
     color: var(--text-muted);
     -webkit-text-fill-color: initial;
     isolation: isolate;
 }
 
-.vc-smyn-suffix::before {
+.sc-smyn-suffix::before {
     content: "(";
 }
 
-.vc-smyn-suffix::after {
+.sc-smyn-suffix::after {
     content: ")";
 }

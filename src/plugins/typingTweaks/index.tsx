@@ -30,7 +30,7 @@ import { PropsWithChildren } from "react";
 
 import managedStyle from "./style.css?managed";
 
-const cl = classNameFactory("vc-typing-tweaks-");
+const cl = classNameFactory("sc-typing-tweaks-");
 const settings = definePluginSettings({
     showAvatars: {
         type: OptionType.BOOLEAN,

@@ -18,7 +18,7 @@ import { Select, TextInput, useState } from "@webpack/common";
 
 import CustomRPCPlugin, { setRpc, settings, TimestampMode } from ".";
 
-const cl = classNameFactory("vc-customRPC-settings-");
+const cl = classNameFactory("sc-customRPC-settings-");
 
 type SettingsKey = keyof typeof settings.store;
 

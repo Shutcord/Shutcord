@@ -49,7 +49,7 @@ export default definePlugin({
             replacement: {
                 match: /let\{id:\i}=(\i),{id:\i}=(\i);return \i\.useCallback\((\i)=>\{/,
                 replace: (m, message, channel, event) =>
-                    `const vcMsg=${message},vcChan=${channel};${m}Shutcord.Api.MessageEvents._handleClick(vcMsg,vcChan,${event});`
+                    `const scMsg=${message},scChan=${channel};${m}Shutcord.Api.MessageEvents._handleClick(scMsg,scChan,${event});`
             }
         }
     ]

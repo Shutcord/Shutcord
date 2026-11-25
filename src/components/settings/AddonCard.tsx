@@ -26,7 +26,7 @@ import { classNameFactory } from "@utils/css";
 import { useRef } from "@webpack/common";
 import type { MouseEventHandler, ReactNode } from "react";
 
-const cl = classNameFactory("vc-addon-");
+const cl = classNameFactory("sc-addon-");
 
 interface Props {
     name: ReactNode;

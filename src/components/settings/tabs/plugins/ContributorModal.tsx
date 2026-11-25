@@ -22,7 +22,7 @@ import Plugins from "~plugins";
 import { PluginCard } from "./PluginCard";
 import { GithubButton, WebsiteButton } from "./PluginModalButtons";
 
-const cl = classNameFactory("vc-author-modal-");
+const cl = classNameFactory("sc-author-modal-");
 
 export function openContributorModal(user: User) {
     openModal(modalProps => <ContributorModal user={user} modalProps={modalProps} />);
@@ -58,7 +58,7 @@ function ContributorModal({ user, modalProps }: { user: User; modalProps: Render
         <Modal
             {...modalProps}
             title={
-                <div className="vc-plugin-modal-header">
+                <div className="sc-plugin-modal-header">
                     <img
                         className={cl("avatar")}
                         src={user.getAvatarURL(void 0, 512, true)}
@@ -66,7 +66,7 @@ function ContributorModal({ user, modalProps }: { user: User; modalProps: Render
                     />
                     <Span size="lg" weight="semibold" className={cl("name")}>{user.username}</Span>
 
-                    <div className={classes("vc-settings-modal-links", cl("links"))}>
+                    <div className={classes("sc-settings-modal-links", cl("links"))}>
                         {website && (
                             <WebsiteButton
                                 text={website}

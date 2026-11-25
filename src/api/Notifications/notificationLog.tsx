@@ -42,7 +42,7 @@ const getLog = async () => {
     return log ?? [];
 };
 
-const cl = classNameFactory("vc-notification-log-");
+const cl = classNameFactory("sc-notification-log-");
 const signals = new Set<DispatchWithoutAction>();
 
 export async function persistNotification(notification: NotificationData) {

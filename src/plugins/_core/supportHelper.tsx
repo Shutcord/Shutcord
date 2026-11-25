@@ -277,7 +277,7 @@ export default definePlugin({
         if (shouldAddUpdateButton) {
             buttons.push(
                 <Button
-                    key="vc-update"
+                    key="sc-update"
                     variant="positive"
                     onClick={async () => {
                         try {
@@ -300,14 +300,14 @@ export default definePlugin({
             if (props.message.content.includes("/shutcord-debug") || props.message.content.includes("/shutcord-plugins")) {
                 buttons.push(
                     <Button
-                        key="vc-dbg"
+                        key="sc-dbg"
                         variant="secondary"
                         onClick={async () => sendMessage(props.channel.id, { content: await generateDebugInfoMessage() })}
                     >
                         Run /shutcord-debug
                     </Button>,
                     <Button
-                        key="vc-plg-list"
+                        key="sc-plg-list"
                         variant="secondary"
                         onClick={async () => sendMessage(props.channel.id, { content: generatePluginList() })}
                     >
