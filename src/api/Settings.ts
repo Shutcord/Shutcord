@@ -64,6 +64,8 @@ export interface Settings {
     | undefined;
     windowsMaterial: "none" | "mica" | "tabbed" | "acrylic";
     disableMinSize: boolean;
+    hideSponsorBadges: boolean;
+    hideOwnSponsorBadges: boolean;
     nativeTitleBar: boolean;
     plugins: {
         [plugin: string]: {
@@ -107,6 +109,8 @@ const DefaultSettings: Settings = {
     macosVibrancyStyle: undefined,
     windowsMaterial: "none",
     disableMinSize: false,
+    hideSponsorBadges: false,
+    hideOwnSponsorBadges: false,
     nativeTitleBar: false,
     plugins: {},
 
