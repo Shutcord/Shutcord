@@ -10,7 +10,7 @@ import { classNameFactory } from "@utils/css";
 import { classes } from "@utils/misc";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-const textCls = classNameFactory("vc-text-");
+const textCls = classNameFactory("sc-text-");
 
 const Sizes = {
     xxs: "0.625rem",

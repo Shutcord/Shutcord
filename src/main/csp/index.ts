@@ -5,6 +5,7 @@
  */
 
 import { NativeSettings } from "@main/settings";
+import { SHUTCORD_API } from "@shared/api";
 import { session } from "electron";
 
 type PolicyMap = Record<string, string[]>;
@@ -20,6 +21,8 @@ export const ImageScriptsAndCssSrc = [...ImageAndCssSrc, "script-src", "worker-s
 // script and just adding to it. But generally, you should just edit this file instead
 
 export const CspPolicies: PolicyMap = {
+    ...(SHUTCORD_API ? { [new URL(SHUTCORD_API).host]: ImageSrc } : {}), // your Shutcord API: sponsors.json and badge images
+
     "http://localhost:*": ImageAndCssSrc,
     "http://127.0.0.1:*": ImageAndCssSrc,
     "localhost:*": ImageAndCssSrc,
@@ -60,7 +63,6 @@ export const CspPolicies: PolicyMap = {
     "archive.org": ConnectSrc,
     "*.archive.org": ConnectSrc,
     "translate-pa.googleapis.com": ConnectSrc, // Google Translate API
-    "raw.githubusercontent.com": ImageSrc, // Badges (badges.json in the Shutcord repo)
     "manti.vendicated.dev": ImageSrc, // ReviewDB API
     "decor.fieryflames.dev": ConnectSrc, // Decor API
     "ugc.decor.fieryflames.dev": ImageSrc, // Decor CDN

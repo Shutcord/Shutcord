@@ -70,6 +70,16 @@ function Switches() {
             description: NoTrack.settings.def.disableAnalytics.description,
             restartRequired: NoTrack.settings.def.disableAnalytics.restartNeeded,
         },
+        {
+            key: "hideOwnSponsorBadges",
+            title: "Hide my own Shutcord badges",
+            description: "Hides the Shutcord badges on your own profile, on your screen only. Other Shutcord users still see them"
+        },
+        {
+            key: "hideSponsorBadges",
+            title: "Hide everyone's Shutcord badges",
+            description: "Stops showing Shutcord sponsor and custom badges on every profile"
+        },
         IS_DISCORD_DESKTOP && {
             key: "nativeTitleBar",
             title: "Enable the system's title bar in addition to Discord's custom one",
@@ -230,7 +240,7 @@ function ShutcordSettings() {
                     </a>!
                 </Paragraph>
 
-                <div className="vc-settings-switches">
+                <div className="sc-settings-switches">
                     <Switches />
                 </div>
             </section>

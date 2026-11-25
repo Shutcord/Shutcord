@@ -18,7 +18,7 @@
 
 import { classNameFactory } from "@utils/css";
 
-const marginCls = classNameFactory("vc-margin-");
+const marginCls = classNameFactory("sc-margin-");
 
 const Directions = ["top", "bottom", "left", "right"] as const;
 const Sizes = [8, 16, 20] as const;

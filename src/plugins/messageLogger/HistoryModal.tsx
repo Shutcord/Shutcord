@@ -18,7 +18,7 @@ import { parseEditContent } from ".";
 const CodeContainerClasses = findCssClassesLazy("markup", "codeContainer");
 const MiscClasses = findCssClassesLazy("messageContent", "markupRtl");
 
-const cl = classNameFactory("vc-ml-modal-");
+const cl = classNameFactory("sc-ml-modal-");
 
 export function openHistoryModal(message: any) {
     openModal(props =>
@@ -45,14 +45,14 @@ export function HistoryModal({ modalProps, message }: { modalProps: RenderModalP
             <TabBar
                 type="top"
                 look="brand"
-                className={classes("vc-settings-tab-bar", cl("tab-bar"))}
+                className={classes("sc-settings-tab-bar", cl("tab-bar"))}
                 selectedItem={currentTab}
                 onItemSelect={setCurrentTab}
             >
                 {message.firstEditTimestamp.getTime() !== message.timestamp.getTime() && (
                     <TooltipContainer text="This edit state was not logged so it can't be displayed.">
                         <TabBar.Item
-                            className="vc-settings-tab-bar-item"
+                            className="sc-settings-tab-bar-item"
                             id={-1}
                             disabled
                         >
@@ -69,7 +69,7 @@ export function HistoryModal({ modalProps, message }: { modalProps: RenderModalP
                 {timestamps.map((timestamp, index) => (
                     <TabBar.Item
                         key={index}
-                        className="vc-settings-tab-bar-item"
+                        className="sc-settings-tab-bar-item"
                         id={index}
                     >
                         <Timestamp

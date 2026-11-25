@@ -23,7 +23,7 @@ export default function DonateButton({ variant, ...props }: Omit<ButtonProps, "c
     const commonProps = {
         ...props,
         onClick: () => ShutcordNative.native.openExternal("https://github.com/Shutcord/Shutcord"),
-        className: "vc-donate-button",
+        className: "sc-donate-button",
         children: <><Heart />Donate</>
     };
 

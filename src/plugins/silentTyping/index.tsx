@@ -104,7 +104,7 @@ const ChatBarContextCheckbox: NavContextMenuPatchCallback = children => {
 
     group.splice(idx + 1, 0,
         <Menu.MenuCheckboxItem
-            id="vc-silent-typing"
+            id="sc-silent-typing"
             label="Enable Silent Typing"
             checked={isEnabled}
             action={() => settings.store.isEnabled = !settings.store.isEnabled}

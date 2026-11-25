@@ -1,4 +1,4 @@
-.vc-plugin-ui-elements-button {
+.sc-plugin-ui-elements-button {
     display: flex;
     align-items: center;
     color: var(--interactive-icon-default);
@@ -11,25 +11,25 @@
     }
 }
 
-.vc-plugin-ui-elements-button-arrow {
+.sc-plugin-ui-elements-button-arrow {
     margin-left: auto;
     width: 24px;
     height: 24px;
 }
 
-.vc-plugin-ui-elements-modal-content {
+.sc-plugin-ui-elements-modal-content {
     display: flex;
     flex-direction: column;
     gap: 2em;
 }
 
-.vc-plugin-ui-elements-switches {
+.sc-plugin-ui-elements-switches {
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-.vc-plugin-ui-elements-switches-row {
+.sc-plugin-ui-elements-switches-row {
     display: flex;
     gap: 1em;
     width: 100%;
@@ -40,6 +40,6 @@
     }
 }
 
-.vc-plugin-ui-elements-description {
+.sc-plugin-ui-elements-description {
     color: var(--text-subtle);
 }

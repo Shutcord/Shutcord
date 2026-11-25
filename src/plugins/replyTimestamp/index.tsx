@@ -40,7 +40,7 @@ function ReplyTimestamp({
     const baseTimestamp = baseMessage.timestamp as any;
     return (
         <Timestamp
-            className="vc-reply-timestamp"
+            className="sc-reply-timestamp"
             compact={DateUtils.isSameDay(refTimestamp, baseTimestamp)}
             timestamp={refTimestamp}
             isInline={false}

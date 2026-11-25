@@ -18,6 +18,8 @@
 
 import "./fixDiscordBadgePadding.css";
 
+import { Settings } from "@api/Settings";
+import { SHUTCORD_API } from "@shared/api";
 import { _getBadges, BadgePosition, BadgeRarity, BadgeUserArgs, DirectoryBadge, ProfileBadge } from "@api/Badges";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Flex } from "@components/Flex";
@@ -26,12 +28,14 @@ import { CopyIcon, LinkIcon } from "@components/Icons";
 import { Paragraph } from "@components/Paragraph";
 import DonateButton from "@components/settings/DonateButton";
 import { openContributorModal } from "@components/settings/tabs";
+import { LOGO_IMAGE } from "@components/settings/tabs/shutcord/art";
 import { Text } from "@components/Text";
 import { Devs } from "@utils/constants";
 import { copyWithToast } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { Margins } from "@utils/margins";
 import { shouldShowContributorBadge } from "@utils/misc";
+import { listSponsorIds, resolveCustomBadges, resolveSponsorBadges, resolveSponsorTierNames, SponsorBadge, SponsorsFile } from "@utils/sponsors";
 import definePlugin from "@utils/types";
 import { ContextMenuApi, Menu, Modal, openModal, showToast, UserStore } from "@webpack/common";
 
@@ -40,21 +44,18 @@ const ContributorBadge: ProfileBadge = {
     description: "Shutcord Contributor",
     infoLabel: "Shutcord",
     rarity: BadgeRarity.MYTHIC,
-    iconSrc: "https://cdn.discordapp.com/emojis/1562267648857997356.webp?size=128",
-    largeIconSrc: "https://cdn.discordapp.com/emojis/1562267648857997356.webp?size=512",
+    iconSrc: "https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges/shutcord.png",
+    largeIconSrc: "https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges/shutcord@2x.png",
     position: BadgePosition.START,
     shouldShow: ({ userId }) => shouldShowContributorBadge(userId),
     onClick: (_, { userId }) => openContributorModal(UserStore.getUser(userId))
 };
 
 
-interface DonorBadge {
-    tooltip?: string;
-    badge: string;
-    "2"?: 1;
-}
-
-let DonorBadges = {} as Record<string, Array<DonorBadge>>;
+let DonorBadges = {} as Record<string, SponsorBadge[]>;
+let CustomBadges = {} as Record<string, SponsorBadge[]>;
+let SponsorIds = new Set<string>();
+let SponsorTierNames = {} as Record<string, string>;
 let DirectoryBadges = {} as Record<string, DirectoryBadge>;
 
 async function loadBadges(noCache = false) {
@@ -63,17 +64,22 @@ async function loadBadges(noCache = false) {
         init.cache = "no-cache";
 
     try {
-        DonorBadges = await fetch("https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges.json", init)
+        const source = SHUTCORD_API || "https://raw.githubusercontent.com/Shutcord/Shutcord/main";
+        const data: SponsorsFile = await fetch(`${source}/sponsors.json`, init)
             .then(r => r.json());
+        DonorBadges = resolveSponsorBadges(data, SHUTCORD_API ? [new URL(SHUTCORD_API).hostname] : []);
+        CustomBadges = resolveCustomBadges(data, SHUTCORD_API ? [new URL(SHUTCORD_API).hostname] : []);
+        SponsorIds = listSponsorIds(data);
+        SponsorTierNames = resolveSponsorTierNames(data);
     } catch (err) {
-        console.warn("[Shutcord] Failed to load donor badges, continuing without them", err);
+        console.warn("[Shutcord] Failed to load sponsors.json, continuing without them", err);
     }
 }
 
 let intervalId: any;
 
 function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
-    const id = `vc-${userId}-${b.id}`;
+    const id = `sc-${userId}-${b.id}`;
 
     return DirectoryBadges[id] ??= {
         badge_id: id,
@@ -94,13 +100,13 @@ function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
 function BadgeContextMenu({ badge }: { badge: Omit<ProfileBadge, "id"> & BadgeUserArgs; }) {
     return (
         <Menu.Menu
-            navId="vc-badge-context"
+            navId="sc-badge-context"
             onClose={ContextMenuApi.closeContextMenu}
             aria-label="Badge Options"
         >
             {badge.description && (
                 <Menu.MenuItem
-                    id="vc-badge-copy-name"
+                    id="sc-badge-copy-name"
                     label="Copy Badge Name"
                     action={() => copyWithToast(badge.description!)}
                     leadingAccessory={{ type: "icon", icon: CopyIcon }}
@@ -108,7 +114,7 @@ function BadgeContextMenu({ badge }: { badge: Omit<ProfileBadge, "id"> & BadgeUs
             )}
             {badge.iconSrc && (
                 <Menu.MenuItem
-                    id="vc-badge-copy-link"
+                    id="sc-badge-copy-link"
                     label="Copy Badge Image Link"
                     action={() => copyWithToast(badge.iconSrc!)}
                     leadingAccessory={{ type: "icon", icon: LinkIcon }}
@@ -178,6 +184,10 @@ export default definePlugin({
     // for access from the console or other plugins
     get DonorBadges() {
         return DonorBadges;
+    },
+
+    isSponsor(userId: string) {
+        return SponsorIds.has(userId);
     },
 
     toolboxActions: {
@@ -250,7 +260,29 @@ export default definePlugin({
         return handlers;
     },
 
+    getCustomBadges(userId: string) {
+        if (Settings.hideSponsorBadges) return undefined;
+        if (Settings.hideOwnSponsorBadges && userId === UserStore.getCurrentUser()?.id) return undefined;
+
+        return CustomBadges[userId]?.map((badge, idx) => ({
+            id: `shutcord_custom_badge_${idx}`,
+            iconSrc: badge.badge,
+            description: badge.tooltip,
+            name: badge.tooltip,
+            infoLabel: "Shutcord",
+            rarity: BadgeRarity.RARE,
+            position: BadgePosition.START,
+            props: { style: { borderRadius: "50%", transform: "scale(0.9)" } },
+            onContextMenu(event, badge) {
+                ContextMenuApi.openContextMenu(event, () => <BadgeContextMenu badge={badge} />);
+            },
+        } satisfies ProfileBadge));
+    },
+
     getDonorBadges(userId: string) {
+        if (Settings.hideSponsorBadges) return undefined;
+        if (Settings.hideOwnSponsorBadges && userId === UserStore.getCurrentUser()?.id) return undefined;
+
         return DonorBadges[userId]?.map((badge, idx) => {
             let largeIconSrc: string | undefined = undefined;
             if (badge["2"]) {
@@ -302,26 +334,25 @@ export default definePlugin({
                                 }
                             >
                                 <div>
-                                    <Flex>
-                                        <img
-                                            role="presentation"
-                                            src="https://cdn.discordapp.com/emojis/1026533070955872337.png"
-                                            alt=""
-                                            style={{ margin: "auto" }}
-                                        />
-                                        <img
-                                            role="presentation"
-                                            src="https://cdn.discordapp.com/emojis/1026533090627174460.png"
-                                            alt=""
-                                            style={{ margin: "auto" }}
-                                        />
+                                    <Flex justifyContent="center" alignItems="center" flexDirection="column" gap="0.75em" style={{ padding: "1.25em 1em 0" }}>
+                                        <img role="presentation" src={LOGO_IMAGE} alt="" style={{ width: 150 }} />
+                                        {SponsorTierNames[userId] && (
+                                            <Text size="sm" weight="semibold" style={{ padding: "2px 12px", borderRadius: 999, background: "var(--background-mod-subtle)" }}>
+                                                {SponsorTierNames[userId]}
+                                            </Text>
+                                        )}
+                                        <Flex justifyContent="center" gap="8px">
+                                            {DonorBadges[userId]?.map(b => (
+                                                <img key={b.badge} src={b.badge} alt={b.tooltip ?? ""} title={b.tooltip} style={{ width: 40, height: 40, borderRadius: "50%" }} />
+                                            ))}
+                                        </Flex>
                                     </Flex>
                                     <div style={{ padding: "1em" }}>
-                                        <Paragraph>
-                                            This badge is a special perk for Shutcord Donors
+                                        <Paragraph style={{ textAlign: "center" }}>
+                                            This badge belongs to a Shutcord sponsor. Thank you for keeping Shutcord free!
                                         </Paragraph>
-                                        <Paragraph className={Margins.top16}>
-                                            Please consider supporting the development of Shutcord by becoming a donor. It would mean a lot!!
+                                        <Paragraph className={Margins.top16} style={{ textAlign: "center" }}>
+                                            Sponsors get profile badges and a role in the community server.
                                         </Paragraph>
                                     </div>
                                 </div>

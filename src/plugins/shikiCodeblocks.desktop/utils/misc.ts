@@ -22,7 +22,7 @@ import { HighlighterSetting } from "@plugins/shikiCodeblocks.desktop/types";
 import { classNameFactory } from "@utils/css";
 import { filters, mapMangledModuleLazy } from "@webpack";
 
-export const cl = classNameFactory("vc-shiki-");
+export const cl = classNameFactory("sc-shiki-");
 
 export const arboriumLanguages = mapMangledModuleLazy('jldoctest:"julia"', {
     resolveLang: filters.byCode(/!\i.test\(/, ".toLowerCase();")

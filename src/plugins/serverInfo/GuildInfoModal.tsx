@@ -20,7 +20,7 @@ import { FluxDispatcher, GuildChannelStore, GuildMemberStore, GuildRoleStore, Ic
 const IconClasses = findCssClassesLazy("icon", "acronym", "childWrapper");
 const FriendRow = findComponentByCodeLazy("discriminatorClass:", ".isMobileOnline", "avatarSrc:");
 
-const cl = classNameFactory("vc-gp-");
+const cl = classNameFactory("sc-gp-");
 
 export function openGuildInfoModal(guild: Guild) {
     openModal(props => <GuildInfoModal guild={guild} modalProps={props} />);

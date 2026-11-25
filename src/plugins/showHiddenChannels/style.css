@@ -1,4 +1,4 @@
-.vc-shc-container {
+.sc-shc-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,19 +9,19 @@
     min-height: 100%;
 }
 
-.vc-shc-logo {
+.sc-shc-logo {
     width: 12em;
     height: 12em;
 }
 
-.vc-shc-heading-container {
+.sc-shc-heading-container {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 0.5em;
 }
 
-.vc-shc-hidden-channel-icon {
+.sc-shc-hidden-channel-icon {
     cursor: not-allowed;
     margin-left: 6px;
     z-index: 0;

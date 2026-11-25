@@ -8,8 +8,8 @@ import { managedStyleRootNode } from "@api/Styles";
 import { createAndAppendStyle } from "@utils/css";
 
 import { hexToHSL } from "./colorUtils";
-const VARS_STYLE_ID = "vc-clientTheme-vars";
-const OVERRIDES_STYLE_ID = "vc-clientTheme-overrides";
+const VARS_STYLE_ID = "sc-clientTheme-vars";
+const OVERRIDES_STYLE_ID = "sc-clientTheme-overrides";
 type StyleId = typeof VARS_STYLE_ID | typeof OVERRIDES_STYLE_ID;
 
 const styleCache = {} as Record<StyleId, HTMLStyleElement | null>;

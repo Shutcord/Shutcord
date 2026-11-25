@@ -18,14 +18,14 @@ function createPinMenuItem(channelId: string) {
 
     return (
         <Menu.MenuItem
-            id="vc-pin-dm"
+            id="sc-pin-dm"
             label="Pin DMs"
         >
 
             {!pinned && (
                 <>
                     <Menu.MenuItem
-                        id="vc-add-category"
+                        id="sc-add-category"
                         label="Add Category"
                         color="brand"
                         action={() => openCategoryModal(null, channelId)}
@@ -48,7 +48,7 @@ function createPinMenuItem(channelId: string) {
             {pinned && (
                 <>
                     <Menu.MenuItem
-                        id="vc-unpin-dm"
+                        id="sc-unpin-dm"
                         label="Unpin DM"
                         color="danger"
                         action={() => removeChannelFromCategory(channelId)}

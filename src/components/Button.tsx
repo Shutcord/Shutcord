@@ -13,8 +13,8 @@ import type { ComponentPropsWithRef } from "react";
 import { OpenExternalIcon } from "./Icons";
 import { Link } from "./Link";
 
-const btnCls = classNameFactory("vc-btn-");
-const textBtnCls = classNameFactory("vc-text-btn-");
+const btnCls = classNameFactory("sc-btn-");
+const textBtnCls = classNameFactory("sc-text-btn-");
 
 export type ButtonVariant =
     "primary" | "secondary" | "dangerPrimary" | "dangerSecondary" | "overlayPrimary" | "positive" | "link" | "none";

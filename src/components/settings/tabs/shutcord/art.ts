@@ -30,24 +30,17 @@ const toDataUri = (svg: string) => `data:image/svg+xml,${encodeURIComponent(svg.
 
 const C = SHUTCORD_COLORS;
 
-/** The "SC" pixel mark on a dark badge, shown on the right side of the banners */
+/** The "SC" mark, shown on the right side of the banners */
 export const LOGO_IMAGE = toDataUri(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -112 480 448" shape-rendering="crispEdges">
-  <path fill="${C.mark}" d="M32 0h160v32h-160zM288 0h160v32h-160zM0 32h64v32h-64zM160 32h64v32h-64zM256 32h64v32h-64zM416 32h64v32h-64zM0 64h64v32h-64zM256 64h64v32h-64zM32 96h160v32h-160zM256 96h64v32h-64zM160 128h64v32h-64zM256 128h64v32h-64zM0 160h64v32h-64zM160 160h64v32h-64zM256 160h64v32h-64zM416 160h64v32h-64zM32 192h160v32h-160zM288 192h160v32h-160z"/>
-</svg>`);
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 60 480 280"><defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="640" height="400"><rect width="640" height="400" fill="#fff"/><g transform="translate(405 200) rotate(-6) scale(0.351123595505618 -0.351123595505618) translate(-389.0 -344.0)"><path d="M733 405H522Q522 465 490.5 500.0Q459 535 401 535Q334 535 302.5 493.0Q271 451 271 376V312Q271 238 302.5 195.5Q334 153 399 153Q463 153 496.0 186.0Q529 219 529 279H733Q733 138 646.5 63.0Q560 -12 402 -12Q226 -12 135.5 78.0Q45 168 45 344Q45 520 135.5 610.0Q226 700 402 700Q555 700 644.0 623.5Q733 547 733 405Z" stroke-linejoin="round" stroke-width="28.48" fill="#000" stroke="#000"/></g></mask></defs><g mask="url(#m)"><g transform="translate(200 200) rotate(-6) scale(0.351123595505618 -0.351123595505618) translate(-364.5 -344.0)"><path d="M667 488V476H460V480Q460 510 438.0 530.0Q416 550 371 550Q327 550 303.5 537.0Q280 524 280 505Q280 478 312.0 465.0Q344 452 415 438Q498 421 551.5 402.5Q605 384 645.0 342.0Q685 300 686 228Q686 106 603.5 47.0Q521 -12 383 -12Q222 -12 132.5 42.0Q43 96 43 233H252Q252 181 279.0 163.5Q306 146 363 146Q405 146 432.5 155.0Q460 164 460 192Q460 217 429.5 229.5Q399 242 330 256Q246 274 191.0 293.5Q136 313 95.0 358.0Q54 403 54 480Q54 593 141.5 646.5Q229 700 363 700Q495 700 580.0 646.5Q665 593 667 488Z" stroke-linejoin="round" stroke-width="28.48" fill="#71717a" stroke="#71717a"/></g></g><g transform="translate(405 200) rotate(-6) scale(0.351123595505618 -0.351123595505618) translate(-389.0 -344.0)"><path d="M733 405H522Q522 465 490.5 500.0Q459 535 401 535Q334 535 302.5 493.0Q271 451 271 376V312Q271 238 302.5 195.5Q334 153 399 153Q463 153 496.0 186.0Q529 219 529 279H733Q733 138 646.5 63.0Q560 -12 402 -12Q226 -12 135.5 78.0Q45 168 45 344Q45 520 135.5 610.0Q226 700 402 700Q555 700 644.0 623.5Q733 547 733 405Z" stroke-linejoin="round" stroke-width="28.48" fill="#d4d4d8" stroke="#d4d4d8"/></g></svg>`);
 
 function banner(from: string, to: string) {
-    // a few faint pixel blocks on the right, in the same grid as the logo
-    const blocks = [
-        [700, 40, 1], [732, 40, 2], [764, 72, 1], [828, 40, 3], [796, 104, 2],
-        [732, 136, 1], [860, 136, 2], [764, 200, 3], [828, 232, 1], [700, 232, 2]
-    ].map(([x, y, o]) => `<rect x="${x}" y="${y}" width="32" height="32" fill="${C.block}" opacity="${(o * 0.025).toFixed(3)}"/>`).join("");
-
+    // one big, very faint copy of the mark on the right
     return toDataUri(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid slice">
   <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/></linearGradient></defs>
   <rect width="900" height="300" fill="url(#g)"/>
-  ${blocks}
+  <g transform="translate(730 150) scale(.8) translate(-340 -200)" opacity=".05"><defs><mask id="bm" maskUnits="userSpaceOnUse" x="0" y="0" width="640" height="400"><rect width="640" height="400" fill="#fff"/><g transform="translate(405 200) rotate(-6) scale(0.351123595505618 -0.351123595505618) translate(-389.0 -344.0)"><path d="M733 405H522Q522 465 490.5 500.0Q459 535 401 535Q334 535 302.5 493.0Q271 451 271 376V312Q271 238 302.5 195.5Q334 153 399 153Q463 153 496.0 186.0Q529 219 529 279H733Q733 138 646.5 63.0Q560 -12 402 -12Q226 -12 135.5 78.0Q45 168 45 344Q45 520 135.5 610.0Q226 700 402 700Q555 700 644.0 623.5Q733 547 733 405Z" stroke-linejoin="round" stroke-width="28.48" fill="#000" stroke="#000"/></g></mask></defs><g mask="url(#bm)"><g transform="translate(200 200) rotate(-6) scale(0.351123595505618 -0.351123595505618) translate(-364.5 -344.0)"><path d="M667 488V476H460V480Q460 510 438.0 530.0Q416 550 371 550Q327 550 303.5 537.0Q280 524 280 505Q280 478 312.0 465.0Q344 452 415 438Q498 421 551.5 402.5Q605 384 645.0 342.0Q685 300 686 228Q686 106 603.5 47.0Q521 -12 383 -12Q222 -12 132.5 42.0Q43 96 43 233H252Q252 181 279.0 163.5Q306 146 363 146Q405 146 432.5 155.0Q460 164 460 192Q460 217 429.5 229.5Q399 242 330 256Q246 274 191.0 293.5Q136 313 95.0 358.0Q54 403 54 480Q54 593 141.5 646.5Q229 700 363 700Q495 700 580.0 646.5Q665 593 667 488Z" stroke-linejoin="round" stroke-width="28.48" fill="#fff" stroke="#fff"/></g></g><g transform="translate(405 200) rotate(-6) scale(0.351123595505618 -0.351123595505618) translate(-389.0 -344.0)"><path d="M733 405H522Q522 465 490.5 500.0Q459 535 401 535Q334 535 302.5 493.0Q271 451 271 376V312Q271 238 302.5 195.5Q334 153 399 153Q463 153 496.0 186.0Q529 219 529 279H733Q733 138 646.5 63.0Q560 -12 402 -12Q226 -12 135.5 78.0Q45 168 45 344Q45 520 135.5 610.0Q226 700 402 700Q555 700 644.0 623.5Q733 547 733 405Z" stroke-linejoin="round" stroke-width="28.48" fill="#fff" stroke="#fff"/></g></g>
 </svg>`);
 }
 

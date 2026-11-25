@@ -35,7 +35,7 @@ import { ChannelStore, PermissionsBits, PermissionStore, Tooltip } from "@webpac
 
 import HiddenChannelLockScreen from "./components/HiddenChannelLockScreen";
 
-export const cl = classNameFactory("vc-shc-");
+export const cl = classNameFactory("sc-shc-");
 
 const ChannelListClasses = findCssClassesLazy("modeSelected", "modeMuted", "unread", "icon");
 

@@ -42,7 +42,7 @@ import { OptionComponentMap } from "./components";
 import { openContributorModal } from "./ContributorModal";
 import { FavoriteButton, GithubButton } from "./PluginModalButtons";
 
-const cl = classNameFactory("vc-plugin-modal-");
+const cl = classNameFactory("sc-plugin-modal-");
 
 const AvatarStyles = findCssClassesLazy("moreUsers", "avatar", "clickableAvatar");
 const UserRecord: Constructor<Partial<User>> = proxyLazy(() => UserStore.getCurrentUser().constructor) as any;
@@ -139,7 +139,7 @@ export default function PluginModal({ plugin, onRestartNeeded, onClose, transiti
         });
 
         return (
-            <div className="vc-plugins-settings">
+            <div className="sc-plugins-settings">
                 {options}
             </div>
         );
@@ -176,7 +176,7 @@ export default function PluginModal({ plugin, onRestartNeeded, onClose, transiti
                 <div className={cl("header")}>
                     <Heading tag="h3">{plugin.name}</Heading>
                     {!pluginMeta.userPlugin && (
-                        <div className="vc-settings-modal-links">
+                        <div className="sc-settings-modal-links">
                             <FavoriteButton
                                 isFavorite={pluginSettings.isFavorite ?? false}
                                 onClick={() => pluginSettings.isFavorite = !pluginSettings.isFavorite}
@@ -198,7 +198,7 @@ export default function PluginModal({ plugin, onRestartNeeded, onClose, transiti
                 </div>
             }
         >
-            <div className={"vc-settings-modal-content"}>
+            <div className={"sc-settings-modal-content"}>
                 <section>
                     <Heading tag="h3" className={classes(Margins.top8, Margins.bottom8)}>Authors</Heading>
                     <div style={{ width: "fit-content" }}>

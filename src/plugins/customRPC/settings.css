@@ -1,10 +1,10 @@
-.vc-customRPC-settings-root {
+.sc-customRPC-settings-root {
     display: flex;
     flex-direction: column;
     gap: 0.5em;
 }
 
-.vc-customRPC-settings-pair {
+.sc-customRPC-settings-pair {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     align-items: start;
@@ -12,16 +12,16 @@
     width: 100%;
 }
 
-.vc-customRPC-settings-single {
+.sc-customRPC-settings-single {
     display: grid;
     gap: 0.5em;
 }
 
-.vc-customRPC-settings-disabled {
+.sc-customRPC-settings-disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.vc-customRPC-settings-error {
+.sc-customRPC-settings-error {
     color: var(--text-feedback-critical);
 }

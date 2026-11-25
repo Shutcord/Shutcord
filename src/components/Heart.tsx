@@ -27,7 +27,7 @@ export function Heart(props: SVGProps<SVGSVGElement>) {
             height="16"
             width="16"
             {...props}
-            className={classes("vc-heart-icon", props.className)}
+            className={classes("sc-heart-icon", props.className)}
         >
             <path
                 fill="#db61a2"

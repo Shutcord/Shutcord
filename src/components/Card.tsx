@@ -10,7 +10,7 @@ import { classNameFactory } from "@utils/css";
 import { classes } from "@utils/misc";
 import { ComponentPropsWithRef } from "react";
 
-const cl = classNameFactory("vc-card-");
+const cl = classNameFactory("sc-card-");
 
 export interface CardProps extends ComponentPropsWithRef<"div"> {
     variant?: "normal" | "warning" | "danger" | "info" | "success";

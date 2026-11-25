@@ -43,8 +43,8 @@ const settings = definePluginSettings({
 
 function setCss() {
     style.textContent = `
-        .vc-nsfw-img [class*=imageContainer],
-        .vc-nsfw-img [class*=wrapperPaused] {
+        .sc-nsfw-img [class*=imageContainer],
+        .sc-nsfw-img [class*=wrapperPaused] {
             filter: blur(${settings.store.blurAmount}px);
             transition: filter 0.2s;
 
@@ -74,14 +74,14 @@ export default definePlugin({
             replacement: [
                 {
                     match: /(\.renderReactions\(\i\).+?className:)/,
-                    replace: '$&($self.shouldBlur(this?.props?.channel)?"vc-nsfw-img ":"")+'
+                    replace: '$&($self.shouldBlur(this?.props?.channel)?"sc-nsfw-img ":"")+'
                 }
             ]
         }
     ],
 
     start() {
-        style = createAndAppendStyle("VcBlurNsfw", managedStyleRootNode);
+        style = createAndAppendStyle("ScBlurNsfw", managedStyleRootNode);
 
         setCss();
     },

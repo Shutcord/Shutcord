@@ -115,10 +115,10 @@ function CompactConnectionComponent({ connection, theme }: { connection: Connect
     return (
         <Tooltip
             text={
-                <span className="vc-sc-tooltip">
-                    <span className="vc-sc-connection-name">{connection.name}</span>
+                <span className="sc-sc-tooltip">
+                    <span className="sc-sc-connection-name">{connection.name}</span>
                     {connection.verified && <VerifiedIcon />}
-                    <TooltipIcon height={16} width={16} className="vc-sc-tooltip-icon" />
+                    <TooltipIcon height={16} width={16} className="sc-sc-tooltip-icon" />
                 </span>
             }
             key={connection.id}
@@ -127,7 +127,7 @@ function CompactConnectionComponent({ connection, theme }: { connection: Connect
                 url
                     ? <a
                         {...tooltipProps}
-                        className="vc-user-connection"
+                        className="sc-user-connection"
                         href={url}
                         target="_blank"
                         rel="noreferrer"
@@ -142,7 +142,7 @@ function CompactConnectionComponent({ connection, theme }: { connection: Connect
                     </a>
                     : <button
                         {...tooltipProps}
-                        className="vc-user-connection"
+                        className="sc-user-connection"
                         onClick={() => copyWithToast(connection.name)}
                     >
                         {img}

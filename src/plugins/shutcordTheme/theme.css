@@ -1,0 +1,166 @@
+/*
+ * Shutcord base theme: flat, one-color grey, rounded, calm.
+ * Only colors, borders, radii, shadows and motion are changed. No layout rules, so Discord updates can't break it.
+ * Variables --sc-accent, --sc-radius come from the plugin settings (index.tsx).
+ */
+
+:root {
+    --sc-bg-0: #0d0d0f;
+    --sc-bg-1: #111113;
+    --sc-bg-2: #161618;
+    --sc-bg-3: #1c1c1f;
+    --sc-bg-4: #232327;
+    --sc-bg-5: #2b2b30;
+    --sc-line: rgba(255, 255, 255, .07);
+    --sc-line-strong: rgba(255, 255, 255, .12);
+    --sc-text: #e4e4e7;
+    --sc-text-dim: #a1a1aa;
+    --sc-text-faint: #71717a;
+}
+
+/* ---------- color tokens (dark themes only) ---------- */
+.theme-dark, .theme-darker, .theme-midnight {
+    --background-base-lowest: var(--sc-bg-0);
+    --background-base-lower: var(--sc-bg-1);
+    --background-base-low: var(--sc-bg-2);
+    --background-surface-high: var(--sc-bg-3);
+    --background-surface-higher: var(--sc-bg-4);
+    --background-surface-highest: var(--sc-bg-5);
+    --background-mod-subtle: rgba(255, 255, 255, .04);
+    --background-mod-normal: rgba(255, 255, 255, .07);
+    --background-mod-strong: rgba(255, 255, 255, .11);
+    --background-floating: var(--sc-bg-3);
+    --background-secondary: var(--sc-bg-2);
+    --background-secondary-alt: var(--sc-bg-1);
+    --background-primary: var(--sc-bg-2);
+    --background-tertiary: var(--sc-bg-0);
+    --channeltextarea-background: var(--sc-bg-3);
+    --card-background-default: var(--sc-bg-3);
+    --input-background-default: var(--sc-bg-1);
+    --input-border-default: var(--sc-line-strong);
+    --border-subtle: var(--sc-line);
+    --border-normal: var(--sc-line-strong);
+    --text-default: var(--sc-text);
+    --text-strong: #fafafa;
+    --text-muted: var(--sc-text-dim);
+    --text-subtle: var(--sc-text-faint);
+    --channels-default: var(--sc-text-dim);
+    --header-primary: #fafafa;
+    --header-secondary: var(--sc-text-dim);
+    --interactive-icon-default: var(--sc-text-dim);
+    --interactive-icon-hover: var(--sc-text);
+    --interactive-icon-active: #fff;
+    --scrollbar-thin-thumb: var(--sc-bg-5);
+    --scrollbar-thin-track: transparent;
+    --scrollbar-auto-thumb: var(--sc-bg-5);
+    --scrollbar-auto-track: transparent;
+    --user-profile-background-hover: var(--sc-bg-4);
+    --elevation-high: 0 0 0 1px var(--sc-line-strong), 0 12px 32px rgba(0, 0, 0, .45);
+    --elevation-stroke: 0 0 0 1px var(--sc-line);
+}
+
+/* ---------- accent: replaces Discord's blurple everywhere it is a variable ---------- */
+.theme-dark, .theme-darker, .theme-midnight, .theme-light {
+    --brand-500: var(--sc-accent);
+    --brand-360: var(--sc-accent);
+    --brand-400: var(--sc-accent);
+    --brand-430: var(--sc-accent);
+    --brand-460: var(--sc-accent);
+    --brand-530: var(--sc-accent);
+    --brand-560: var(--sc-accent);
+    --text-link: var(--sc-accent);
+    --text-brand: var(--sc-accent);
+    --control-primary-background-default: var(--sc-accent);
+    --control-primary-background-hover: color-mix(in srgb, var(--sc-accent) 88%, #fff);
+    --control-primary-border-default: transparent;
+    --control-primary-border-hover: transparent;
+    --border-focus: var(--sc-accent);
+    --focus-primary: var(--sc-accent);
+}
+
+/* ---------- popups, menus, modals ---------- */
+[class*="layer_"] [class*="menu_"],
+[class*="contextMenu"],
+[class*="popout_"],
+[class*="popoutContainer"],
+[class*="tooltip_"][class*="tooltip"] {
+    border-radius: var(--sc-radius) !important;
+    border: 1px solid var(--sc-line-strong) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .45) !important;
+    background: var(--sc-bg-3) !important;
+}
+
+[class*="root_"][class*="modal"],
+[class*="modal_"][role="dialog"],
+[role="dialog"][class*="root"] {
+    border-radius: calc(var(--sc-radius) + 4px) !important;
+    border: 1px solid var(--sc-line-strong) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .55) !important;
+}
+
+[class*="backdrop_"] {
+    backdrop-filter: blur(6px) saturate(.8);
+}
+
+/* menu items: soft rounded highlight instead of full-width bar */
+[class*="menu_"] [class*="item_"] {
+    border-radius: calc(var(--sc-radius) - 4px) !important;
+}
+
+/* ---------- inputs, buttons, cards ---------- */
+input[type="text"], input[type="search"], input[type="number"], input[type="password"], textarea,
+[class*="inputWrapper"], [class*="searchBar"] {
+    border-radius: calc(var(--sc-radius) - 2px) !important;
+}
+
+button[class*="button_"], [class*="lookFilled"], [class*="lookOutlined"], [class*="lookBlank"] {
+    border-radius: calc(var(--sc-radius) - 2px) !important;
+    transition: background-color .15s ease, color .15s ease, transform .1s ease !important;
+}
+
+button[class*="button_"]:active { transform: scale(.98); }
+
+[class*="card_"], [class*="embedWrapper"], [class*="embedFull"] {
+    border-radius: var(--sc-radius) !important;
+}
+
+/* ---------- settings window ---------- */
+[class*="standardSidebarView"] [class*="sidebar"] {
+    background: var(--sc-bg-1) !important;
+}
+
+[class*="standardSidebarView"] [class*="contentRegion"],
+[class*="standardSidebarView"] [class*="content_"] {
+    background: var(--sc-bg-2) !important;
+}
+
+[class*="sidebar"] [class*="item_"][aria-selected="true"],
+[class*="sidebar"] [class*="selected"] {
+    background: var(--sc-bg-4) !important;
+    border-radius: calc(var(--sc-radius) - 4px) !important;
+}
+
+/* ---------- chat ---------- */
+[class*="channelTextArea"] {
+    border-radius: var(--sc-radius) !important;
+    border: 1px solid var(--sc-line);
+}
+
+[class*="messageListItem"] [class*="mouseOver"],
+[class*="message_"]:hover {
+    background-color: var(--background-mod-subtle) !important;
+}
+
+/* ---------- scrollbars ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+    background: var(--sc-bg-5);
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-clip: padding-box; background-color: #3a3a40; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- selection ---------- */
+::selection { background: color-mix(in srgb, var(--sc-accent) 45%, transparent); }

@@ -23,3 +23,12 @@ Where it downloads Shutcord from: `constants.go` (`ReleaseUrl`). Self-update: `s
 
 
 The Windows icon and manifest are embedded from `rsrc_windows_amd64.syso` (made from `assets/icon.ico` with github.com/akavel/rsrc, `rsrc -manifest app.manifest -ico icon.ico -arch amd64 -o rsrc_windows_amd64.syso`).
+
+## License screen, custom folders
+
+- First launch shows a license agreement (tick "I accept", then Next). Acceptance is stored in
+  `<user config dir>/Shutcord/installer-license-accepted-v1`; delete that file to see it again.
+  The footer "License" link reopens it any time.
+- Cards are always ordered Stable, PTB, Canary, Dev, then custom folders in the order added.
+- Folders added with "+ Custom folder" have a "custom" tag and an x button to remove them from the list
+  (this never deletes anything on disk).

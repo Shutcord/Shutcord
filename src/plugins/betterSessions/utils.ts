@@ -25,7 +25,7 @@ import { SessionInfo } from "./types";
 
 const getDataKey = () => `BetterSessions_savedSessions_${UserStore.getCurrentUser().id}`;
 
-export const cl = classNameFactory("vc-betterSessions-");
+export const cl = classNameFactory("sc-betterSessions-");
 export const savedSessionsCache: Map<string, { name: string, isNew: boolean; }> = new Map();
 
 export function getDefaultName(clientInfo: SessionInfo["session"]["client_info"]) {

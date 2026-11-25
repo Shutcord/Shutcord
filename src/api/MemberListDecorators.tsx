@@ -58,7 +58,7 @@ export function __getDecorators(props: DecoratorProps, type: "guild" | "dm"): JS
     );
 
     return (
-        <div className="vc-member-list-decorators-wrapper">
+        <div className="sc-member-list-decorators-wrapper">
             {decorators}
         </div>
     );

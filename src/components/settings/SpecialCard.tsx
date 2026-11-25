@@ -26,7 +26,7 @@ import { classNameFactory } from "@utils/css";
 import { Clickable } from "@webpack/common";
 import type { PropsWithChildren } from "react";
 
-const cl = classNameFactory("vc-special-");
+const cl = classNameFactory("sc-special-");
 
 interface StyledCardProps {
     title: string;

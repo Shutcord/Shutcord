@@ -1,19 +1,19 @@
-.vc-shiki-container {
+.sc-shiki-container {
     display: flex;
     border: 4px;
     background-color: var(--background-base-lower);
 }
 
-.vc-shiki-container:only-child {
+.sc-shiki-container:only-child {
     min-height: 100%;
 }
 
-.vc-shiki-root {
+.sc-shiki-root {
     flex: 1;
     border-radius: 4px;
 }
 
-.vc-shiki-root .vc-shiki-code {
+.sc-shiki-root .sc-shiki-code {
     display: block;
     overflow-x: auto;
     padding: 0.5em;
@@ -26,24 +26,24 @@
     border: none;
 }
 
-.vc-shiki-plain .vc-shiki-code {
+.sc-shiki-plain .sc-shiki-code {
     padding-top: 8px;
 }
 
-.vc-shiki-container:only-child .vc-shiki-root {
+.sc-shiki-container:only-child .sc-shiki-root {
     display: flex;
 }
 
-.vc-shiki-container:only-child .vc-shiki-code {
+.sc-shiki-container:only-child .sc-shiki-code {
     flex: 1;
 }
 
-.vc-shiki-devicon {
+.sc-shiki-devicon {
     margin-right: 8px;
     user-select: none;
 }
 
-.vc-shiki-btns {
+.sc-shiki-btns {
     font-size: 1em;
     position: absolute;
     right: 0;
@@ -51,25 +51,25 @@
     opacity: 0;
 }
 
-.vc-shiki-root:hover .vc-shiki-btns {
+.sc-shiki-root:hover .sc-shiki-btns {
     opacity: 1;
 }
 
-.vc-shiki-btn {
+.sc-shiki-btn {
     border-radius: 4px 4px 0 0;
     padding: 4px 8px;
     user-select: none;
 }
 
-.vc-shiki-btn ~ .vc-shiki-btn {
+.sc-shiki-btn ~ .sc-shiki-btn {
     margin-left: 4px;
 }
 
-.vc-shiki-btn:last-child {
+.sc-shiki-btn:last-child {
     border-radius: 4px 0;
 }
 
-.vc-shiki-spinner-container {
+.sc-shiki-spinner-container {
     align-items: center;
     background-color: rgb(0 0 0 / 60%);
     display: flex;
@@ -78,11 +78,11 @@
     inset: 0;
 }
 
-.vc-shiki-preview {
+.sc-shiki-preview {
     margin-bottom: 2em;
 }
 
-.vc-shiki-lang {
+.sc-shiki-lang {
     padding: 0 5px;
     margin-bottom: 6px;
     font-weight: bold;
@@ -91,17 +91,17 @@
     align-items: center;
 }
 
-.vc-shiki-table {
+.sc-shiki-table {
     border-collapse: collapse;
     width: 100%;
 }
 
-.vc-shiki-table-row {
+.sc-shiki-table-row {
     height: 19px;
     width: 100%;
 }
 
-.vc-shiki-root .vc-shiki-table-cell:first-child {
+.sc-shiki-root .sc-shiki-table-cell:first-child {
     border-right: 1px solid transparent;
     padding-left: 5px;
     padding-right: 8px;
@@ -109,7 +109,7 @@
     white-space: nowrap;
 }
 
-.vc-shiki-root .vc-shiki-table-cell:last-child {
+.sc-shiki-root .sc-shiki-table-cell:last-child {
     padding-left: 8px;
     overflow-wrap: anywhere;
     width: 100%;

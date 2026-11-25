@@ -12,7 +12,7 @@ import { DefinedSettings, PluginSettingDefCommon } from "@utils/types";
 import { useEffect, useState } from "@webpack/common";
 import { PropsWithChildren } from "react";
 
-export const cl = classNameFactory("vc-plugins-setting-");
+export const cl = classNameFactory("sc-plugins-setting-");
 
 interface SettingBaseProps<T> {
     setting: T;

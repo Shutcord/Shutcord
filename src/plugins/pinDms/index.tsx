@@ -267,13 +267,13 @@ export default definePlugin({
                 onContextMenu={e => {
                     ContextMenuApi.openContextMenu(e, () => (
                         <Menu.Menu
-                            navId="vc-pindms-header-menu"
+                            navId="sc-pindms-header-menu"
                             onClose={() => FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" })}
                             color="danger"
                             aria-label="Pin DMs Category Menu"
                         >
                             <Menu.MenuItem
-                                id="vc-pindms-edit-category"
+                                id="sc-pindms-edit-category"
                                 label="Edit Category"
                                 action={() => openCategoryModal(category.id, null)}
                             />
@@ -283,14 +283,14 @@ export default definePlugin({
                                     <>
                                         {
                                             canMoveCategoryInDirection(category.id, -1) && <Menu.MenuItem
-                                                id="vc-pindms-move-category-up"
+                                                id="sc-pindms-move-category-up"
                                                 label="Move Up"
                                                 action={() => moveCategory(category.id, -1)}
                                             />
                                         }
                                         {
                                             canMoveCategoryInDirection(category.id, 1) && <Menu.MenuItem
-                                                id="vc-pindms-move-category-down"
+                                                id="sc-pindms-move-category-down"
                                                 label="Move Down"
                                                 action={() => moveCategory(category.id, 1)}
                                             />
@@ -302,7 +302,7 @@ export default definePlugin({
 
                             <Menu.MenuSeparator />
                             <Menu.MenuItem
-                                id="vc-pindms-delete-category"
+                                id="sc-pindms-delete-category"
                                 color="danger"
                                 label="Delete Category"
                                 action={() => removeCategory(category.id)}
@@ -314,13 +314,13 @@ export default definePlugin({
                 }}
             >
                 <h2
-                    className={classes(headerClasses.privateChannelsHeaderContainer, "vc-pindms-section-container", category.collapsed ? "vc-pindms-collapsed" : "")}
+                    className={classes(headerClasses.privateChannelsHeaderContainer, "sc-pindms-section-container", category.collapsed ? "sc-pindms-collapsed" : "")}
                     style={{ color: `#${category.color.toString(16).padStart(6, "0")}` }}
                 >
                     <span className={headerClasses.headerText}>
                         {category?.name ?? "uh oh"}
                     </span>
-                    <svg className="vc-pindms-collapse-icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <svg className="sc-pindms-collapse-icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M9.3 5.3a1 1 0 0 0 0 1.4l5.29 5.3-5.3 5.3a1 1 0 1 0 1.42 1.4l6-6a1 1 0 0 0 0-1.4l-6-6a1 1 0 0 0-1.42 0Z"></path>
                     </svg>
                 </h2>

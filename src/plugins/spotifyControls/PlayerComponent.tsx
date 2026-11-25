@@ -33,7 +33,7 @@ import { settings } from ".";
 import { SeekBar } from "./SeekBar";
 import { SpotifyStore, Track } from "./SpotifyStore";
 
-const cl = classNameFactory("vc-spotify-");
+const cl = classNameFactory("sc-spotify-");
 
 function Svg(path: string, label: string) {
     return () => (
@@ -75,26 +75,26 @@ function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
 function CopyContextMenu({ name, type, path }: { type: string; name: string; path: string; }) {
     return (
         <Menu.Menu
-            navId="vc-spotify-menu"
+            navId="sc-spotify-menu"
             onClose={ContextMenuApi.closeContextMenu}
             aria-label={`Spotify ${type} Menu`}
         >
             <Menu.MenuItem
-                id="vc-spotify-copy-name"
+                id="sc-spotify-copy-name"
                 label={`Copy ${type} Name`}
                 action={() => copyWithToast(name)}
                 icon={CopyIcon}
                 leadingAccessory={{ type: "icon", icon: CopyIcon }}
             />
             <Menu.MenuItem
-                id="vc-spotify-copy-link"
+                id="sc-spotify-copy-link"
                 label={`Copy ${type} Link`}
                 action={() => copyWithToast("https://open.spotify.com" + path)}
                 icon={LinkIcon}
                 leadingAccessory={{ type: "icon", icon: LinkIcon }}
             />
             <Menu.MenuItem
-                id="vc-spotify-open"
+                id="sc-spotify-open"
                 label={`Open ${type} in Spotify`}
                 action={() => SpotifyStore.openExternal(path)}
                 icon={OpenExternalIcon}
@@ -379,7 +379,7 @@ export function Player() {
         return null;
 
     const exportTrackImageStyle = {
-        "--vc-spotify-track-image": `url(${track?.album?.image?.url || ""})`,
+        "--sc-spotify-track-image": `url(${track?.album?.image?.url || ""})`,
     } as React.CSSProperties;
 
     return (

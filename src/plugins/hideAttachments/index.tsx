@@ -89,7 +89,7 @@ export default definePlugin({
 
     renderMediaHidden(message: BasicMessage) {
         return (
-            <span className={classes("vc-hideAttachments-accessory", !message.content && "vc-hideAttachments-no-content")}>
+            <span className={classes("sc-hideAttachments-accessory", !message.content && "sc-hideAttachments-no-content")}>
                 Media Hidden
             </span>
         );

@@ -20,7 +20,7 @@ import { AuthenticationStore, Clickable, Constants, FluxDispatcher, GuildStore, 
 
 import { buildCloneItem, logger, settings } from ".";
 
-const cl = classNameFactory("vc-expressionManager-");
+const cl = classNameFactory("sc-expressionManager-");
 
 const loadCreateStickerModal = extractAndLoadChunksLazy(
     ["CREATE_STICKER_MODAL", "#{intl::STICKER_PICKER_CREATE_STICKER}"],
@@ -259,18 +259,18 @@ export function buildStickerLinkItems(sticker: StickerItem, ParentComponent = Me
     if (!settings.store.stickerCopyAndOpen) return null;
 
     return (
-        <ParentComponent key="vc-em-sticker-links">
+        <ParentComponent key="sc-em-sticker-links">
             <Menu.MenuItem
-                id="vc-copy-sticker-link"
-                key="vc-copy-sticker-link"
+                id="sc-copy-sticker-link"
+                key="sc-copy-sticker-link"
                 label="Copy Sticker Link"
                 leadingAccessory={{ type: "icon", icon: LinkIcon }}
                 action={() => copyWithToast(formatStickerURL(sticker, 512), "Link copied!")}
             />
 
             <Menu.MenuItem
-                id="vc-open-sticker-link"
-                key="vc-open-sticker-link"
+                id="sc-open-sticker-link"
+                key="sc-open-sticker-link"
                 label="Open Sticker Link"
                 leadingAccessory={{ type: "icon", icon: LinkIcon }}
                 trailingIndicator={{ type: "icon", icon: TopRightArrow }}

@@ -26,7 +26,7 @@ function LegacyHeading<T extends HeadingTag>(props: HeadingProps<T>) {
     } = props;
 
     return (
-        <Tag className={classes(`vc-${Tag}`, !className && `vc-${Tag}-defaultMargin`, className)} {...restProps}>
+        <Tag className={classes(`sc-${Tag}`, !className && `sc-${Tag}-defaultMargin`, className)} {...restProps}>
             {children}
         </Tag>
     );

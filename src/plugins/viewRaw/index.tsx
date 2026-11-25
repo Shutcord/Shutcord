@@ -123,11 +123,11 @@ function openViewRawModal(data: object, type: string, msgContent?: string) {
                 {!!msgContent && (
                     <>
                         <Heading className={Margins.bottom8}>Message Content</Heading>
-                        <CodeBlock className="vc-viewRaw-codeBlock" content={msgContent} lang="" />
+                        <CodeBlock className="sc-viewRaw-codeBlock" content={msgContent} lang="" />
                         <Heading className={classes(Margins.top16, Margins.bottom8)}>Message Data</Heading>
                     </>
                 )}
-                <CodeBlock className="vc-viewRaw-codeBlock" content={json} lang="json" />
+                <CodeBlock className="sc-viewRaw-codeBlock" content={json} lang="json" />
             </Modal>
         </ErrorBoundary >
     ));
@@ -176,7 +176,7 @@ function MakeContextCallback(name: "Guild" | "Role" | "User" | "Channel" | "Mess
         if (isMessage && !settings.store.messageContextMenu) return;
 
         // typescript parser goes crazy if this is inline
-        const id = `vc-view-${name.toLowerCase()}-raw`;
+        const id = `sc-view-${name.toLowerCase()}-raw`;
         const action = isMessage
             ? () => openViewRawModalMessage(value)
             : name === "User"
@@ -206,7 +206,7 @@ const devContextCallback: NavContextMenuPatchCallback = (children, { id }: { id:
 
     children.push(
         <Menu.MenuItem
-            id={"vc-view-role-raw"}
+            id={"sc-view-role-raw"}
             label="View Raw"
             action={() => openViewRawModal(role, "Role")}
             icon={CopyRawIcon}

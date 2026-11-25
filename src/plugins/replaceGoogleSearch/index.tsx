@@ -78,7 +78,7 @@ function makeSearchItem(src: string) {
             <Menu.MenuItem
                 label={`Search with ${name}`}
                 key="search-custom-engine"
-                id="vc-search-custom-engine"
+                id="sc-search-custom-engine"
                 action={() => search(src, Engines[name!])}
             />
         );
@@ -88,11 +88,11 @@ function makeSearchItem(src: string) {
         <Menu.MenuItem
             label="Search Text"
             key="search-text"
-            id="vc-search-text"
+            id="sc-search-text"
             leadingAccessory={{ type: "icon", icon: SearchIcon }}
         >
             {Object.keys(Engines).map(engine => {
-                const key = "vc-search-content-" + engine;
+                const key = "sc-search-content-" + engine;
                 return (
                     <Menu.MenuItem
                         key={key}

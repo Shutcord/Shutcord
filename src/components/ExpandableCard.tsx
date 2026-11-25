@@ -28,14 +28,14 @@ export function ExpandableSection({ children, renderContent: Content, className,
     const Icon = expanded ? DownArrow : RightArrow;
 
     return (
-        <Card data-expanded={expanded} className={classes("vc-expandable-card", className)}>
-            <Clickable className="vc-expandable-card-header" onClick={() => setExpanded(c => !c)} >
+        <Card data-expanded={expanded} className={classes("sc-expandable-card", className)}>
+            <Clickable className="sc-expandable-card-header" onClick={() => setExpanded(c => !c)} >
                 {children}
-                <Icon className="vc-expandable-card-icon" />
+                <Icon className="sc-expandable-card-icon" />
             </Clickable>
 
             {expanded
-                ? <div className="vc-expandable-card-content">
+                ? <div className="sc-expandable-card-content">
                     <Content />
                 </div>
                 : null

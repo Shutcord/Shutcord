@@ -28,6 +28,14 @@ Downloads: https://github.com/Shutcord/Shutcord/releases
 
 Issues and discussions: https://github.com/Shutcord/Shutcord
 
+## Sponsors
+
+Thank you to everyone who supports Shutcord. Perks are listed in [docs/SPONSORS.md](docs/SPONSORS.md).
+
+<!-- sponsors:start -->
+_Be the first. See the Sponsor button on this repo._
+<!-- sponsors:end -->
+
 ## Disclaimer
 
 Discord is trademark of Discord Inc. and solely mentioned for the sake of descriptivity.

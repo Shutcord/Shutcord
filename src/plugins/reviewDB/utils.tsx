@@ -23,7 +23,7 @@ import { showToast as originalShowToast, UserStore } from "@webpack/common";
 import { Auth } from "./auth";
 import { Review, UserType } from "./entities";
 
-export const cl = classNameFactory("vc-rdb-");
+export const cl = classNameFactory("sc-rdb-");
 
 export function canDeleteReview(profileId: string, review: Review) {
     const myId = UserStore.getCurrentUser().id;

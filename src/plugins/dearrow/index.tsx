@@ -97,7 +97,7 @@ function DearrowButton({ component }: { component: Component<Props>; }) {
                 <button
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
-                    className={"vc-dearrow-toggle-" + (embed.dearrow.enabled ? "on" : "off")}
+                    className={"sc-dearrow-toggle-" + (embed.dearrow.enabled ? "on" : "off")}
                     onClick={() => {
                         const { enabled, oldThumb, oldTitle } = embed.dearrow;
                         embed.dearrow.enabled = !enabled;
@@ -120,7 +120,7 @@ function DearrowButton({ component }: { component: Component<Props>; }) {
                         height="24px"
                         viewBox="0 0 36 36"
                         aria-label="Toggle Dearrow"
-                        className="vc-dearrow-icon"
+                        className="sc-dearrow-icon"
                     >
                         <path
                             fill="#1213BD"

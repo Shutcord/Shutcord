@@ -34,7 +34,7 @@ export interface MagnifierProps {
     instance: any;
 }
 
-const cl = classNameFactory("vc-imgzoom-");
+const cl = classNameFactory("sc-imgzoom-");
 
 export const Magnifier = ErrorBoundary.wrap<MagnifierProps>(({ instance, size: initialSize, zoom: initalZoom }) => {
     const [ready, setReady] = useState(false);

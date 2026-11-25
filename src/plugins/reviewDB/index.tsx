@@ -47,7 +47,7 @@ const guildPopoutPatch: NavContextMenuPatchCallback = (children, { guild }: { gu
     children.push(
         <Menu.MenuItem
             label="View Reviews"
-            id="vc-rdb-server-reviews"
+            id="sc-rdb-server-reviews"
             icon={OpenExternalIcon}
             leadingAccessory={{ type: "icon", icon: OpenExternalIcon }}
             action={() => openReviewsModal(guild.id, guild.name, ReviewType.Server)}
@@ -60,7 +60,7 @@ const userContextPatch: NavContextMenuPatchCallback = (children, { user }: { use
     children.push(
         <Menu.MenuItem
             label="View Reviews"
-            id="vc-rdb-user-reviews"
+            id="sc-rdb-user-reviews"
             icon={OpenExternalIcon}
             leadingAccessory={{ type: "icon", icon: OpenExternalIcon }}
             action={() => openReviewsModal(user.id, user.username, ReviewType.User)}

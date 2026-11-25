@@ -62,8 +62,8 @@ export const settings = definePluginSettings({
 export function buildCloneItem(type: string, action: () => void) {
     return (
         <Menu.MenuItem
-            id="vc-em-clone"
-            key="vc-em-clone"
+            id="sc-em-clone"
+            key="sc-em-clone"
             label={`Clone ${type}`}
             leadingAccessory={{ type: "icon", icon: PlusIcon }}
             action={action}
@@ -97,8 +97,8 @@ function buildManageExpressionItems(id: string, type: string) {
     return (
         <>
             <Menu.MenuItem
-                key="vc-em-edit"
-                id="vc-em-edit"
+                key="sc-em-edit"
+                id="sc-em-edit"
                 label={`Edit ${expressionName}`}
                 leadingAccessory={{ type: "icon", icon: PencilIcon }}
                 action={() => {
@@ -110,8 +110,8 @@ function buildManageExpressionItems(id: string, type: string) {
                 }}
             />
             <Menu.MenuItem
-                key="vc-em-delete"
-                id="vc-em-delete"
+                key="sc-em-delete"
+                id="sc-em-delete"
                 label={`Delete ${expressionName}`}
                 leadingAccessory={{ type: "icon", icon: DeleteIcon }}
                 color="danger"
@@ -180,8 +180,8 @@ function buildRemoveFrecentItem({ type, id, name }: Record<"type" | "id" | "name
 
     return (
         <Menu.MenuItem
-            id="vc-em-remove-frecent"
-            key="vc-em-remove-frecent"
+            id="sc-em-remove-frecent"
+            key="sc-em-remove-frecent"
             label="Remove From Recents"
             leadingAccessory={{ type: "icon", icon: HistoryIcon }}
             action={async e => {
@@ -233,7 +233,7 @@ const patchExpressionPickerMenu: NavContextMenuPatchCallback = (children, props:
 
     if (type === "emoji" && name) {
         children.push(
-            <Menu.MenuGroup key="vc-em-group">
+            <Menu.MenuGroup key="sc-em-group">
                 {buildCloneEmojiItem({ id, name })}
                 {buildManageExpressionItems(id, type)}
             </Menu.MenuGroup>
@@ -257,7 +257,7 @@ const patchExpressionPickerMenu: NavContextMenuPatchCallback = (children, props:
         }
 
         children.push(
-            <Menu.MenuGroup key="vc-em-manage">
+            <Menu.MenuGroup key="sc-em-manage">
                 {buildCloneStickerItem(sticker)}
                 {buildManageExpressionItems(id, type)}
             </Menu.MenuGroup>
@@ -280,7 +280,7 @@ const patchMessageContextMenu: NavContextMenuPatchCallback = (children, props: R
             if (container) {
                 container?.unshift(
                     buildCloneEmojiItem({ id: favoriteableId, name }),
-                    !favContainer ? <Menu.MenuSeparator key="vc-em-emoji-separator" /> : null,
+                    !favContainer ? <Menu.MenuSeparator key="sc-em-emoji-separator" /> : null,
                 );
             } else {
                 children.push(buildCloneEmojiItem({ id: favoriteableId, name }));
@@ -301,12 +301,12 @@ const patchMessageContextMenu: NavContextMenuPatchCallback = (children, props: R
 
                 if (settings.store.stickerCopyAndOpen)
                     favoriteContainer.push(
-                        <Menu.MenuSeparator key="vc-em-sticker-links-separator" />,
+                        <Menu.MenuSeparator key="sc-em-sticker-links-separator" />,
                         buildStickerLinkItems(sticker, React.Fragment),
                     );
             } else {
                 children.splice(-1, 0,
-                    <Menu.MenuGroup key="vc-em-clone-sticker-group">{cloneItem}</Menu.MenuGroup>,
+                    <Menu.MenuGroup key="sc-em-clone-sticker-group">{cloneItem}</Menu.MenuGroup>,
                     buildStickerLinkItems(sticker)
                 );
             }
@@ -318,8 +318,8 @@ const patchMessageContextMenu: NavContextMenuPatchCallback = (children, props: R
     if (mediaItem?.contentType?.startsWith("image/")) {
         findGroupChildrenByChildId("save-image", children)?.push(
             <Menu.MenuItem
-                key="vc-em-upload-as-emoji"
-                id="vc-em-upload-as-emoji"
+                key="sc-em-upload-as-emoji"
+                id="sc-em-upload-as-emoji"
                 label="Upload as Emoji"
                 leadingAccessory={{ type: "icon", icon: PlusIcon }}
                 action={() => openEmojiUploadModal(mediaItem.url)}
