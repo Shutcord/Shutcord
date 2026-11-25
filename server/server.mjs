@@ -258,6 +258,43 @@ async function pollGithub() {
     }
 }
 
+const userNames = () => Object.fromEntries(Object.entries(readJson(F.users)).map(([id, u]) => [id, u.name]));
+const out = d => ({ ...d, names: userNames() });
+
+function rememberUser(user) {
+    if (!user?.id) return;
+    const users = readJson(F.users);
+    users[user.id] = { name: String(user.global_name || user.username || "").slice(0, 40) };
+    writeJson(F.users, users);
+    return users[user.id];
+}
+
+async function discordBotJson(path) {
+    try {
+        const r = await fetch(DISCORD_API + path, { headers: { authorization: "Bot " + BOT_TOKEN } });
+        return r.ok ? await r.json() : null;
+    } catch { return null; }
+}
+
+/** Name for a Discord ID: from the file, else asked from Discord with the bot (best effort) */
+async function resolveUser(id) {
+    return readJson(F.users)[id] ?? (botReady() ? rememberUser(await discordBotJson("/users/" + id)) : undefined);
+}
+
+function storeBadgeImage(buf, prefix) {
+    const type = sniff(buf);
+    if (!type) return { error: "image must be png, jpg, gif or webp" };
+    if (buf.length > 512 * 1024) return { error: "image over 512 KB" };
+    const name = `${prefix}-${Date.now().toString(36)}.${type.ext}`;
+    writeFileSync(join(DATA, "badges", name), buf);
+    return { url: `${PUBLIC_URL}/badges/${name}` };
+}
+
+const dropBadgeFile = url => {
+    const f = join(DATA, "badges", String(url).split("/").pop());
+    if (String(url).startsWith(PUBLIC_URL) && existsSync(f)) unlinkSync(f);
+};
+
 const page = (res, title, bodyHtml) => html(res, `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>${title}</title>${STYLE}<main><h1>${title}</h1><div class=card>${bodyHtml}</div></main>`);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -348,7 +385,37 @@ const server = createServer(async (req, res) => {
                 }
             }
 
-            if (path === "/admin/api/data" && req.method === "GET") return send(res, 200, d);
+            if (path === "/admin/api/data" && req.method === "GET") return send(res, 200, out(d));
+
+            if (path === "/admin/api/lookup" && req.method === "GET") {
+                const q = (url.searchParams.get("q") || "").trim().slice(0, 50);
+                if (!q) return send(res, 200, []);
+                const found = new Map();
+                if (ID.test(q)) found.set(q, { id: q, name: (await resolveUser(q))?.name ?? null });
+                for (const [id, u] of Object.entries(readJson(F.users))) if (u.name && lc(u.name).includes(lc(q))) found.set(id, { id, name: u.name });
+                if (botReady() && !ID.test(q)) {
+                    const members = await discordBotJson(`/guilds/${GUILD_ID}/members/search?query=${encodeURIComponent(q)}&limit=10`);
+                    for (const m of Array.isArray(members) ? members : []) { const u = rememberUser(m.user); if (u) found.set(m.user.id, { id: m.user.id, name: u.name }); }
+                }
+                return send(res, 200, [...found.values()].slice(0, 15));
+            }
+
+            const pm = /^\/admin\/api\/(?:sponsor\/(\d+)\/badge|custom\/(\d+))\/(\d+)$/.exec(path);
+            if (pm && req.method === "PATCH") {
+                const id = pm[1] || pm[2];
+                const item = (pm[1] ? d.sponsors[id]?.badges : d.custom?.[id])?.[Number(pm[3])];
+                if (!item) return send(res, 404, { error: "badge not found" });
+                const b = await body(req, 3_000_000);
+                if (typeof b.tooltip === "string") item.tooltip = b.tooltip.slice(0, 60);
+                if (b.data) {
+                    const r = storeBadgeImage(Buffer.from(String(b.data), "base64"), (pm[1] ? "" : "c-") + id);
+                    if (r.error) return send(res, 400, { error: r.error });
+                    dropBadgeFile(item.badge);
+                    item.badge = r.url;
+                }
+                writeJson(F.sponsors, d);
+                return send(res, 200, out(d));
+            }
 
             if (path === "/admin/api/sponsor" && req.method === "POST") {
                 const b = await body(req);
@@ -360,7 +427,8 @@ const server = createServer(async (req, res) => {
                 const p = sponsorProblems(d);
                 if (p) return send(res, 400, { error: p });
                 writeJson(F.sponsors, d);
-                return send(res, 200, d);
+                await resolveUser(b.id);
+                return send(res, 200, out(d));
             }
 
             if (path === "/admin/api/badge" && req.method === "POST") {
@@ -377,7 +445,7 @@ const server = createServer(async (req, res) => {
                 writeFileSync(join(DATA, "badges", name), buf);
                 (s.badges ??= []).push({ tooltip: String(b.tooltip || tier.name).slice(0, 60), badge: `${PUBLIC_URL}/badges/${name}` });
                 writeJson(F.sponsors, d);
-                return send(res, 200, d);
+                return send(res, 200, out(d));
             }
 
             if (path === "/admin/api/custom" && req.method === "POST") {
@@ -393,7 +461,8 @@ const server = createServer(async (req, res) => {
                 writeFileSync(join(DATA, "badges", name), buf);
                 list.push({ tooltip: String(b.tooltip || "Shutcord").slice(0, 60), badge: `${PUBLIC_URL}/badges/${name}` });
                 writeJson(F.sponsors, d);
-                return send(res, 200, d);
+                await resolveUser(b.id);
+                return send(res, 200, out(d));
             }
 
             const cm = /^\/admin\/api\/custom\/(\d+)\/(\d+)$/.exec(path);
@@ -405,7 +474,7 @@ const server = createServer(async (req, res) => {
                 if (gone.badge.startsWith(PUBLIC_URL) && existsSync(f)) unlinkSync(f);
                 if (!list.length) delete d.custom[cm[1]];
                 writeJson(F.sponsors, d);
-                return send(res, 200, d);
+                return send(res, 200, out(d));
             }
 
             const dm = /^\/admin\/api\/sponsor\/(\d+)(?:\/badge\/(\d+))?$/.exec(path);
@@ -416,7 +485,7 @@ const server = createServer(async (req, res) => {
                 if (dm[2] !== undefined) { const [gone] = (s.badges ?? []).splice(Number(dm[2]), 1); if (gone) drop(gone.badge); }
                 else { (s.badges ?? []).forEach(x => drop(x.badge)); delete d.sponsors[dm[1]]; }
                 writeJson(F.sponsors, d);
-                return send(res, 200, d);
+                return send(res, 200, out(d));
             }
             return send(res, 404, { error: "no such admin route" });
         }
@@ -522,6 +591,7 @@ const ADMIN_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport conte
 <div id=app hidden>
 <div id=adminsCard class=card hidden><b>Admins</b> <small>(only you, the owner, can change this)</small><div id=admins></div><div class=row><input id=aid placeholder="Discord user ID" size=22><button id=aadd>Make admin</button></div></div>
 <div id=integCard class=card hidden><b>Discord roles and GitHub Sponsors</b> <small>(owner only)</small><div id=integ></div></div>
+<div class=card><b>Find a person</b> <small>(Discord username or user ID)</small><div class=row><input id=q placeholder="Search…" size=30></div><div id=results></div></div>
 <div class=card><b>Add or change a sponsor</b><div class=row><input id=id placeholder="Discord user ID" size=22><select id=tier></select><input id=gh placeholder="GitHub name (optional)"><button id=add>Save</button></div></div>
 <div class=card><b>Custom badges</b> <small>(for anyone: staff, testers, friends. Not tied to a tier, up to 10 each)</small>
 <div class=row><input id=cid placeholder="Discord user ID" size=22><input id=ctip placeholder="Tooltip, e.g. Staff" size=18><input id=cfile type=file accept="image/*"><button id=cadd>Add badge</button></div><div id=clist></div></div>
@@ -530,15 +600,29 @@ const ADMIN_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport conte
 const $=i=>document.getElementById(i);let D,ME;const msg=t=>$('msg').textContent=t||'';
 async function api(p,m='GET',b){const r=await fetch('/admin/api/'+p,{method:m,headers:{'content-type':'application/json','x-requested-with':'shutcord'},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.error||r.status);e.status=r.status;throw e}return j}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const nm=id=>D.names&&D.names[id]?D.names[id]:null;
+const who=id=>'<b>'+esc(nm(id)||id)+'</b>'+(nm(id)?' <small>'+esc(id)+'</small>':'');
+let Q='';const hit=(id,extra)=>!Q||(id+' '+(nm(id)||'')+' '+(extra||'')).toLowerCase().includes(Q);
+function badgeRow(b,base,paren){const r=document.createElement('div');r.className='row';const im=document.createElement('img');im.className='b';im.src=b.badge;
+const tt=document.createElement('input');tt.value=b.tooltip||'';tt.placeholder='tooltip';tt.size=16;const f=document.createElement('input');f.type='file';f.accept='image/*';f.title='Replace the image';
+const sv=document.createElement('button');sv.textContent='Save';sv.title='Save the tooltip and/or the new image';
+sv.onclick=()=>{const file=f.files[0];const go=data=>run(()=>api(base,'PATCH',{tooltip:tt.value,data}));if(!file)return go();const fr=new FileReader();fr.onload=()=>go(fr.result.split(',')[1]);fr.readAsDataURL(file)};
+const x=document.createElement('button');x.className='x';x.textContent='Remove';x.onclick=()=>confirm('Remove this badge?')&&run(()=>api(base,'DELETE'));r.append(im,tt,f,sv,x);return r}
 function draw(){$('app').hidden=false;$('tier').innerHTML=Object.entries(D.tiers).map(([k,t])=>'<option value='+k+'>'+esc(t.name)+' ($'+t.usd+', '+t.badges+' badges)</option>').join('');
-drawCustom();$('list').innerHTML='';for(const [id,s] of Object.entries(D.sponsors)){const t=D.tiers[s.tier]||{name:'?',badges:0};const c=document.createElement('div');c.className='card';
-c.innerHTML='<div class=row><b>'+esc(id)+'</b><small>'+esc(t.name)+(s.github?' · '+esc(s.github):'')+' · '+(s.badges||[]).length+'/'+t.badges+' badges</small></div><div class=row></div>';
-const r=c.lastChild;(s.badges||[]).forEach((b,i)=>{const im=document.createElement('img');im.className='b';im.src=b.badge;im.title=b.tooltip||'';const x=document.createElement('button');x.className='x';x.textContent='remove';x.onclick=()=>run(()=>api('sponsor/'+id+'/badge/'+i,'DELETE'));r.append(im,x)});
+drawCustom();$('list').innerHTML='';for(const [id,s] of Object.entries(D.sponsors)){if(!hit(id,(s.github||'')+' '+s.tier))continue;const t=D.tiers[s.tier]||{name:'?',badges:0};const c=document.createElement('div');c.className='card';
+c.innerHTML='<div class=row>'+who(id)+'<small>'+esc(t.name)+(s.github?' · '+esc(s.github):'')+' · '+(s.badges||[]).length+'/'+t.badges+' badges</small></div>';
+(s.badges||[]).forEach((b,i)=>c.append(badgeRow(b,'sponsor/'+id+'/badge/'+i)));
+const r=document.createElement('div');r.className='row';
 if((s.badges||[]).length<t.badges){const f=document.createElement('input');f.type='file';f.accept='image/*';const tt=document.createElement('input');tt.placeholder='tooltip';const u=document.createElement('button');u.textContent='Add badge';
 u.onclick=()=>{const file=f.files[0];if(!file)return msg('pick an image first');const fr=new FileReader();fr.onload=()=>run(()=>api('badge','POST',{id,tooltip:tt.value,data:fr.result.split(',')[1]}));fr.readAsDataURL(file)};r.append(f,tt,u)}
-const del=document.createElement('button');del.className='x';del.textContent='Remove sponsor';del.onclick=()=>confirm('Remove '+id+'?')&&run(()=>api('sponsor/'+id,'DELETE'));r.append(del);$('list').append(c)}}
-function drawCustom(){$('clist').innerHTML='';for(const [id,list] of Object.entries(D.custom||{})){const r=document.createElement('div');r.className='row';r.innerHTML='<b>'+esc(id)+'</b>';
-list.forEach((b,i)=>{const im=document.createElement('img');im.className='b';im.src=b.badge;im.title=b.tooltip||'';const x=document.createElement('button');x.className='x';x.textContent='remove';x.onclick=()=>run(()=>api('custom/'+id+'/'+i,'DELETE'));r.append(im,x)});$('clist').append(r)}}
+const del=document.createElement('button');del.className='x';del.textContent='Remove sponsor';del.onclick=()=>confirm('Remove '+id+'?')&&run(()=>api('sponsor/'+id,'DELETE'));r.append(del);c.append(r);$('list').append(c)}}
+function drawCustom(){$('clist').innerHTML='';for(const [id,list] of Object.entries(D.custom||{})){if(!hit(id))continue;const c=document.createElement('div');c.className='row';c.style.display='block';c.innerHTML='<div class=row>'+who(id)+'</div>';
+list.forEach((b,i)=>c.append(badgeRow(b,'custom/'+id+'/'+i)));$('clist').append(c)}}
+function showResults(list){const el=$('results');el.innerHTML='';if(!Q){return}if(!list.length){el.innerHTML='<small>No match. Search finds people who logged in here and (with the bot) members of your Discord server. Pasting a user ID always works.</small>';return}
+for(const u of list){const r=document.createElement('div');r.className='row';r.innerHTML=(u.name?'<b>'+esc(u.name)+'</b>':'<b>(unknown name)</b>')+' <small>'+esc(u.id)+'</small>';
+const a=document.createElement('button');a.className='x';a.textContent='Use for sponsor';a.onclick=()=>{$('id').value=u.id;$('id').scrollIntoView({block:'center'})};
+const b=document.createElement('button');b.className='x';b.textContent='Use for custom badge';b.onclick=()=>{$('cid').value=u.id;$('cid').scrollIntoView({block:'center'})};r.append(a,b);el.append(r)}}
+let qt;$('q').oninput=()=>{Q=$('q').value.trim().toLowerCase();if(D)draw();clearTimeout(qt);qt=setTimeout(async()=>{if(!Q)return showResults([]);try{showResults(await api('lookup?q='+encodeURIComponent($('q').value.trim())))}catch(e){msg(e.message)}},300)};
 function drawInteg(I){$('integCard').hidden=false;const el=$('integ');el.innerHTML='';
 const po=document.createElement('p');po.innerHTML='GitHub check: <b>'+(I.poll.configured?'on for '+esc(I.poll.account)+', every '+I.poll.every+' min':'off (set GITHUB_TOKEN and GITHUB_SPONSORED_ACCOUNT)')+'</b>'+(I.poll.last?'<br><small>Last run '+esc(I.poll.last.replace('T',' ').slice(0,16))+' UTC: '+(I.poll.ok?'ok':'FAILED')+' · '+esc(I.poll.message)+'</small>':'');if(I.poll.configured){const nb=document.createElement('button');nb.textContent='Check now';nb.onclick=async()=>{try{msg();await api('integration/poll','POST',{});drawInteg(await api('integration'))}catch(e){msg(e.message)}};po.append(' ',nb)}el.append(po);
 const st=document.createElement('p');st.innerHTML='Bot: <b>'+(I.botConfigured?'ready':'not set (DISCORD_BOT_TOKEN, DISCORD_GUILD_ID)')+'</b> · Webhook secret: <b>'+(I.webhookConfigured?'set':'not set (GITHUB_WEBHOOK_SECRET)')+'</b><br><small>GitHub webhook URL: '+esc(I.webhookUrl)+'<br>Link page for sponsors: '+esc(I.linkUrl)+'</small>';el.append(st);
