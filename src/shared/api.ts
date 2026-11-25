@@ -9,4 +9,4 @@
  * Leave empty to use sponsors.json from the GitHub repo instead.
  * Example: "https://api.example.com"
  */
-export const SHUTCORD_API = "";
+export const SHUTCORD_API = "https://shutcord.shut.wtf";
