@@ -28,7 +28,7 @@ const settings = definePluginSettings({
         description: "Accent color (hex). Grey by default; try #a78bfa, #60a5fa or #34d399",
         default: "#d4d4d8",
         onChange: applyVars,
-        isValid: v => HEX.test(v) || "Use a hex color like #d4d4d8"
+        isValid: (v: string) => HEX.test(v) || "Use a hex color like #d4d4d8"
     },
     radius: {
         type: OptionType.SLIDER,
@@ -43,7 +43,7 @@ const settings = definePluginSettings({
 export default definePlugin({
     name: "ShutcordTheme",
     description: "The Shutcord base theme: flat grey look, rounder popups, calmer settings. Turn it off to get plain Discord back",
-    tags: ["Appearance", "Shutcord"],
+    tags: ["Appearance", "Customisation"],
     authors: [Devs.Shutcord],
     enabledByDefault: true,
     settings,
