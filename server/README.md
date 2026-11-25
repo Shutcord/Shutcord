@@ -20,46 +20,17 @@ node server.mjs
 ```
 (On Linux/macOS use `export` instead of `set`.) Open `PUBLIC_URL/admin` and press "Log in with Discord". The account whose ID is `OWNER_ID` becomes the owner.
 
-## Automatic roles when someone sponsors
+## Discord roles
 
-When a sponsorship starts, changes or ends on GitHub, the server adds the person to your Discord server, gives the role for their tier, and updates `sponsors.json` (tier and badge limit) by itself. Cancelled sponsors lose the role and the tier (their custom badges stay).
+1. Create the tier roles (Supporter, Patron, Champion, Legend) in your Discord server and copy each role ID (Developer Mode, right click the role).
+2. Create a bot in your Discord application (Bot tab), copy its token into `DISCORD_BOT_TOKEN`, put your server's ID in `DISCORD_GUILD_ID`, and add the bot to your server with the **Manage Roles** permission. In the server's role list, drag the bot's role **above** the tier roles.
+3. Paste the four role IDs into the "Discord roles" card of the dashboard and press **Save roles**.
 
-Setup, once:
-1. **Discord server:** create roles Supporter, Patron, Champion, Legend. Copy each role ID (Developer Mode, right click the role).
-2. **Bot:** in your Discord application, open the **Bot** tab, create the bot, copy its token. Open OAuth2 > URL Generator, tick `bot`, give it **Manage Roles** and **Create Instant Invite**, open the generated link and add it to your server. In the server's role list, drag the bot's role **above** the four tier roles.
-3. **Server settings:** set `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID` (right click the server icon, Copy Server ID) and `GITHUB_WEBHOOK_SECRET` (any long random text), then restart. Open the dashboard and paste the four role IDs under "Discord roles and GitHub Sponsors", then Save.
-4. **GitHub:** in your Sponsors dashboard open Webhooks (or the repo/org Settings > Webhooks), add `PUBLIC_URL/webhooks/github`, content type `application/json`, the same secret, and tick **Sponsorships**.
-5. **Tell sponsors to link:** put `PUBLIC_URL/link` in your Sponsors welcome message ("Open this link to get your role"). They log in with Discord, which has to have their **GitHub linked in Discord Settings > Connections**. That connection is how the server knows a payment belongs to that Discord user.
+## Adding sponsors
 
-What happens: payment first or link first both work. If someone pays before linking, they get their role as soon as they open the link. The dashboard shows the last 30 events so you can see what happened and why something didn't.
-
-Tier by price: a payment gets the most expensive tier whose price is at or below what they paid ($7 gets Patron).
-
-Limits: GitHub sends no event when a **one-time** sponsorship runs out, so those never expire by themselves (remove them in the dashboard). If the join fails because the login expired, the person opens the link again. This was tested with a fake Discord and fake GitHub calls, not the real ones.
-
-## No webhook? Let the server check GitHub (works for personal accounts)
-
-GitHub only sends sponsorship webhooks for some accounts (a repository webhook has no Sponsorships event). Instead the server can ask GitHub for your active sponsors every few minutes and apply the same changes (new, upgrade, downgrade, cancel).
-
-1. Create a token: GitHub, Settings, Developer settings, Personal access tokens, **Tokens (classic)**, Generate new token. Tick **read:user** (and **read:org** if the sponsor page belongs to an organization). Copy it.
-2. Add to your `.env`:
-   ```
-   GITHUB_TOKEN=ghp_...
-   GITHUB_SPONSORED_ACCOUNT=shutted
-   SPONSOR_POLL_MINUTES=10
-   ```
-   `GITHUB_SPONSORED_ACCOUNT` is the user or organization that has the Sponsors page.
-3. Restart. The dashboard card shows "GitHub check: on", when it last ran and whether it worked, and has a **Check now** button.
-4. Sponsors still open `PUBLIC_URL/link` once so the server knows their Discord account.
-
-Roles arrive within a few minutes of a payment. It was tested against a fake GitHub, not the real API, so confirm it with a real $1 sponsor. If "Last run" says FAILED the message says why (for example Bad credentials, or a missing scope).
-
-## Simplest setup: add sponsors by hand, roles included
-
-You don't need the GitHub check or the `/link` page, and sponsors don't need GitHub linked to Discord. Just leave `GITHUB_TOKEN` out of your `.env`.
-1. Create the tier roles in your server, paste their IDs in the dashboard card and press **Save roles**.
-2. When someone sponsors, find them with the search box (or paste their Discord ID), pick their tier and press **Save**.
-3. If the bot is set up and the person is **in your Discord server**, it gives them the role for that tier and takes the other tier roles away. Changing the tier changes the role, and **Remove sponsor** removes it. (Someone who isn't in the server yet gets the badge but no role. Press Save again after they join.)
+Nothing is automatic and nobody needs a GitHub account linked to Discord.
+1. When someone sponsors, find them with the search box (or paste their Discord ID), pick their tier and press **Save**.
+2. If the bot is set up and the person is **in your Discord server**, it gives them the role for that tier and takes the other tier roles away. Changing the tier changes the role, and **Remove sponsor** removes it. (Someone who isn't in the server yet gets the badge but no role. Press Save again after they join.)
 
 ## Importing what you already have
 
@@ -97,8 +68,7 @@ Instead of setting variables by hand you can copy `.env.example` to `.env` (next
 | `PORT` | no | Default 8787 |
 | `DATA_DIR` | no | Where files are kept, default `server/data` |
 | `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET` | yes, for any login | From your Discord application (below). Without them nobody can log in |
-| `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID` | for auto roles | Bot token and your server's ID (see "Automatic roles") |
-| `GITHUB_WEBHOOK_SECRET` | for auto roles | A long random string you also paste into GitHub |
+| `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID` | for roles | Bot token and your server's ID (see "Discord roles") |
 | `PROFILES_SPONSORS_ONLY` | no | Set to `1` so only sponsors can style their profile |
 
 ## Make it reachable from the internet

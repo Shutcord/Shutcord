@@ -38,12 +38,7 @@ const CLIENT_SECRET = env.DISCORD_CLIENT_SECRET || "";
 const SPONSORS_ONLY = env.PROFILES_SPONSORS_ONLY === "1";
 const BOT_TOKEN = env.DISCORD_BOT_TOKEN || "";
 const GUILD_ID = env.DISCORD_GUILD_ID || "";
-const WEBHOOK_SECRET = env.GITHUB_WEBHOOK_SECRET || "";
 const IMPORT_URL = env.IMPORT_URL || "https://raw.githubusercontent.com/Shutcord/Shutcord/main/sponsors.json";
-const GITHUB_TOKEN = env.GITHUB_TOKEN || "";
-const GITHUB_ACCOUNT = env.GITHUB_SPONSORED_ACCOUNT || "";
-const GITHUB_GRAPHQL = env.GITHUB_GRAPHQL || "https://api.github.com/graphql";
-const POLL_MINUTES = Math.max(1, Number(env.SPONSOR_POLL_MINUTES || 10));
 const DISCORD_API = (env.DISCORD_API || "https://discord.com/api").replace(/\/$/, "");
 
 if (!/^\d{15,22}$/.test(OWNER_ID)) {
@@ -54,7 +49,7 @@ if (!env.DISCORD_CLIENT_ID || !env.DISCORD_CLIENT_SECRET)
     console.warn("DISCORD_CLIENT_ID / DISCORD_CLIENT_SECRET are not set: nobody can log in to the dashboard until you set them.");
 
 mkdirSync(join(DATA, "badges"), { recursive: true });
-const F = { sponsors: join(DATA, "sponsors.json"), profiles: join(DATA, "profiles.json"), admins: join(DATA, "admins.json"), integ: join(DATA, "integration.json"), links: join(DATA, "links.json"), spons: join(DATA, "sponsorships.json"), events: join(DATA, "events.json"), users: join(DATA, "users.json"), secret: join(DATA, "secret") };
+const F = { sponsors: join(DATA, "sponsors.json"), profiles: join(DATA, "profiles.json"), admins: join(DATA, "admins.json"), integ: join(DATA, "integration.json"), users: join(DATA, "users.json"), secret: join(DATA, "secret") };
 if (!existsSync(F.sponsors)) {
     const seed = join(here, "..", "sponsors.json");
     writeFileSync(F.sponsors, existsSync(seed) ? readFileSync(seed) : JSON.stringify({ tiers: {}, sponsors: {} }));
@@ -62,7 +57,7 @@ if (!existsSync(F.sponsors)) {
 if (!existsSync(F.profiles)) writeFileSync(F.profiles, "{}");
 if (!existsSync(F.admins)) writeFileSync(F.admins, "[]");
 if (!existsSync(F.users)) writeFileSync(F.users, "{}");
-for (const [k, v] of [["integ", "{\"tierRoles\":{}}"], ["links", "{}"], ["spons", "{}"], ["events", "[]"]]) if (!existsSync(F[k])) writeFileSync(F[k], v);
+if (!existsSync(F.integ)) writeFileSync(F.integ, "{\"tierRoles\":{}}");
 if (!existsSync(F.secret)) writeFileSync(F.secret, randomBytes(32).toString("hex"));
 const SECRET = readFileSync(F.secret, "utf8").trim();
 
@@ -130,140 +125,26 @@ const html = (res, page) => send(res, 200, page, { "content-type": "text/html; c
 const roleOf = id => id === OWNER_ID ? "owner" : readJson(F.admins).includes(id) ? "admin" : null;
 const userName = id => readJson(F.users)[id]?.name;
 
-// ---------- GitHub Sponsors -> Discord ----------
+// ---------- Discord roles ----------
 const botReady = () => !!(BOT_TOKEN && GUILD_ID);
 const lc = s => String(s || "").toLowerCase();
-
-function logEvent(text) {
-    const ev = readJson(F.events);
-    ev.unshift({ at: new Date().toISOString(), text });
-    writeJson(F.events, ev.slice(0, 100));
-}
 
 async function discordBot(method, path, json) {
     const r = await fetch(DISCORD_API + path, { method, headers: { authorization: "Bot " + BOT_TOKEN, "content-type": "application/json" }, body: json ? JSON.stringify(json) : undefined });
     return r.status;
 }
 
-function tierForPrice(d, usd) {
-    let best = null;
-    for (const [k, tier] of Object.entries(d.tiers)) if (tier.usd <= usd && (!best || tier.usd > d.tiers[best].usd)) best = k;
-    return best;
-}
-
-/** Sets the sponsor entry in sponsors.json and the Discord roles to match `tierKey` (null = not a sponsor any more) */
-async function applyTier(discordId, github, tierKey, accessToken) {
-    const d = readJson(F.sponsors);
-    if (tierKey && d.tiers[tierKey]) {
-        const s = d.sponsors[discordId] ??= { tier: tierKey };
-        s.tier = tierKey; s.github = github;
-        const limit = d.tiers[tierKey].badges;
-        for (const gone of (s.badges ?? []).splice(limit)) {
-            const f = join(DATA, "badges", gone.badge.split("/").pop());
-            if (gone.badge.startsWith(PUBLIC_URL) && existsSync(f)) unlinkSync(f);
-        }
-    } else delete d.sponsors[discordId];
-    writeJson(F.sponsors, d);
-
-    if (!botReady()) return;
-    const roles = readJson(F.integ).tierRoles;
-    const want = tierKey && roles[tierKey];
-    if (want && accessToken) {
-        const st = await discordBot("PUT", `/guilds/${GUILD_ID}/members/${discordId}`, { access_token: accessToken, roles: [want] });
-        if (st >= 300) logEvent(`Could not add ${discordId} to the server (HTTP ${st}). Is the bot in the server with Create Invite / Manage Roles?`);
-    }
-    await syncRoles(discordId, tierKey);
-}
-
-/** Gives the member the role of `tierKey` and takes the other tier roles away (null = take all away) */
+/** Gives the member the role of `tierKey` and takes the other tier roles away (null = take all away). Returns a problem text or null */
 async function syncRoles(discordId, tierKey) {
-    if (!botReady()) return;
+    if (!botReady()) return null;
     const roles = readJson(F.integ).tierRoles;
+    let problem = null;
     for (const [k, id] of Object.entries(roles)) {
         if (!id) continue;
         const st = await discordBot(k === tierKey ? "PUT" : "DELETE", `/guilds/${GUILD_ID}/members/${discordId}/roles/${id}`);
-        if (k === tierKey && st >= 300) logEvent(`Could not give role ${k} to ${discordId} (HTTP ${st}). Are they in your server, and is the bot's role above the tier roles?`);
+        if (k === tierKey && st >= 300) problem = st === 404 ? "they are not in your Discord server yet" : `Discord refused (HTTP ${st}): is the bot's role above the tier roles?`;
     }
-}
-
-async function reconcile(login, accessToken) {
-    const sp = readJson(F.spons)[login];
-    const link = readJson(F.links)[login];
-    if (!link) return "waiting";
-    const tier = sp?.active ? sp.tier : null;
-    await applyTier(link.id, login, tier, accessToken);
-    logEvent(`${login} (${link.id}): ${tier ? "now " + tier : "no active sponsorship, perks removed"}`);
-    return tier ? "active" : "none";
-}
-
-async function onSponsorship(payload) {
-    const login = lc(payload.sponsorship?.sponsor?.login);
-    if (!login) return;
-    const price = Number(payload.sponsorship?.tier?.monthly_price_in_dollars ?? 0);
-    const all = readJson(F.spons);
-    const d = readJson(F.sponsors);
-    const action = payload.action;
-    const cur = all[login] ?? {};
-    if (action === "cancelled") all[login] = { ...cur, active: false };
-    else if (["created", "edited", "tier_changed"].includes(action)) all[login] = { usd: price, tier: tierForPrice(d, price), active: true, oneTime: !!payload.sponsorship?.tier?.is_one_time };
-    else { logEvent(`${login}: ${action} (nothing to do until it takes effect)`); return; }
-    writeJson(F.spons, all);
-    logEvent(`GitHub: ${login} ${action}${all[login].active ? ` ($${price} -> ${all[login].tier ?? "no matching tier"})` : ""}`);
-    const r = await reconcile(login);
-    if (r === "waiting") logEvent(`${login} has not linked Discord yet. Send them ${PUBLIC_URL}/link`);
-}
-
-// Asks GitHub for the current sponsors of GITHUB_SPONSORED_ACCOUNT and applies the differences
-const poll = { last: null, ok: null, message: "never run", running: false };
-const pollConfigured = () => !!(GITHUB_TOKEN && GITHUB_ACCOUNT);
-
-async function fetchActiveSponsors() {
-    const query = `query($owner:String!,$after:String){repositoryOwner(login:$owner){... on Sponsorable{sponsorshipsAsMaintainer(first:100,after:$after,activeOnly:true,includePrivate:true){pageInfo{hasNextPage endCursor}nodes{isOneTimePayment tier{monthlyPriceInDollars}sponsorEntity{... on User{login} ... on Organization{login}}}}}}}`;
-    const out = {};
-    let after = null;
-    for (let i = 0; i < 20; i++) {
-        const r = await fetch(GITHUB_GRAPHQL, { method: "POST", headers: { authorization: "Bearer " + GITHUB_TOKEN, "content-type": "application/json", "user-agent": "shutcord-server" }, body: JSON.stringify({ query, variables: { owner: GITHUB_ACCOUNT, after } }) });
-        const j = await r.json();
-        if (!r.ok || j.errors) throw new Error(j.message || j.errors?.[0]?.message || "HTTP " + r.status);
-        const conn = j.data?.repositoryOwner?.sponsorshipsAsMaintainer;
-        if (!conn) throw new Error(`GitHub account "${GITHUB_ACCOUNT}" not found or has no sponsors listing`);
-        for (const n of conn.nodes) {
-            const login = lc(n.sponsorEntity?.login);
-            if (login) out[login] = { usd: Number(n.tier?.monthlyPriceInDollars ?? 0), oneTime: !!n.isOneTimePayment };
-        }
-        if (!conn.pageInfo.hasNextPage) break;
-        after = conn.pageInfo.endCursor;
-    }
-    return out;
-}
-
-async function pollGithub() {
-    if (!pollConfigured() || poll.running) return;
-    poll.running = true;
-    try {
-        const active = await fetchActiveSponsors();
-        const known = readJson(F.spons);
-        const d = readJson(F.sponsors);
-        let changes = 0;
-        for (const [login, s] of Object.entries(active)) {
-            const tier = tierForPrice(d, s.usd);
-            const cur = known[login];
-            if (cur?.active && cur.tier === tier && cur.usd === s.usd) continue;
-            await onSponsorship({ action: cur?.active ? "tier_changed" : "created", sponsorship: { sponsor: { login }, tier: { monthly_price_in_dollars: s.usd, is_one_time: s.oneTime } } });
-            changes++;
-        }
-        for (const [login, cur] of Object.entries(known)) {
-            if (!cur.active || active[login]) continue;
-            await onSponsorship({ action: "cancelled", sponsorship: { sponsor: { login }, tier: { monthly_price_in_dollars: 0 } } });
-            changes++;
-        }
-        poll.ok = true; poll.message = `${Object.keys(active).length} active sponsor(s), ${changes} change(s)`;
-    } catch (e) {
-        poll.ok = false; poll.message = String(e.message || e).slice(0, 200);
-        logEvent("GitHub check failed: " + poll.message);
-    } finally {
-        poll.last = new Date().toISOString(); poll.running = false;
-    }
+    return problem;
 }
 
 const userNames = () => Object.fromEntries(Object.entries(readJson(F.users)).map(([id, u]) => [id, u.name]));
@@ -304,17 +185,6 @@ const dropBadgeFile = url => {
     if (String(url).startsWith(PUBLIC_URL) && existsSync(f)) unlinkSync(f);
 };
 
-const page = (res, title, bodyHtml) => html(res, `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>${title}</title>${STYLE}<main><h1>${title}</h1><div class=card>${bodyHtml}</div></main>`);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-function rawBody(req, limit = 1_000_000) {
-    return new Promise((res, rej) => {
-        const chunks = []; let n = 0;
-        req.on("data", c => { n += c.length; if (n > limit) { rej(Object.assign(new Error("too large"), { status: 413 })); req.destroy(); } else chunks.push(c); });
-        req.on("end", () => res(Buffer.concat(chunks)));
-    });
-}
-
 // ---------- routes ----------
 const server = createServer(async (req, res) => {
     try {
@@ -351,17 +221,10 @@ const server = createServer(async (req, res) => {
             if (req.method !== "GET" && req.headers["x-requested-with"] !== "shutcord") return send(res, 403, { error: "missing header" });
             const d = readJson(F.sponsors);
 
-            if (path === "/admin/api/integration/poll" && req.method === "POST") {
-                if (role !== "owner") return send(res, 403, { error: "only the owner changes this" });
-                if (!pollConfigured()) return send(res, 400, { error: "Set GITHUB_TOKEN and GITHUB_SPONSORED_ACCOUNT first" });
-                await pollGithub();
-                return send(res, 200, { ...poll });
-            }
-
             if (path === "/admin/api/integration") {
                 if (role !== "owner") return send(res, 403, { error: "only the owner changes this" });
                 const cfg = readJson(F.integ);
-                const view = () => ({ botConfigured: botReady(), webhookConfigured: !!WEBHOOK_SECRET, poll: { configured: pollConfigured(), account: GITHUB_ACCOUNT, every: POLL_MINUTES, ...poll }, webhookUrl: PUBLIC_URL + "/webhooks/github", linkUrl: PUBLIC_URL + "/link", tierRoles: cfg.tierRoles, events: readJson(F.events).slice(0, 30) });
+                const view = () => ({ botConfigured: botReady(), tierRoles: cfg.tierRoles });
                 if (req.method === "GET") return send(res, 200, view());
                 if (req.method === "POST") {
                     const b = await body(req, 5000);
@@ -457,8 +320,8 @@ const server = createServer(async (req, res) => {
                 if (p) return send(res, 400, { error: p });
                 writeJson(F.sponsors, d);
                 await resolveUser(b.id);
-                await syncRoles(b.id, b.tier);
-                return send(res, 200, out(d));
+                const problem = await syncRoles(b.id, b.tier);
+                return send(res, 200, { ...out(d), note: problem ? `Saved, but the role was not given: ${problem}.` : undefined });
             }
 
             if (path === "/admin/api/badge" && req.method === "POST") {
@@ -520,27 +383,6 @@ const server = createServer(async (req, res) => {
             return send(res, 404, { error: "no such admin route" });
         }
 
-        // GitHub Sponsors webhook
-        if (path === "/webhooks/github" && req.method === "POST") {
-            if (!WEBHOOK_SECRET) return send(res, 503, { error: "GITHUB_WEBHOOK_SECRET not set" });
-            const raw = await rawBody(req);
-            const sig = req.headers["x-hub-signature-256"] || "";
-            if (!safeEq(sig, "sha256=" + createHmac("sha256", WEBHOOK_SECRET).update(raw).digest("hex"))) return send(res, 401, { error: "bad signature" });
-            const ev = req.headers["x-github-event"];
-            if (ev === "ping") return send(res, 200, { ok: true });
-            if (ev !== "sponsorship") return send(res, 200, { ignored: ev });
-            await onSponsorship(JSON.parse(raw.toString()));
-            return send(res, 200, { ok: true });
-        }
-
-        // sponsor links Discord + GitHub and joins the server
-        if (path === "/link") {
-            if (!CLIENT_ID) return send(res, 503, "Not configured.", { "content-type": "text/plain" });
-            const state = randomBytes(16).toString("hex");
-            const q = new URLSearchParams({ client_id: CLIENT_ID, redirect_uri: PUBLIC_URL + "/callback", response_type: "code", scope: "identify connections guilds.join", state });
-            return send(res, 302, "", { location: "https://discord.com/oauth2/authorize?" + q, "set-cookie": [`sc_state=${state}; HttpOnly; Path=/; Max-Age=600; SameSite=Lax`, "sc_next=link; HttpOnly; Path=/; Max-Age=600; SameSite=Lax"] });
-        }
-
         // profile login (Discord OAuth2, scope identify only)
         if (path === "/login") {
             if (!CLIENT_ID) return send(res, 503, "Profile login is not configured (DISCORD_CLIENT_ID).", { "content-type": "text/plain" });
@@ -559,26 +401,8 @@ const server = createServer(async (req, res) => {
             }).then(r => r.json());
             if (!tok.access_token) return send(res, 400, "Discord refused the login.", { "content-type": "text/plain" });
             const me = await fetch(DISCORD_API + "/users/@me", { headers: { authorization: "Bearer " + tok.access_token } }).then(r => r.json());
-            if (/(?:^|;\s*)sc_next=link/.test(req.headers.cookie || "")) {
-                if (!ID.test(me.id || "")) return page(res, "Shutcord", "Could not read your Discord ID.");
-                const conns = await fetch(DISCORD_API + "/users/@me/connections", { headers: { authorization: "Bearer " + tok.access_token } }).then(r => r.json());
-                const gh = Array.isArray(conns) ? conns.find(c => c.type === "github" && c.verified !== false) : null;
-                if (!gh) return page(res, "Link your GitHub", "Your Discord account has no GitHub connection. In Discord go to <b>Settings > Connections</b>, add GitHub, then open this link again.");
-                const login = lc(gh.name);
-                const links = readJson(F.links);
-                links[login] = { id: me.id, at: Date.now() };
-                writeJson(F.links, links);
-                logEvent(`${login} linked Discord ${me.id}`);
-                const sp = readJson(F.spons)[login];
-                if (!sp?.active) return page(res, "Linked", `Linked GitHub <b>${esc(login)}</b> to your Discord. We don't see an active sponsorship yet. If you just paid, wait a minute and open this link again.`);
-                const users = readJson(F.users); users[me.id] = { name: String(me.global_name || me.username || "").slice(0, 40) }; writeJson(F.users, users);
-                await reconcile(login, tok.access_token);
-                return page(res, "Thank you!", `Linked <b>${esc(login)}</b>. You've been added to the server with your sponsor role, and your badge perks are on. Message the owner to get your badge image set up.`);
-            }
             if (!ID.test(me.id || "")) return send(res, 400, "Could not read your Discord ID.", { "content-type": "text/plain" });
-            const users = readJson(F.users);
-            users[me.id] = { name: String(me.global_name || me.username || "").slice(0, 40) };
-            writeJson(F.users, users);
+            rememberUser(me);
             return send(res, 302, "", { location: state_next(req), "set-cookie": `sc_session=${makeSession(me.id)}; HttpOnly; Path=/; Max-Age=2592000; SameSite=Lax${PUBLIC_URL.startsWith("https") ? "; Secure" : ""}` });
         }
         if (path === "/logout") return send(res, 302, "", { location: "/me", "set-cookie": "sc_session=; Path=/; Max-Age=0" });
@@ -620,10 +444,10 @@ const ADMIN_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport conte
 <h1>Shutcord dashboard</h1><div id=top class=card>Loading…</div><div id=msg></div>
 <div id=app hidden>
 <div id=adminsCard class=card hidden><b>Admins</b> <small>(only you, the owner, can change this)</small><div id=admins></div><div class=row><input id=aid placeholder="Discord user ID" size=22><button id=aadd>Make admin</button></div></div>
-<div id=integCard class=card hidden><b>Discord roles and GitHub Sponsors</b> <small>(owner only)</small><div id=integ></div></div>
+<div id=integCard class=card hidden><b>Discord roles</b> <small>(owner only. Given automatically when you add a sponsor)</small><div id=integ></div></div>
 <div class=card><b>Import</b> <small>(copies sponsors and badges that are in the GitHub file but not here yet; nothing is overwritten)</small><div class=row><button id=imp>Import from GitHub file</button><span id=impmsg></span></div></div>
 <div class=card><b>Find a person</b> <small>(Discord username or user ID)</small><div class=row><input id=q placeholder="Search…" size=30></div><div id=results></div></div>
-<div class=card><b>Add or change a sponsor</b><div class=row><input id=id placeholder="Discord user ID" size=22><select id=tier></select><input id=gh placeholder="GitHub name (optional)"><button id=add>Save</button></div></div>
+<div class=card><b>Add or change a sponsor</b><div class=row><input id=id placeholder="Discord user ID" size=22><select id=tier></select><button id=add>Save</button></div></div>
 <div class=card><b>Custom badges</b> <small>(for anyone: staff, testers, friends. Not tied to a tier, up to 10 each)</small>
 <div class=row><input id=cid placeholder="Discord user ID" size=22><input id=ctip placeholder="Tooltip, e.g. Staff" size=18><input id=cfile type=file accept="image/*"><button id=cadd>Add badge</button></div><div id=clist></div></div>
 <div id=list></div></div>
@@ -655,11 +479,9 @@ const a=document.createElement('button');a.className='x';a.textContent='Use for 
 const b=document.createElement('button');b.className='x';b.textContent='Use for custom badge';b.onclick=()=>{$('cid').value=u.id;$('cid').scrollIntoView({block:'center'})};r.append(a,b);el.append(r)}}
 let qt;$('q').oninput=()=>{Q=$('q').value.trim().toLowerCase();MATCH=new Set();if(D)draw();clearTimeout(qt);qt=setTimeout(async()=>{if(!Q)return showResults([]);try{showResults(await api('lookup?q='+encodeURIComponent($('q').value.trim())))}catch(e){msg(e.message)}},300)};
 function drawInteg(I){$('integCard').hidden=false;const el=$('integ');el.innerHTML='';
-const po=document.createElement('p');po.innerHTML='GitHub check: <b>'+(I.poll.configured?'on for '+esc(I.poll.account)+', every '+I.poll.every+' min':'off (optional)')+'</b>'+(I.poll.last?'<br><small>Last run '+esc(I.poll.last.replace('T',' ').slice(0,16))+' UTC: '+(I.poll.ok?'ok':'FAILED')+' · '+esc(I.poll.message)+'</small>':'');if(I.poll.configured){const nb=document.createElement('button');nb.textContent='Check now';nb.onclick=async()=>{try{msg();await api('integration/poll','POST',{});drawInteg(await api('integration'))}catch(e){msg(e.message)}};po.append(' ',nb)}el.append(po);
-const st=document.createElement('p');st.innerHTML='Bot: <b>'+(I.botConfigured?'ready':'not set (DISCORD_BOT_TOKEN, DISCORD_GUILD_ID)')+'</b>'+(I.webhookConfigured?' · Webhook secret: <b>set</b>':'')+'<br><small>Optional automatic sign-up page for sponsors (needs GitHub linked in their Discord): '+esc(I.linkUrl)+'</small>';el.append(st);
+const st=document.createElement('p');st.innerHTML='Bot: <b>'+(I.botConfigured?'ready':'not set up, so no roles are given')+'</b>';el.append(st);
 const inputs={};for(const [k,t] of Object.entries(D.tiers)){const r=document.createElement('div');r.className='row';r.innerHTML='<b style="width:110px">'+esc(t.name)+'</b>';const i=document.createElement('input');i.placeholder='Discord role ID';i.size=22;i.value=I.tierRoles[k]||'';inputs[k]=i;r.append(i);el.append(r)}
-const b=document.createElement('button');b.textContent='Save roles';b.onclick=async()=>{try{msg();const tr={};for(const k in inputs)tr[k]=inputs[k].value.trim();drawInteg(await api('integration','POST',{tierRoles:tr}))}catch(e){msg(e.message)}};el.append(b);
-const ev=document.createElement('div');ev.innerHTML='<p><b>Recent events</b></p>'+(I.events.length?I.events.map(e=>'<div><small>'+esc(e.at.replace('T',' ').slice(0,16))+' · '+esc(e.text)+'</small></div>').join(''):'<small>Nothing yet.</small>');el.append(ev)}
+const b=document.createElement('button');b.textContent='Save roles';b.onclick=async()=>{try{msg();const tr={};for(const k in inputs)tr[k]=inputs[k].value.trim();drawInteg(await api('integration','POST',{tierRoles:tr}))}catch(e){msg(e.message)}};el.append(b)}
 function drawAdmins(A){$('adminsCard').hidden=false;$('admins').innerHTML='';const row=(p,owner)=>{const d=document.createElement('div');d.className='row';d.innerHTML='<b>'+esc(p.name||'(not logged in yet)')+'</b><small>'+esc(p.id)+(owner?' · owner':'')+'</small>';
 if(!owner){const x=document.createElement('button');x.className='x';x.textContent='remove';x.onclick=()=>runA(()=>api('admins','DELETE',{id:p.id}));d.append(x)}$('admins').append(d)};row(A.owner,true);A.admins.forEach(a=>row(a,false))}
 async function run(f){try{msg();D=await f();draw()}catch(e){msg(e.message)}}
@@ -670,7 +492,7 @@ $('top').innerHTML='Logged in as <b>'+esc(ME.name||ME.id)+'</b> <small>('+ME.rol
 D=await api('data');draw();if(ME.role==='owner'){drawAdmins(await api('admins'));drawInteg(await api('integration'));$('aadd').onclick=()=>runA(()=>api('admins','POST',{id:$('aid').value.trim()}))}
 $('cadd').onclick=()=>{const file=$('cfile').files[0];if(!file)return msg('pick an image first');const fr=new FileReader();fr.onload=()=>run(()=>api('custom','POST',{id:$('cid').value.trim(),tooltip:$('ctip').value,data:fr.result.split(',')[1]}));fr.readAsDataURL(file)};
 $('imp').onclick=async()=>{try{msg();D=await api('import','POST',{});$('impmsg').textContent='Added '+D.imported.added+', skipped '+D.imported.skipped+' (already here or invalid).';draw()}catch(e){msg(e.message)}};
-$('add').onclick=()=>run(()=>api('sponsor','POST',{id:$('id').value.trim(),tier:$('tier').value,github:$('gh').value.trim()}))})();
+$('add').onclick=async()=>{try{msg();D=await api('sponsor','POST',{id:$('id').value.trim(),tier:$('tier').value});draw();if(D.note)msg(D.note)}catch(e){msg(e.message)}}})();
 </script></main>`;
 
 const ME_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Shutcord profile</title>${STYLE}<main>
@@ -684,11 +506,4 @@ const save=b=>fetch('/me/profile',{method:'PUT',headers:{'content-type':'applica
 document.getElementById('s').onclick=()=>save({color:c.value,accent:a.value,banner:b.value.trim()});document.getElementById('n').onclick=()=>save({});});
 </script></main>`;
 
-server.listen(PORT, () => {
-    console.log(`Shutcord API on ${PUBLIC_URL} (port ${PORT}). Admin: ${PUBLIC_URL}/admin`);
-    if (pollConfigured()) {
-        console.log(`Checking GitHub sponsors of ${GITHUB_ACCOUNT} every ${POLL_MINUTES} minutes.`);
-        setTimeout(pollGithub, 5000);
-        setInterval(pollGithub, POLL_MINUTES * 60_000);
-    }
-});
+server.listen(PORT, () => console.log(`Shutcord API on ${PUBLIC_URL} (port ${PORT}). Admin: ${PUBLIC_URL}/admin`));
