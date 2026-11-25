@@ -67,7 +67,7 @@ const listener: MessageSendListener = async (channelId, msg) => {
     for (const part of parts.slice(0, -1))
         await sendMessage(channelId, { content: part });
 
-    msg.content = parts[parts.length - 1];
+    msg.content = parts.at(-1)!;
 };
 
 export default definePlugin({

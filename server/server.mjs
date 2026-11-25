@@ -11,7 +11,7 @@
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -28,7 +28,7 @@ for (const f of [process.env.ENV_FILE, join(here, ".env"), join(here, "..", ".en
     console.log("Loaded settings from " + f);
     break;
 }
-const env = process.env;
+const { env } = process;
 const PORT = Number(env.PORT || 8787);
 const DATA = env.DATA_DIR || join(here, "data");
 const PUBLIC_URL = (env.PUBLIC_URL || `http://localhost:${PORT}`).replace(/\/$/, "");

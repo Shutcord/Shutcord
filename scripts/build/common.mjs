@@ -21,7 +21,7 @@
 import "../suppressExperimentalWarnings.js";
 import "../checkNodeVersion.js";
 
-import { exec, execSync } from "child_process";
+import { execSync } from "child_process";
 import esbuild, { build, context } from "esbuild";
 import { constants as FsConstants, readFileSync } from "fs";
 import { access, readdir, readFile } from "fs/promises";
@@ -29,7 +29,6 @@ import { minify as minifyHtml } from "html-minifier-terser";
 import { builtinModules } from "module";
 import { join, relative, resolve } from "path";
 import { optimize as optimizeSvg } from "svgo";
-import { promisify } from "util";
 
 import { getPluginTarget } from "../utils.mjs";
 
