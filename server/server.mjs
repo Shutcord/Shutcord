@@ -49,6 +49,7 @@ if (!env.DISCORD_CLIENT_ID || !env.DISCORD_CLIENT_SECRET)
     console.warn("DISCORD_CLIENT_ID / DISCORD_CLIENT_SECRET are not set: nobody can log in to the dashboard until you set them.");
 
 mkdirSync(join(DATA, "badges"), { recursive: true });
+const BANNER_HOSTS = ["cdn.discordapp.com", "media.discordapp.net", "i.imgur.com", "i.ibb.co"];
 const F = { sponsors: join(DATA, "sponsors.json"), profiles: join(DATA, "profiles.json"), admins: join(DATA, "admins.json"), integ: join(DATA, "integration.json"), users: join(DATA, "users.json"), secret: join(DATA, "secret") };
 if (!existsSync(F.sponsors)) {
     const seed = join(here, "..", "sponsors.json");
@@ -171,10 +172,10 @@ async function resolveUser(id) {
     return readJson(F.users)[id] ?? (botReady() ? rememberUser(await discordBotJson("/users/" + id)) : undefined);
 }
 
-function storeBadgeImage(buf, prefix) {
+function storeBadgeImage(buf, prefix, maxKb = 512) {
     const type = sniff(buf);
     if (!type) return { error: "image must be png, jpg, gif or webp" };
-    if (buf.length > 512 * 1024) return { error: "image over 512 KB" };
+    if (buf.length > maxKb * 1024) return { error: `image over ${maxKb} KB` };
     const name = `${prefix}-${Date.now().toString(36)}.${type.ext}`;
     writeFileSync(join(DATA, "badges", name), buf);
     return { url: `${PUBLIC_URL}/badges/${name}` };
@@ -195,6 +196,7 @@ const server = createServer(async (req, res) => {
 
         // public
         if (path === "/sponsors.json") return send(res, 200, readFileSync(F.sponsors), { "content-type": "application/json", "cache-control": "public, max-age=60" });
+        if (path === "/profiles.json") return send(res, 200, readFileSync(F.profiles), { "content-type": "application/json", "cache-control": "public, max-age=60" });
         if (path === "/profiles") {
             const ids = (url.searchParams.get("ids") || "").split(",").filter(i => ID.test(i)).slice(0, 100);
             const all = readJson(F.profiles), out = {};
@@ -419,13 +421,29 @@ const server = createServer(async (req, res) => {
                 for (const k of ["color", "accent"]) if (b[k]) { if (!HEX.test(b[k])) return send(res, 400, { error: `${k} must look like #aabbcc` }); p[k] = b[k].toLowerCase(); }
                 if (b.banner) {
                     let u; try { u = new URL(b.banner); } catch { return send(res, 400, { error: "banner must be a link" }); }
-                    if (u.protocol !== "https:" || b.banner.length > 300) return send(res, 400, { error: "banner must be an https link under 300 characters" });
+                    if (u.protocol !== "https:" || b.banner.length > 600) return send(res, 400, { error: "banner must be an https link under 600 characters" });
+                    if (!BANNER_HOSTS.includes(u.hostname) && u.origin !== new URL(PUBLIC_URL).origin) return send(res, 400, { error: "use the upload button, or a link from " + BANNER_HOSTS.join(", ") });
                     p.banner = b.banner;
                 }
+                if (all[id]?.banner && all[id].banner !== p.banner) dropBadgeFile(all[id].banner);
                 if (Object.keys(p).length) all[id] = p; else delete all[id];
                 writeJson(F.profiles, all);
                 return send(res, 200, { id, profile: all[id] ?? {} });
             }
+        }
+        if (path === "/me/banner" && req.method === "POST") {
+            const id = readSession(req);
+            if (!id) return send(res, 401, { error: "not logged in" });
+            if (req.headers["x-requested-with"] !== "shutcord") return send(res, 403, { error: "missing header" });
+            if (SPONSORS_ONLY && !readJson(F.sponsors).sponsors[id]) return send(res, 403, { error: "profile styling is for sponsors" });
+            const b = await body(req, 3_500_000);
+            const r = storeBadgeImage(Buffer.from(String(b.data || ""), "base64"), `banner-${id}`, 2048);
+            if (r.error) return send(res, 400, { error: r.error });
+            const all = readJson(F.profiles);
+            if (all[id]?.banner) dropBadgeFile(all[id].banner);
+            all[id] = { ...all[id], banner: r.url };
+            writeJson(F.profiles, all);
+            return send(res, 200, { id, profile: all[id] });
         }
         if (path === "/") return send(res, 200, "Shutcord API", { "content-type": "text/plain" });
         send(res, 404, { error: "not found" });
@@ -501,8 +519,9 @@ const ME_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport content=
 const o=document.getElementById('out');
 fetch('/me/profile').then(async r=>{if(r.status===401){o.innerHTML='<a href=/login><button>Log in with Discord</button></a>';return}
 const j=await r.json();if(!j.allowed){o.textContent='Profile styling is for sponsors.';return}const p=j.profile;
-o.innerHTML='<div class=row><label>Profile colour <input id=c type=color value="'+(p.color||'#d4d4d8')+'"></label><label>Accent <input id=a type=color value="'+(p.accent||'#71717a')+'"></label></div><div class=row><input id=b size=48 placeholder="Banner image link (https)" value="'+(p.banner||'')+'"></div><div class=row><button id=s>Save</button><button class=x id=n>Clear</button><a href=/logout><small>Log out</small></a></div><div id=msg></div>';
+o.innerHTML='<div class=row><label>Profile colour <input id=c type=color value="'+(p.color||'#d4d4d8')+'"></label><label>Accent <input id=a type=color value="'+(p.accent||'#71717a')+'"></label></div><div class=row><input id=b size=48 placeholder="Banner image link (https)" value="'+(p.banner||'')+'"></div><div class=row><label>Or upload a banner (png, jpg, gif, webp, up to 2 MB) <input id=f type=file accept="image/png,image/jpeg,image/gif,image/webp"></label></div><div class=row><button id=s>Save</button><button class=x id=n>Clear</button><a href=/logout><small>Log out</small></a></div><div id=msg></div>';
 const save=b=>fetch('/me/profile',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(async r=>{const x=await r.json();document.getElementById('msg').textContent=r.ok?'Saved. Others see it within a minute.':x.error});
+f.onchange=()=>{const fl=f.files[0];if(!fl)return;if(fl.size>2097152){msg.textContent='Image over 2 MB';return}const rd=new FileReader();rd.onload=()=>fetch('/me/banner',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'shutcord'},body:JSON.stringify({data:String(rd.result).split(',')[1]})}).then(async r=>{const x=await r.json();if(r.ok){b.value=x.profile.banner;msg.textContent='Banner uploaded. Others see it within a minute.'}else msg.textContent=x.error});rd.readAsDataURL(fl)};
 document.getElementById('s').onclick=()=>save({color:c.value,accent:a.value,banner:b.value.trim()});document.getElementById('n').onclick=()=>save({});});
 </script></main>`;
 
