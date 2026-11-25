@@ -11,7 +11,7 @@
 
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -28,7 +28,7 @@ for (const f of [process.env.ENV_FILE, join(here, ".env"), join(here, "..", ".en
     console.log("Loaded settings from " + f);
     break;
 }
-const env = process.env;
+const { env } = process;
 const PORT = Number(env.PORT || 8787);
 const DATA = env.DATA_DIR || join(here, "data");
 const PUBLIC_URL = (env.PUBLIC_URL || `http://localhost:${PORT}`).replace(/\/$/, "");
@@ -124,6 +124,10 @@ const send = (res, code, data, headers = {}) => {
 const html = (res, page) => send(res, 200, page, { "content-type": "text/html; charset=utf-8", "content-security-policy": "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' https: data:" });
 
 const roleOf = id => id === OWNER_ID ? "owner" : readJson(F.admins).includes(id) ? "admin" : null;
+const userCard = id => {
+    const u = readJson(F.users)[id] ?? {};
+    return { id, name: u.name, handle: u.handle, avatar: u.avatar ? `https://cdn.discordapp.com/avatars/${id}/${u.avatar}.png?size=128` : null };
+};
 const userName = id => readJson(F.users)[id]?.name;
 
 // ---------- Discord roles ----------
@@ -155,7 +159,7 @@ const out = d => ({ ...d, names: userNames(), handles: userHandles() });
 function rememberUser(user) {
     if (!user?.id) return;
     const users = readJson(F.users);
-    users[user.id] = { name: String(user.global_name || user.username || "").slice(0, 40), handle: String(user.username || "").slice(0, 40) };
+    users[user.id] = { name: String(user.global_name || user.username || "").slice(0, 40), handle: String(user.username || "").slice(0, 40), avatar: /^\w{1,40}$/.test(user.avatar || "") ? user.avatar : users[user.id]?.avatar };
     writeJson(F.users, users);
     return users[user.id];
 }
@@ -413,7 +417,7 @@ const server = createServer(async (req, res) => {
             const id = readSession(req);
             if (!id) return send(res, 401, { error: "not logged in" });
             const all = readJson(F.profiles);
-            if (req.method === "GET") return send(res, 200, { id, profile: all[id] ?? {}, allowed: !SPONSORS_ONLY || !!readJson(F.sponsors).sponsors[id] });
+            if (req.method === "GET") return send(res, 200, { ...userCard(id), profile: all[id] ?? {}, allowed: !SPONSORS_ONLY || !!readJson(F.sponsors).sponsors[id] });
             if (req.method === "PUT") {
                 if (SPONSORS_ONLY && !readJson(F.sponsors).sponsors[id]) return send(res, 403, { error: "profile styling is for sponsors" });
                 const b = await body(req, 10_000);
@@ -421,7 +425,7 @@ const server = createServer(async (req, res) => {
                 for (const k of ["color", "accent"]) if (b[k]) { if (!HEX.test(b[k])) return send(res, 400, { error: `${k} must look like #aabbcc` }); p[k] = b[k].toLowerCase(); }
                 if (b.banner) {
                     let u; try { u = new URL(b.banner); } catch { return send(res, 400, { error: "banner must be a link" }); }
-                    if (u.protocol !== "https:" || b.banner.length > 600) return send(res, 400, { error: "banner must be an https link under 600 characters" });
+                    if ((u.protocol !== "https:" && u.origin !== new URL(PUBLIC_URL).origin) || b.banner.length > 600) return send(res, 400, { error: "banner must be an https link under 600 characters" });
                     if (!BANNER_HOSTS.includes(u.hostname) && u.origin !== new URL(PUBLIC_URL).origin) return send(res, 400, { error: "use the upload button, or a link from " + BANNER_HOSTS.join(", ") });
                     p.banner = b.banner;
                 }
@@ -513,16 +517,178 @@ $('imp').onclick=async()=>{try{msg();D=await api('import','POST',{});$('impmsg')
 $('add').onclick=async()=>{try{msg();D=await api('sponsor','POST',{id:$('id').value.trim(),tier:$('tier').value});draw();if(D.note)msg(D.note)}catch(e){msg(e.message)}}})();
 </script></main>`;
 
-const ME_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Shutcord profile</title>${STYLE}<main>
-<h1>Your Shutcord profile</h1><p><small>Only people using Shutcord see this.</small></p><div id=out class=card>Loading…</div>
+const ME_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Shutcord profile</title>
+<style>
+:root{color-scheme:dark;--bg:#121214;--card:#1a1a1e;--line:#2a2a30;--soft:#232328;--txt:#e7e7ea;--dim:#8d8d96;--acc:#d4d4d8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;max-width:940px;margin:0 auto;padding:22px 16px 6px}
+header b{font-size:18px;letter-spacing:.2px}header small{color:var(--dim)}
+a{color:var(--dim)}
+main{max-width:940px;margin:0 auto;padding:10px 16px 60px;display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+@media(max-width:780px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h2{margin:0 0 2px;font-size:14px;font-weight:650}.card p{margin:0 0 12px;color:var(--dim);font-size:13px}
+.stack{display:grid;gap:16px}
+button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:9px 14px;font-weight:600;background:var(--acc);color:#121214;transition:opacity .15s,transform .05s}
+button:hover{opacity:.9}button:active{transform:translateY(1px)}button:disabled{opacity:.4;cursor:default}
+button.g{background:var(--soft);color:var(--txt);border:1px solid var(--line)}
+input[type=text]{font:inherit;background:var(--soft);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 11px;min-width:0;width:100%}
+input[type=text]:focus{outline:2px solid #52525b;outline-offset:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+/* preview */
+.pv{position:sticky;top:16px}
+.pcard{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,var(--p,#2a2a30),var(--a,#2a2a30));transition:background .2s}
+.pbanner{height:108px;background:var(--p,#3a3a42) center/cover no-repeat;transition:background-color .2s}
+.pbody{padding:0 14px 14px;position:relative}
+.pav{width:84px;height:84px;border-radius:50%;border:6px solid rgba(0,0,0,.55);background:#2f2f36 center/cover;margin-top:-44px;display:grid;place-items:center;font-size:30px;font-weight:700;color:#cfcfd6;box-shadow:0 0 0 0 transparent}
+.pin{background:rgba(0,0,0,.5);border-radius:12px;padding:12px;margin-top:10px}
+.pname{font-size:19px;font-weight:700;display:flex;gap:8px;align-items:center}
+.chip{font:800 10px/1 system-ui;background:rgba(0,0,0,.55);border-radius:5px;padding:4px 5px;letter-spacing:.5px}
+.phand{color:#c8c8d0;font-size:13px}
+.sec{margin-top:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#d6d6dc}
+.ln{height:8px;border-radius:4px;background:rgba(255,255,255,.14);margin-top:7px}
+.pnote{color:var(--dim);font-size:12px;margin:10px 2px 0;text-align:center}
+/* colour picker */
+.pick{display:grid;gap:10px}
+.pr{display:flex;gap:10px;align-items:center}
+.sw{position:relative;width:46px;height:46px;border-radius:11px;border:1px solid var(--line);overflow:hidden;flex:none}
+.sw input{position:absolute;inset:-8px;width:70px;height:70px;border:0;padding:0;cursor:pointer;background:none}
+.hex{display:flex;align-items:center;gap:6px;flex:1}.hex span{color:var(--dim)}
+.presets{display:flex;gap:7px;flex-wrap:wrap}
+.dot{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;outline:1px solid var(--line)}
+.dot.on{border-color:#fff}
+.pairs{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.pair{height:38px;border-radius:9px;border:2px solid transparent;cursor:pointer;padding:0;outline:1px solid var(--line)}
+.pair.on{border-color:#fff}
+.lab{font-size:12px;color:var(--dim);font-weight:600;margin:2px 0 -2px}
+/* switch */
+.sw2{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.tg{position:relative;width:42px;height:24px;flex:none}.tg input{opacity:0;position:absolute;inset:0;margin:0;cursor:pointer;z-index:1}
+.tg i{position:absolute;inset:0;background:#3a3a42;border-radius:99px;transition:.15s}.tg i:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+.tg input:checked+i{background:#71717a}.tg input:checked+i:after{transform:translateX(18px)}
+/* banner drop */
+.drop{border:1.5px dashed #3a3a42;border-radius:12px;padding:16px;text-align:center;color:var(--dim);cursor:pointer;transition:.15s;font-size:13px}
+.drop:hover,.drop.over{border-color:#8d8d96;color:var(--txt);background:var(--soft)}
+.thumb{height:84px;border-radius:10px;background:var(--soft) center/cover;border:1px solid var(--line)}
+details summary{cursor:pointer;color:var(--dim);font-size:13px;margin-top:10px}
+/* bar + toasts */
+.bar{display:flex;gap:10px;align-items:center;justify-content:flex-end}
+.dirty{color:var(--dim);font-size:13px;margin-right:auto}
+#toasts{position:fixed;right:16px;top:16px;display:grid;gap:8px;z-index:9;max-width:calc(100vw - 32px)}
+.t{display:flex;gap:10px;align-items:center;background:#202026;border:1px solid var(--line);border-left:3px solid #71717a;border-radius:10px;padding:11px 14px;box-shadow:0 8px 28px rgba(0,0,0,.45);animation:in .22s ease-out;min-width:240px}
+.t.ok{border-left-color:#4ade80}.t.err{border-left-color:#f87171}.t.out{animation:out .2s ease-in forwards}
+@keyframes in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes out{to{opacity:0;transform:translateY(6px)}}
+.center{max-width:380px;margin:90px auto;text-align:center;display:block}
+</style>
+<header><b>Shutcord</b><span id=who><small></small></span></header>
+<div id=root><main><div class="card" style="grid-column:1/-1;text-align:center;color:var(--dim)">Loading…</div></main></div>
+<div id=toasts></div>
 <script>
-const o=document.getElementById('out');
-fetch('/me/profile').then(async r=>{if(r.status===401){o.innerHTML='<a href=/login><button>Log in with Discord</button></a>';return}
-const j=await r.json();if(!j.allowed){o.textContent='Profile styling is for sponsors.';return}const p=j.profile;
-o.innerHTML='<div class=row><label>Profile colour <input id=c type=color value="'+(p.color||'#d4d4d8')+'"></label><label>Accent <input id=a type=color value="'+(p.accent||'#71717a')+'"></label></div><div class=row><input id=b size=48 placeholder="Banner image link (https)" value="'+(p.banner||'')+'"></div><div class=row><label>Or upload a banner (png, jpg, gif, webp, up to 2 MB) <input id=f type=file accept="image/png,image/jpeg,image/gif,image/webp"></label></div><div class=row><button id=s>Save</button><button class=x id=n>Clear</button><a href=/logout><small>Log out</small></a></div><div id=msg></div>';
-const save=b=>fetch('/me/profile',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(async r=>{const x=await r.json();document.getElementById('msg').textContent=r.ok?'Saved. Others see it within a minute.':x.error});
-f.onchange=()=>{const fl=f.files[0];if(!fl)return;if(fl.size>2097152){msg.textContent='Image over 2 MB';return}const rd=new FileReader();rd.onload=()=>fetch('/me/banner',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'shutcord'},body:JSON.stringify({data:String(rd.result).split(',')[1]})}).then(async r=>{const x=await r.json();if(r.ok){b.value=x.profile.banner;msg.textContent='Banner uploaded. Others see it within a minute.'}else msg.textContent=x.error});rd.readAsDataURL(fl)};
-document.getElementById('s').onclick=()=>save({color:c.value,accent:a.value,banner:b.value.trim()});document.getElementById('n').onclick=()=>save({});});
-</script></main>`;
+var $=function(i){return document.getElementById(i)};
+var S={c:'#6366f1',a:'#a855f7',on:false,b:'',orig:''},U={};
+var PRESET=['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#6366f1','#a855f7','#ec4899','#71717a','#d4d4d8','#18181b'];
+var PAIRS=[['#6366f1','#a855f7'],['#3b82f6','#14b8a6'],['#f97316','#ec4899'],['#22c55e','#14b8a6'],['#ef4444','#7f1d1d'],['#eab308','#f97316'],['#71717a','#27272a'],['#ec4899','#6366f1']];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function toast(text,kind){var t=document.createElement('div');t.className='t '+(kind||'');t.innerHTML='<span>'+(kind==='ok'?'&#10003;':kind==='err'?'&#10005;':'&#8226;')+'</span><span>'+esc(text)+'</span>';$('toasts').appendChild(t);setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove()},220)},kind==='err'?5000:2800)}
+function hex6(v){v=String(v||'').trim().replace('#','');if(/^[0-9a-f]{3}$/i.test(v))v=v.split('').map(function(x){return x+x}).join('');return /^[0-9a-f]{6}$/i.test(v)?'#'+v.toLowerCase():null}
+function snap(){return JSON.stringify([S.on?S.c:'',S.on?S.a:'',S.b])}
+function dirty(){return snap()!==S.orig}
+
+function login(msg){$('root').innerHTML='<div class="card center"><h2 style="font-size:18px">Your Shutcord profile</h2><p>'+msg+'</p><a href=/login><button>Log in with Discord</button></a></div>'}
+
+function render(){
+  var name=U.name||U.handle||'You';
+  var av=U.avatar?'background-image:url('+esc(U.avatar)+')':'';
+  $('root').innerHTML='<main>'
+  +'<div class=pv><div class=pcard id=pc><div class=pbanner id=pb></div><div class=pbody><div class=pav id=pa style="'+av+'">'+(U.avatar?'':esc(name[0].toUpperCase()))+'</div>'
+  +'<div class=pin><div class=pname>'+esc(name)+' <span class=chip>SC</span></div><div class=phand>'+esc(U.handle||'')+'</div>'
+  +'<div class=sec>About me</div><div class=ln style="width:80%"></div><div class=ln style="width:55%"></div><div class=sec>Member since</div><div class=ln style="width:35%"></div></div></div></div>'
+  +'<div class=pnote>Live preview. Only people using Shutcord see this.</div></div>'
+  +'<div class=stack>'
+  +'<div class=card><div class=sw2><div><h2>Custom colours</h2><p style="margin:0">Tint your whole profile card with two colours.</p></div><label class=tg><input type=checkbox id=on><i></i></label></div><div id=cbox class=pick style="margin-top:14px"></div></div>'
+  +'<div class=card><h2>Banner</h2><p>png, jpg, gif or webp, up to 2 MB. Animated gifs work.</p><div id=bbox></div></div>'
+  +'<div class=bar><span class=dirty id=dirty></span><button class=g id=reset>Reset</button><button id=save>Save changes</button></div>'
+  +'</div></main>';
+  $('on').checked=S.on;$('on').onchange=function(){S.on=this.checked;paint()};
+  $('save').onclick=save;$('reset').onclick=function(){load(true)};
+  paint(true);
+}
+
+function colourRow(label,key){
+  return '<div class=lab>'+label+'</div><div class=pr><label class=sw id=sw_'+key+' style="background:'+S[key]+'"><input type=color id=cp_'+key+' value="'+S[key]+'"></label>'
+  +'<div class=hex><span>#</span><input type=text id=hx_'+key+' maxlength=7 value="'+S[key].slice(1)+'" spellcheck=false></div></div>'
+  +'<div class=presets>'+PRESET.map(function(p){return '<button class="dot'+(S[key]===p?' on':'')+'" data-k='+key+' data-v='+p+' style="background:'+p+'" title='+p+'></button>'}).join('')+'</div>';
+}
+function paintColourBox(){
+  var b=$('cbox');if(!S.on){b.innerHTML='<small style="color:var(--dim)">Off. Your profile uses Discord&#39;s normal colours.</small>';return}
+  b.innerHTML='<div class=lab>Quick pairs</div><div class=pairs>'+PAIRS.map(function(p,i){return '<button class="pair'+(S.c===p[0]&&S.a===p[1]?' on':'')+'" data-i='+i+' style="background:linear-gradient(135deg,'+p[0]+','+p[1]+')"></button>'}).join('')+'</div>'
+  +colourRow('Profile colour (top)','c')+colourRow('Accent (bottom)','a')
+  +'<div class=row><button class=g id=swap>Swap colours</button></div>';
+  ['c','a'].forEach(function(k){
+    $('cp_'+k).oninput=function(){S[k]=this.value;paint()};
+    $('hx_'+k).oninput=function(){var h=hex6(this.value);if(h){S[k]=h;paint()}};
+  });
+  b.querySelectorAll('.dot').forEach(function(d){d.onclick=function(){S[d.dataset.k]=d.dataset.v;paint(true)}});
+  b.querySelectorAll('.pair').forEach(function(d){d.onclick=function(){var p=PAIRS[+d.dataset.i];S.c=p[0];S.a=p[1];paint(true)}});
+  $('swap').onclick=function(){var t=S.c;S.c=S.a;S.a=t;paint(true)};
+}
+function paintBannerBox(){
+  var b=$('bbox');
+  b.innerHTML=(S.b?'<div class=thumb style="background-image:url('+esc(S.b)+')"></div><div class=row style="margin-top:10px"><button class=g id=rep>Replace</button><button class=g id=rem>Remove</button></div>'
+  :'<div class=drop id=dz>Drop an image here or click to choose</div>')
+  +'<input type=file id=fl accept="image/png,image/jpeg,image/gif,image/webp" hidden>'
+  +'<details><summary>Use a link instead</summary><div class=row style="margin-top:8px"><input type=text id=lk placeholder="https://cdn.discordapp.com/..." value="'+esc(S.b)+'"></div><p style="margin-top:6px">Links from cdn.discordapp.com, media.discordapp.net, i.imgur.com or i.ibb.co. Discord links expire after a while, so uploading is safer.</p></details>';
+  var fl=$('fl'),pick=function(){fl.click()};
+  if($('dz')){$('dz').onclick=pick;$('dz').ondragover=function(e){e.preventDefault();this.classList.add('over')};$('dz').ondragleave=function(){this.classList.remove('over')};$('dz').ondrop=function(e){e.preventDefault();this.classList.remove('over');if(e.dataTransfer.files[0])up(e.dataTransfer.files[0])}}
+  if($('rep'))$('rep').onclick=pick;
+  if($('rem'))$('rem').onclick=function(){S.b='';paint(true)};
+  fl.onchange=function(){if(fl.files[0])up(fl.files[0])};
+  $('lk').onchange=function(){S.b=this.value.trim();paint(true)};
+}
+function paint(full){
+  var pc=$('pc'),pb=$('pb');
+  pc.style.setProperty('--p',S.on?S.c:'#2a2a30');pc.style.setProperty('--a',S.on?S.a:'#2a2a30');
+  pb.style.backgroundImage=S.b?'url('+S.b+')':'none';pb.style.backgroundColor=S.on?S.c:'#3a3a42';
+  if(full||!document.activeElement||document.activeElement.type!=='color'&&document.activeElement.type!=='text'){paintColourBox();paintBannerBox()}
+  else{['c','a'].forEach(function(k){if($('sw_'+k))$('sw_'+k).style.background=S[k];if($('cp_'+k)&&document.activeElement!==$('cp_'+k))$('cp_'+k).value=S[k];if($('hx_'+k)&&document.activeElement!==$('hx_'+k))$('hx_'+k).value=S[k].slice(1)})}
+  var d=dirty();$('dirty').textContent=d?'Unsaved changes':'';$('save').disabled=!d;$('reset').disabled=!d;
+}
+function up(file){
+  if(file.size>2097152){toast('That image is over 2 MB','err');return}
+  var rd=new FileReader();
+  rd.onload=function(){
+    fetch('/me/banner',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'shutcord'},body:JSON.stringify({data:String(rd.result).split(',')[1]})})
+    .then(function(r){return r.json().then(function(x){return{ok:r.ok,x:x}})})
+    .then(function(o){if(o.ok){S.b=o.x.profile.banner;U.saved=o.x.profile;var o=JSON.parse(S.orig);o[2]=S.b;S.orig=JSON.stringify(o);paint(true);toast('Banner uploaded','ok')}else toast(o.x.error||'Upload failed','err')})
+    .catch(function(){toast('Could not reach the server','err')})
+  };rd.readAsDataURL(file);
+}
+function save(){
+  var body=S.on?{color:S.c,accent:S.a,banner:S.b}:{banner:S.b};
+  $('save').disabled=true;
+  fetch('/me/profile',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(body)})
+  .then(function(r){return r.json().then(function(x){return{ok:r.ok,x:x}})})
+  .then(function(o){if(o.ok){S.orig=snap();paint();toast('Saved. Others see it within a few minutes.','ok')}else{paint();toast(o.x.error||'Could not save','err')}})
+  .catch(function(){paint();toast('Could not reach the server','err')});
+}
+function load(keepToast){
+  fetch('/me/profile').then(function(r){
+    if(r.status===401){login('Log in with Discord to style your profile.');return}
+    return r.json().then(function(j){
+      if(!j.allowed){login('Profile styling is for sponsors.');return}
+      U=j;var p=j.profile||{};
+      S.on=!!p.color;S.c=hex6(p.color)||'#6366f1';S.a=hex6(p.accent)||hex6(p.color)||'#a855f7';S.b=p.banner||'';S.orig=snap();
+      $('who').innerHTML='<small>'+esc(j.name||j.handle||'')+' &middot; <a href=/logout>Log out</a></small>';
+      render();if(keepToast===true)toast('Changes discarded');
+    })
+  }).catch(function(){login('Could not reach the server.')});
+}
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if($('save')&&!$('save').disabled)save()}});
+window.addEventListener('beforeunload',function(e){if($('save')&&dirty()){e.preventDefault();e.returnValue=''}});
+load();
+</script>
+`;
 
 server.listen(PORT, () => console.log(`Shutcord API on ${PUBLIC_URL} (port ${PORT}). Admin: ${PUBLIC_URL}/admin`));

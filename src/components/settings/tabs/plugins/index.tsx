@@ -30,15 +30,15 @@ import { Paragraph } from "@components/Paragraph";
 import { SettingsTab, wrapTab } from "@components/settings/tabs/BaseTab";
 import { ChangeList } from "@utils/ChangeList";
 import { classNameFactory } from "@utils/css";
-import { isTruthy } from "@utils/guards";
 import { Logger } from "@utils/Logger";
 import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
+import { getPluginOrigin } from "@utils/pluginOrigin";
 import { PluginTarget } from "@utils/pluginTargets";
 import { promptToRestart } from "@utils/promptToRestart";
 import { useAwaiter, useCleanupEffect } from "@utils/react";
-import { PluginTag, PluginTags } from "@utils/types";
-import { lodash, React, SearchableSelect, Select, TextInput, Tooltip, useMemo, useRef, useState } from "@webpack/common";
+import { PluginOrigin, PluginTag, PluginTags } from "@utils/types";
+import { lodash, React, SearchableSelect, TextInput, Tooltip, useMemo, useRef, useState } from "@webpack/common";
 import { JSX } from "react";
 
 import Plugins, { ExcludedPlugins, PluginMeta } from "~plugins";
@@ -49,41 +49,31 @@ import { UIElementsButton } from "./UIElements";
 export const cl = classNameFactory("sc-plugins-");
 export const logger = new Logger("PluginSettings", "#a6d189");
 
-function ReloadRequiredCard({ required }: { required: boolean; }) {
+function ReloadRequiredCard() {
     return (
-        <Card variant={required ? "warning" : "normal"} className={cl("info-card")}>
-            {required
-                ? (
-                    <>
-                        <Heading tag="h4">Restart required!</Heading>
-                        <Paragraph className={cl("dep-text")}>
-                            Restart now to apply new plugins and their settings
-                        </Paragraph>
-                        <Button onClick={() => location.reload()} className={cl("restart-button")}>
-                            Restart
-                        </Button>
-                    </>
-                )
-                : (
-                    <>
-                        <Heading tag="h4">Plugin Management</Heading>
-                        <Paragraph>Press the cog wheel or info icon to get more info on a plugin</Paragraph>
-                        <Paragraph>Plugins with a cog wheel have settings you can modify!</Paragraph>
-                    </>
-                )}
+        <Card variant="warning" className={cl("info-card")}>
+            <Heading tag="h4">Restart required!</Heading>
+            <Paragraph className={cl("dep-text")}>
+                Restart now to apply new plugins and their settings
+            </Paragraph>
+            <Button onClick={() => location.reload()} className={cl("restart-button")}>
+                Restart
+            </Button>
         </Card>
     );
 }
 
-const enum SearchStatus {
-    ALL,
-    FAVORITES,
-    ENABLED,
-    DISABLED,
-    NEW,
-    USER_PLUGINS,
-    API_PLUGINS
-}
+type Source = "vencord" | "vencord+equicord" | "shutcord" | "equicord";
+
+const SOURCES: { value: Source; label: string; }[] = [
+    { value: "vencord", label: "Vencord" },
+    { value: "vencord+equicord", label: "Vencord + Equicord" },
+    { value: "shutcord", label: "Shutcord" },
+    { value: "equicord", label: "Equicord" }
+];
+
+const inSource = (origin: PluginOrigin, source: Source) =>
+    source === "vencord+equicord" ? origin !== "shutcord" : origin === source;
 
 function ExcludedPluginsList({ search }: { search: string; }) {
     const matchingExcludedPlugins = search
@@ -154,36 +144,13 @@ function PluginSettings() {
     )
         .toSorted((a, b) => Number(settings.plugins[b.name]?.isFavorite ?? false) - Number(settings.plugins[a.name]?.isFavorite ?? false));
 
-    const hasUserPlugins = useMemo(() => !IS_STANDALONE && Object.values(PluginMeta).some(m => m.userPlugin), []);
-
-    const [searchValue, setSearchValue] = useState({ value: "", tags: [] as PluginTag[], status: SearchStatus.ALL });
+    const [searchValue, setSearchValue] = useState({ value: "", tags: [] as PluginTag[], source: "vencord+equicord" as Source });
 
     const search = searchValue.value.toLowerCase();
     const onSearch = (query: string) => setSearchValue(prev => ({ ...prev, value: query }));
 
     const pluginFilter = (plugin: typeof Plugins[keyof typeof Plugins]) => {
-        const { status, tags } = searchValue;
-
-        switch (status) {
-            case SearchStatus.FAVORITES:
-                if (!settings.plugins[plugin.name]?.isFavorite) return false;
-                break;
-            case SearchStatus.DISABLED:
-                if (isPluginEnabled(plugin.name)) return false;
-                break;
-            case SearchStatus.ENABLED:
-                if (!isPluginEnabled(plugin.name)) return false;
-                break;
-            case SearchStatus.NEW:
-                if (!newPlugins?.includes(plugin.name)) return false;
-                break;
-            case SearchStatus.USER_PLUGINS:
-                if (!PluginMeta[plugin.name]?.userPlugin) return false;
-                break;
-            case SearchStatus.API_PLUGINS:
-                if (!plugin.name.endsWith("API")) return false;
-                break;
-        }
+        const { tags } = searchValue;
 
         if (tags.length && tags.some(t => !plugin.tags?.includes(t))) return false;
 
@@ -214,15 +181,30 @@ function PluginSettings() {
         return lodash.isEqual(newPlugins, sortedPluginNames) ? [] : newPlugins;
     }));
 
+    const enabledPlugins = [] as JSX.Element[];
+    const customPlugins = [] as JSX.Element[];
     const plugins = [] as JSX.Element[];
     const requiredPlugins = [] as JSX.Element[];
+    const sourceCounts: Record<PluginOrigin, number> = { vencord: 0, equicord: 0, shutcord: 0 };
 
-    const showApi = searchValue.status === SearchStatus.API_PLUGINS;
+    const makeCard = (p: typeof sortedPlugins[number]) => (
+        <PluginCard
+            onRestartNeeded={(name, key) => changes.handleChange(`${name}.${key}`)}
+            disabled={false}
+            plugin={p}
+            isNew={newPlugins?.includes(p.name)}
+            key={p.name}
+        />
+    );
+
     for (const p of sortedPlugins) {
-        if (p.hidden || (!p.settings && p.name.endsWith("API") && !showApi))
+        if (p.hidden || (!p.settings && p.name.endsWith("API")))
             continue;
 
         if (!pluginFilter(p)) continue;
+
+        const origin = getPluginOrigin(p);
+        sourceCounts[origin]++;
 
         const isRequired = p.required || p.isDependency || depMap[p.name]?.some(d => settings.plugins[d].enabled);
 
@@ -245,28 +227,18 @@ function PluginSettings() {
                     )}
                 </Tooltip>
             );
-        } else {
-            plugins.push(
-                <PluginCard
-                    onRestartNeeded={(name, key) => changes.handleChange(`${name}.${key}`)}
-                    disabled={false}
-                    plugin={p}
-                    isNew={newPlugins?.includes(p.name)}
-                    key={p.name}
-                />
-            );
+        } else if (PluginMeta[p.name]?.userPlugin) {
+            customPlugins.push(makeCard(p));
+        } else if (isPluginEnabled(p.name)) {
+            enabledPlugins.push(makeCard(p));
+        } else if (inSource(origin, searchValue.source)) {
+            plugins.push(makeCard(p));
         }
     }
 
     return (
         <SettingsTab>
-            <ReloadRequiredCard required={changes.hasChanges} />
-
-            <UIElementsButton />
-
-            <Heading tag="h4" className={classes(Margins.top20, Margins.bottom8)}>
-                Filters
-            </Heading>
+            {changes.hasChanges && <ReloadRequiredCard />}
 
             <ErrorBoundary noop>
                 <TextInput
@@ -279,23 +251,22 @@ function PluginSettings() {
             </ErrorBoundary>
 
             <ErrorBoundary noop>
+                <div className={classes(Margins.top8, cl("source-row"))}>
+                    {SOURCES.map(({ value, label }) => {
+                        const count = Object.entries(sourceCounts)
+                            .reduce((n, [origin, c]) => n + (inSource(origin as PluginOrigin, value) ? c : 0), 0);
+                        return (
+                            <Button
+                                key={value}
+                                variant={searchValue.source === value ? "primary" : "secondary"}
+                                onClick={() => setSearchValue(prev => ({ ...prev, source: value }))}
+                            >
+                                {label} ({count})
+                            </Button>
+                        );
+                    })}
+                </div>
                 <div className={classes(Margins.bottom20, Margins.top8, cl("filter-controls"))}>
-                    <Select
-                        options={[
-                            { label: "Show All", value: SearchStatus.ALL, default: true },
-                            { label: "Show Favorites", value: SearchStatus.FAVORITES },
-                            { label: "Show Enabled", value: SearchStatus.ENABLED },
-                            { label: "Show Disabled", value: SearchStatus.DISABLED },
-                            { label: "Show New", value: SearchStatus.NEW },
-                            hasUserPlugins && { label: "Show UserPlugins", value: SearchStatus.USER_PLUGINS },
-                            { label: "Show API Plugins", value: SearchStatus.API_PLUGINS },
-                        ].filter(isTruthy)}
-                        serialize={String}
-                        select={status => setSearchValue(prev => ({ ...prev, status }))}
-                        isSelected={v => v === searchValue.status}
-                        closeOnSelect={true}
-                        placeholder="Filter by Type"
-                    />
                     <SearchableSelect
                         options={PluginTags.map(tag => ({ label: tag, value: tag }))}
                         value={searchValue.tags}
@@ -307,20 +278,35 @@ function PluginSettings() {
                 </div>
             </ErrorBoundary>
 
-            <Heading tag="h4" className={Margins.top20}>Plugins</Heading>
+            <Heading tag="h4" className={Margins.top20}>Enabled plugins ({enabledPlugins.length})</Heading>
+            <div className={cl("grid")}>
+                {enabledPlugins.length
+                    ? enabledPlugins
+                    : <Paragraph>{search || searchValue.tags.length ? "No enabled plugins meet the search criteria." : "Nothing enabled yet. Turn a plugin on below."}</Paragraph>
+                }
+            </div>
 
-            {plugins.length || requiredPlugins.length
+            <Heading tag="h4" className={classes(Margins.top20, Margins.bottom8)}>Custom plugins ({customPlugins.length})</Heading>
+            <div className={cl("grid")}>
+                {customPlugins.length
+                    ? customPlugins
+                    : <Paragraph>Your own plugins show up here. Put them in <code>src/userplugins</code> when building Shutcord from source.</Paragraph>
+                }
+            </div>
+
+            <Heading tag="h4" className={classes(Margins.top20, Margins.bottom8)}>Plugins ({plugins.length})</Heading>
+
+            {plugins.length || enabledPlugins.length || customPlugins.length || requiredPlugins.length
                 ? (
                     <div className={cl("grid")}>
                         {plugins.length
                             ? plugins
-                            : <Paragraph>No plugins meet the search criteria.</Paragraph>
+                            : <Paragraph>{searchValue.source === "equicord" ? "No Equicord plugins are bundled yet." : "No more plugins meet the search criteria."}</Paragraph>
                         }
                     </div>
                 )
                 : <ExcludedPluginsList search={search} />
             }
-
 
             <Divider className={Margins.top20} />
 
@@ -334,6 +320,8 @@ function PluginSettings() {
                     : <Paragraph>No plugins meet the search criteria.</Paragraph>
                 }
             </div>
+
+            <UIElementsButton />
         </SettingsTab >
     );
 }
