@@ -1,9 +1,36 @@
 {
   "tiers": {
-    "supporter": { "name": "Supporter", "usd": 1, "badges": 0 },
-    "patron": { "name": "Patron", "usd": 5, "badges": 1 },
-    "champion": { "name": "Champion", "usd": 10, "badges": 2 },
-    "legend": { "name": "Legend", "usd": 25, "badges": 5 }
+    "supporter": {
+      "name": "Supporter",
+      "usd": 1,
+      "badges": 0
+    },
+    "patron": {
+      "name": "Patron",
+      "usd": 5,
+      "badges": 1
+    },
+    "champion": {
+      "name": "Champion",
+      "usd": 10,
+      "badges": 2
+    },
+    "legend": {
+      "name": "Legend",
+      "usd": 25,
+      "badges": 5
+    }
   },
-  "sponsors": {}
+  "sponsors": {
+    "670798169088589827": {
+      "tier": "legend",
+      "github": "shutted",
+      "badges": [
+        {
+          "tooltip": "Owner",
+          "badge": "https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges/670798169088589827-1.png"
+        }
+      ]
+    }
+  }
 }
