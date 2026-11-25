@@ -166,6 +166,9 @@ ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
         }
     });
 
+    // the hosted editor page sets its own title, keep ours
+    win.on("page-title-updated", e => e.preventDefault());
+
     // Intercept quit shortcuts so they don't quit the main application
     win.webContents.on("before-input-event", (e, input) => {
         if (input.type !== "keyDown") return;
@@ -183,6 +186,9 @@ ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
     makeLinksOpenExternally(win);
 
     await win.loadURL(DESKTOP_MONACO_EDITOR_URL);
+    win.webContents.executeJavaScript(
+        `document.title=${JSON.stringify(title)};document.querySelectorAll("#title-bar").forEach(e=>{e.textContent=${JSON.stringify(title)}})`
+    ).catch(() => { });
 });
 
 ipcMain.handle(IpcEvents.GET_RENDERER_CSS, () => readFile(RENDERER_CSS_PATH, "utf-8"));

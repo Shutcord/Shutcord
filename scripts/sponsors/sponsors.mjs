@@ -13,7 +13,7 @@
 //   node scripts/sponsors/sponsors.mjs readme      (rewrites the sponsor avatars in README.md)
 
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
