@@ -54,6 +54,13 @@ GitHub only sends sponsorship webhooks for some accounts (a repository webhook h
 
 Roles arrive within a few minutes of a payment. It was tested against a fake GitHub, not the real API, so confirm it with a real $1 sponsor. If "Last run" says FAILED the message says why (for example Bad credentials, or a missing scope).
 
+## Simplest setup: add sponsors by hand, roles included
+
+You don't need the GitHub check or the `/link` page, and sponsors don't need GitHub linked to Discord. Just leave `GITHUB_TOKEN` out of your `.env`.
+1. Create the tier roles in your server, paste their IDs in the dashboard card and press **Save roles**.
+2. When someone sponsors, find them with the search box (or paste their Discord ID), pick their tier and press **Save**.
+3. If the bot is set up and the person is **in your Discord server**, it gives them the role for that tier and takes the other tier roles away. Changing the tier changes the role, and **Remove sponsor** removes it. (Someone who isn't in the server yet gets the badge but no role. Press Save again after they join.)
+
 ## Searching, editing and removing badges
 
 - **Find a person:** the search box at the top of the dashboard takes a Discord username or a user ID. It finds people who have logged in to the dashboard or `/link`, and, if the bot is set up, members of your Discord server (this needs **Server Members Intent** switched on in the Discord developer portal under Bot, Privileged Gateway Intents). A pasted ID always works, and the bot fills in the name. Typing also filters the sponsor and custom badge lists below. "Use for sponsor" and "Use for custom badge" copy the ID into the forms.

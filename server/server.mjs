@@ -171,10 +171,17 @@ async function applyTier(discordId, github, tierKey, accessToken) {
         const st = await discordBot("PUT", `/guilds/${GUILD_ID}/members/${discordId}`, { access_token: accessToken, roles: [want] });
         if (st >= 300) logEvent(`Could not add ${discordId} to the server (HTTP ${st}). Is the bot in the server with Create Invite / Manage Roles?`);
     }
+    await syncRoles(discordId, tierKey);
+}
+
+/** Gives the member the role of `tierKey` and takes the other tier roles away (null = take all away) */
+async function syncRoles(discordId, tierKey) {
+    if (!botReady()) return;
+    const roles = readJson(F.integ).tierRoles;
     for (const [k, id] of Object.entries(roles)) {
         if (!id) continue;
         const st = await discordBot(k === tierKey ? "PUT" : "DELETE", `/guilds/${GUILD_ID}/members/${discordId}/roles/${id}`);
-        if (k === tierKey && st >= 300) logEvent(`Could not give role ${k} to ${discordId} (HTTP ${st}). Is the bot's role above the tier roles?`);
+        if (k === tierKey && st >= 300) logEvent(`Could not give role ${k} to ${discordId} (HTTP ${st}). Are they in your server, and is the bot's role above the tier roles?`);
     }
 }
 
@@ -259,12 +266,13 @@ async function pollGithub() {
 }
 
 const userNames = () => Object.fromEntries(Object.entries(readJson(F.users)).map(([id, u]) => [id, u.name]));
-const out = d => ({ ...d, names: userNames() });
+const userHandles = () => Object.fromEntries(Object.entries(readJson(F.users)).map(([id, u]) => [id, u.handle || ""]));
+const out = d => ({ ...d, names: userNames(), handles: userHandles() });
 
 function rememberUser(user) {
     if (!user?.id) return;
     const users = readJson(F.users);
-    users[user.id] = { name: String(user.global_name || user.username || "").slice(0, 40) };
+    users[user.id] = { name: String(user.global_name || user.username || "").slice(0, 40), handle: String(user.username || "").slice(0, 40) };
     writeJson(F.users, users);
     return users[user.id];
 }
@@ -392,7 +400,7 @@ const server = createServer(async (req, res) => {
                 if (!q) return send(res, 200, []);
                 const found = new Map();
                 if (ID.test(q)) found.set(q, { id: q, name: (await resolveUser(q))?.name ?? null });
-                for (const [id, u] of Object.entries(readJson(F.users))) if (u.name && lc(u.name).includes(lc(q))) found.set(id, { id, name: u.name });
+                for (const [id, u] of Object.entries(readJson(F.users))) if (lc(u.name + " " + (u.handle || "")).includes(lc(q))) found.set(id, { id, name: u.name });
                 if (botReady() && !ID.test(q)) {
                     const members = await discordBotJson(`/guilds/${GUILD_ID}/members/search?query=${encodeURIComponent(q)}&limit=10`);
                     for (const m of Array.isArray(members) ? members : []) { const u = rememberUser(m.user); if (u) found.set(m.user.id, { id: m.user.id, name: u.name }); }
@@ -428,6 +436,7 @@ const server = createServer(async (req, res) => {
                 if (p) return send(res, 400, { error: p });
                 writeJson(F.sponsors, d);
                 await resolveUser(b.id);
+                await syncRoles(b.id, b.tier);
                 return send(res, 200, out(d));
             }
 
@@ -483,7 +492,7 @@ const server = createServer(async (req, res) => {
                 if (!s) return send(res, 404, { error: "not found" });
                 const drop = u => { const f = join(DATA, "badges", u.split("/").pop()); if (u.startsWith(PUBLIC_URL) && existsSync(f)) unlinkSync(f); };
                 if (dm[2] !== undefined) { const [gone] = (s.badges ?? []).splice(Number(dm[2]), 1); if (gone) drop(gone.badge); }
-                else { (s.badges ?? []).forEach(x => drop(x.badge)); delete d.sponsors[dm[1]]; }
+                else { (s.badges ?? []).forEach(x => drop(x.badge)); delete d.sponsors[dm[1]]; await syncRoles(dm[1], null); }
                 writeJson(F.sponsors, d);
                 return send(res, 200, out(d));
             }
@@ -602,7 +611,7 @@ async function api(p,m='GET',b){const r=await fetch('/admin/api/'+p,{method:m,he
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 const nm=id=>D.names&&D.names[id]?D.names[id]:null;
 const who=id=>'<b>'+esc(nm(id)||id)+'</b>'+(nm(id)?' <small>'+esc(id)+'</small>':'');
-let Q='';const hit=(id,extra)=>!Q||(id+' '+(nm(id)||'')+' '+(extra||'')).toLowerCase().includes(Q);
+let Q='',MATCH=new Set();const hit=(id,extra)=>!Q||MATCH.has(id)||(id+' '+(nm(id)||'')+' '+((D.handles&&D.handles[id])||'')+' '+(extra||'')).toLowerCase().includes(Q);
 function badgeRow(b,base,paren){const r=document.createElement('div');r.className='row';const im=document.createElement('img');im.className='b';im.src=b.badge;
 const tt=document.createElement('input');tt.value=b.tooltip||'';tt.placeholder='tooltip';tt.size=16;const f=document.createElement('input');f.type='file';f.accept='image/*';f.title='Replace the image';
 const sv=document.createElement('button');sv.textContent='Save';sv.title='Save the tooltip and/or the new image';
@@ -618,14 +627,14 @@ u.onclick=()=>{const file=f.files[0];if(!file)return msg('pick an image first');
 const del=document.createElement('button');del.className='x';del.textContent='Remove sponsor';del.onclick=()=>confirm('Remove '+id+'?')&&run(()=>api('sponsor/'+id,'DELETE'));r.append(del);c.append(r);$('list').append(c)}}
 function drawCustom(){$('clist').innerHTML='';for(const [id,list] of Object.entries(D.custom||{})){if(!hit(id))continue;const c=document.createElement('div');c.className='row';c.style.display='block';c.innerHTML='<div class=row>'+who(id)+'</div>';
 list.forEach((b,i)=>c.append(badgeRow(b,'custom/'+id+'/'+i)));$('clist').append(c)}}
-function showResults(list){const el=$('results');el.innerHTML='';if(!Q){return}if(!list.length){el.innerHTML='<small>No match. Search finds people who logged in here and (with the bot) members of your Discord server. Pasting a user ID always works.</small>';return}
+function showResults(list){MATCH=new Set(list.map(u=>u.id));if(D)draw();const el=$('results');el.innerHTML='';if(!Q){return}if(!list.length){el.innerHTML='<small>No match. Search finds people who logged in here and (with the bot) members of your Discord server. Pasting a user ID always works.</small>';return}
 for(const u of list){const r=document.createElement('div');r.className='row';r.innerHTML=(u.name?'<b>'+esc(u.name)+'</b>':'<b>(unknown name)</b>')+' <small>'+esc(u.id)+'</small>';
 const a=document.createElement('button');a.className='x';a.textContent='Use for sponsor';a.onclick=()=>{$('id').value=u.id;$('id').scrollIntoView({block:'center'})};
 const b=document.createElement('button');b.className='x';b.textContent='Use for custom badge';b.onclick=()=>{$('cid').value=u.id;$('cid').scrollIntoView({block:'center'})};r.append(a,b);el.append(r)}}
-let qt;$('q').oninput=()=>{Q=$('q').value.trim().toLowerCase();if(D)draw();clearTimeout(qt);qt=setTimeout(async()=>{if(!Q)return showResults([]);try{showResults(await api('lookup?q='+encodeURIComponent($('q').value.trim())))}catch(e){msg(e.message)}},300)};
+let qt;$('q').oninput=()=>{Q=$('q').value.trim().toLowerCase();MATCH=new Set();if(D)draw();clearTimeout(qt);qt=setTimeout(async()=>{if(!Q)return showResults([]);try{showResults(await api('lookup?q='+encodeURIComponent($('q').value.trim())))}catch(e){msg(e.message)}},300)};
 function drawInteg(I){$('integCard').hidden=false;const el=$('integ');el.innerHTML='';
-const po=document.createElement('p');po.innerHTML='GitHub check: <b>'+(I.poll.configured?'on for '+esc(I.poll.account)+', every '+I.poll.every+' min':'off (set GITHUB_TOKEN and GITHUB_SPONSORED_ACCOUNT)')+'</b>'+(I.poll.last?'<br><small>Last run '+esc(I.poll.last.replace('T',' ').slice(0,16))+' UTC: '+(I.poll.ok?'ok':'FAILED')+' · '+esc(I.poll.message)+'</small>':'');if(I.poll.configured){const nb=document.createElement('button');nb.textContent='Check now';nb.onclick=async()=>{try{msg();await api('integration/poll','POST',{});drawInteg(await api('integration'))}catch(e){msg(e.message)}};po.append(' ',nb)}el.append(po);
-const st=document.createElement('p');st.innerHTML='Bot: <b>'+(I.botConfigured?'ready':'not set (DISCORD_BOT_TOKEN, DISCORD_GUILD_ID)')+'</b> · Webhook secret: <b>'+(I.webhookConfigured?'set':'not set (GITHUB_WEBHOOK_SECRET)')+'</b><br><small>GitHub webhook URL: '+esc(I.webhookUrl)+'<br>Link page for sponsors: '+esc(I.linkUrl)+'</small>';el.append(st);
+const po=document.createElement('p');po.innerHTML='GitHub check: <b>'+(I.poll.configured?'on for '+esc(I.poll.account)+', every '+I.poll.every+' min':'off (optional)')+'</b>'+(I.poll.last?'<br><small>Last run '+esc(I.poll.last.replace('T',' ').slice(0,16))+' UTC: '+(I.poll.ok?'ok':'FAILED')+' · '+esc(I.poll.message)+'</small>':'');if(I.poll.configured){const nb=document.createElement('button');nb.textContent='Check now';nb.onclick=async()=>{try{msg();await api('integration/poll','POST',{});drawInteg(await api('integration'))}catch(e){msg(e.message)}};po.append(' ',nb)}el.append(po);
+const st=document.createElement('p');st.innerHTML='Bot: <b>'+(I.botConfigured?'ready':'not set (DISCORD_BOT_TOKEN, DISCORD_GUILD_ID)')+'</b>'+(I.webhookConfigured?' · Webhook secret: <b>set</b>':'')+'<br><small>Optional automatic sign-up page for sponsors (needs GitHub linked in their Discord): '+esc(I.linkUrl)+'</small>';el.append(st);
 const inputs={};for(const [k,t] of Object.entries(D.tiers)){const r=document.createElement('div');r.className='row';r.innerHTML='<b style="width:110px">'+esc(t.name)+'</b>';const i=document.createElement('input');i.placeholder='Discord role ID';i.size=22;i.value=I.tierRoles[k]||'';inputs[k]=i;r.append(i);el.append(r)}
 const b=document.createElement('button');b.textContent='Save roles';b.onclick=async()=>{try{msg();const tr={};for(const k in inputs)tr[k]=inputs[k].value.trim();drawInteg(await api('integration','POST',{tierRoles:tr}))}catch(e){msg(e.message)}};el.append(b);
 const ev=document.createElement('div');ev.innerHTML='<p><b>Recent events</b></p>'+(I.events.length?I.events.map(e=>'<div><small>'+esc(e.at.replace('T',' ').slice(0,16))+' · '+esc(e.text)+'</small></div>').join(''):'<small>Nothing yet.</small>');el.append(ev)}
