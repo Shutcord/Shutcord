@@ -54,6 +54,12 @@ GitHub only sends sponsorship webhooks for some accounts (a repository webhook h
 
 Roles arrive within a few minutes of a payment. It was tested against a fake GitHub, not the real API, so confirm it with a real $1 sponsor. If "Last run" says FAILED the message says why (for example Bad credentials, or a missing scope).
 
+## Searching, editing and removing badges
+
+- **Find a person:** the search box at the top of the dashboard takes a Discord username or a user ID. It finds people who have logged in to the dashboard or `/link`, and, if the bot is set up, members of your Discord server (this needs **Server Members Intent** switched on in the Discord developer portal under Bot, Privileged Gateway Intents). A pasted ID always works, and the bot fills in the name. Typing also filters the sponsor and custom badge lists below. "Use for sponsor" and "Use for custom badge" copy the ID into the forms.
+- **Edit a badge:** every badge row has its tooltip, a file picker to replace the image, **Save**, and **Remove**. Replacing deletes the old image file.
+- Names show next to IDs once the server has seen them.
+
 ## Custom badges
 
 The dashboard has a **Custom badges** card for badges that aren't tied to a sponsor tier, for example Staff, Tester or a friend. Enter the person's Discord ID, a tooltip and an image, and press Add badge. A person can have up to 10. They show on the profile like sponsor badges (without the Donor popup) and are removed with the remove button next to them.
