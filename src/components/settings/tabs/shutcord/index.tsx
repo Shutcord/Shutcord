@@ -30,6 +30,7 @@ import { openContributorModal } from "@components/settings/tabs/plugins/Contribu
 import { openPluginModal } from "@components/settings/tabs/plugins/PluginModal";
 import NoTrack from "@plugins/_core/noTrack";
 import SettingsPlugin from "@plugins/_core/settings";
+import { SHUTCORD_API } from "@shared/api";
 import { gitRemote } from "@shared/shutcordUserAgent";
 import { IS_WINDOWS } from "@utils/constants";
 import { Margins } from "@utils/margins";
@@ -69,6 +70,16 @@ function Switches() {
             title: "Block Discord Analytics",
             description: NoTrack.settings.def.disableAnalytics.description,
             restartRequired: NoTrack.settings.def.disableAnalytics.restartNeeded,
+        },
+        {
+            key: "hideOwnSponsorBadges",
+            title: "Hide my own Shutcord badges",
+            description: "Hides the Shutcord badges on your own profile, on your screen only. Other Shutcord users still see them"
+        },
+        {
+            key: "hideSponsorBadges",
+            title: "Hide everyone's Shutcord badges",
+            description: "Stops showing Shutcord sponsor and custom badges on every profile"
         },
         IS_DISCORD_DESKTOP && {
             key: "nativeTitleBar",
@@ -205,6 +216,13 @@ function ShutcordSettings() {
                                 action={() => ShutcordNative.settings.openFolder()}
                             />
                         </>
+                    )}
+                    {SHUTCORD_API && (
+                        <QuickAction
+                            Icon={PaintbrushIcon}
+                            text="Edit My Profile"
+                            action={() => ShutcordNative.native.openExternal(SHUTCORD_API + "/me")}
+                        />
                     )}
                     <QuickAction
                         Icon={GithubIcon}

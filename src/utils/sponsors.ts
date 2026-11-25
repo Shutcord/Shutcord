@@ -31,28 +31,30 @@ export interface Sponsor {
 export interface SponsorsFile {
     tiers: Record<string, SponsorTier>;
     sponsors: Record<string, Sponsor>;
+    /** Badges for anyone, not tied to a tier (staff, testers, friends...) */
+    custom?: Record<string, SponsorBadge[]>;
 }
 
 export const ALLOWED_BADGE_HOSTS = ["raw.githubusercontent.com", "cdn.discordapp.com"];
 
-export function isAllowedBadgeUrl(url: string) {
+export function isAllowedBadgeUrl(url: string, extraHosts: string[] = []) {
     try {
         const u = new URL(url);
-        return u.protocol === "https:" && ALLOWED_BADGE_HOSTS.includes(u.hostname);
+        return u.protocol === "https:" && (ALLOWED_BADGE_HOSTS.includes(u.hostname) || extraHosts.includes(u.hostname));
     } catch {
         return false;
     }
 }
 
 /** Turns sponsors.json into `userId -> badges`, cutting every sponsor down to what their tier allows */
-export function resolveSponsorBadges(data: Partial<SponsorsFile> | null | undefined) {
+export function resolveSponsorBadges(data: Partial<SponsorsFile> | null | undefined, extraHosts: string[] = []) {
     const result: Record<string, SponsorBadge[]> = {};
     if (!data?.tiers || !data.sponsors) return result;
 
     for (const [userId, sponsor] of Object.entries(data.sponsors)) {
         const limit = data.tiers[sponsor?.tier]?.badges ?? 0;
         const badges = (sponsor?.badges ?? [])
-            .filter(b => b && typeof b.badge === "string" && isAllowedBadgeUrl(b.badge))
+            .filter(b => b && typeof b.badge === "string" && isAllowedBadgeUrl(b.badge, extraHosts))
             .slice(0, limit);
 
         if (badges.length) result[userId] = badges;
@@ -65,4 +67,29 @@ export function resolveSponsorBadges(data: Partial<SponsorsFile> | null | undefi
 export function listSponsorIds(data: Partial<SponsorsFile> | null | undefined) {
     if (!data?.tiers || !data.sponsors) return new Set<string>();
     return new Set(Object.entries(data.sponsors).filter(([, s]) => s && data.tiers![s.tier]).map(([id]) => id));
+}
+
+/** `userId -> tier name`, for the badge popup */
+export function resolveSponsorTierNames(data: Partial<SponsorsFile> | null | undefined) {
+    const result: Record<string, string> = {};
+    if (!data?.tiers || !data.sponsors) return result;
+    for (const [userId, sponsor] of Object.entries(data.sponsors)) {
+        const tier = data.tiers[sponsor?.tier];
+        if (tier) result[userId] = tier.name;
+    }
+    return result;
+}
+
+export const MAX_CUSTOM_BADGES = 10;
+
+/** `userId -> badges` from the `custom` section of sponsors.json */
+export function resolveCustomBadges(data: Partial<SponsorsFile> | null | undefined, extraHosts: string[] = []) {
+    const result: Record<string, SponsorBadge[]> = {};
+    for (const [userId, list] of Object.entries(data?.custom ?? {})) {
+        const badges = (Array.isArray(list) ? list : [])
+            .filter(b => b && typeof b.badge === "string" && isAllowedBadgeUrl(b.badge, extraHosts))
+            .slice(0, MAX_CUSTOM_BADGES);
+        if (badges.length) result[userId] = badges;
+    }
+    return result;
 }

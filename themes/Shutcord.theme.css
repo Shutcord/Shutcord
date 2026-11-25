@@ -1,0 +1,117 @@
+/**
+ * @name Shutcord
+ * @description Flat, one-colour grey rebrand of Discord. Rounded popups, calmer settings, no gradients.
+ * @author Shutcord
+ * @version 1.0.0
+ * @source https://github.com/Shutcord/Shutcord
+ */
+
+/* Palette: change these and everything follows */
+:root {
+    --sc-bg-0: #0f0f11;        /* server list, deepest */
+    --sc-bg-1: #151518;        /* channel list */
+    --sc-bg-2: #1b1b1f;        /* chat */
+    --sc-bg-3: #232328;        /* popups, cards */
+    --sc-bg-4: #2c2c32;        /* hover */
+    --sc-line: #2f2f36;
+    --sc-text: #e4e4e7;
+    --sc-muted: #8d8d96;
+    --sc-accent: #d4d4d8;      /* the one accent: light grey */
+    --sc-accent-text: #121214;
+    --sc-radius: 12px;
+    --sc-radius-sm: 8px;
+}
+
+/* Discord variables (old and new names, so a rename on their side doesn't break everything) */
+.theme-dark, .theme-darker, .theme-midnight, .theme-light {
+    --background-primary: var(--sc-bg-2);
+    --background-secondary: var(--sc-bg-1);
+    --background-secondary-alt: var(--sc-bg-0);
+    --background-tertiary: var(--sc-bg-0);
+    --background-floating: var(--sc-bg-3);
+    --background-accent: var(--sc-bg-4);
+    --background-modifier-hover: color-mix(in srgb, var(--sc-text) 6%, transparent);
+    --background-modifier-selected: color-mix(in srgb, var(--sc-text) 10%, transparent);
+    --background-modifier-accent: var(--sc-line);
+    --background-base-lowest: var(--sc-bg-0);
+    --background-base-lower: var(--sc-bg-1);
+    --background-base-low: var(--sc-bg-1);
+    --background-surface-high: var(--sc-bg-3);
+    --background-surface-higher: var(--sc-bg-3);
+    --background-surface-highest: var(--sc-bg-4);
+    --chat-background-default: var(--sc-bg-2);
+    --channeltextarea-background: var(--sc-bg-3);
+    --header-primary: var(--sc-text);
+    --header-secondary: var(--sc-muted);
+    --text-normal: var(--sc-text);
+    --text-default: var(--sc-text);
+    --text-muted: var(--sc-muted);
+    --text-secondary: var(--sc-muted);
+    --interactive-normal: var(--sc-muted);
+    --interactive-hover: var(--sc-text);
+    --interactive-active: #fff;
+    --brand-500: var(--sc-accent);
+    --brand-460: #e4e4e7;
+    --brand-360: #bcbcc2;
+    --brand-experiment: var(--sc-accent);
+    --brand-experiment-560: #bcbcc2;
+    --button-filled-brand-background: var(--sc-accent);
+    --button-filled-brand-background-hover: #e4e4e7;
+    --button-filled-brand-text: var(--sc-accent-text);
+    --text-link: #c8c8ce;
+    --scrollbar-thin-thumb: #3a3a42;
+    --scrollbar-thin-track: transparent;
+    --scrollbar-auto-thumb: #3a3a42;
+    --scrollbar-auto-track: transparent;
+    --border-radius: var(--sc-radius);
+}
+
+/* Flat: no gradient banners or glows */
+[class*="upsellBanner"], [class*="gradient"], [class*="premiumPromo"] { background-image: none !important; }
+[class*="applicationStore"] { background: var(--sc-bg-2) !important; }
+
+/* Popups, menus, modals: rounded, thin outline, soft shadow */
+[class*="popout_"], [class*="menu_"][role="menu"], [class*="layerContainer"] [class*="container_"][role="dialog"],
+[class*="root_"][class*="small_"], [class*="root_"][class*="medium_"], [class*="root_"][class*="large_"] {
+    border-radius: var(--sc-radius) !important;
+    border: 1px solid var(--sc-line) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .45) !important;
+    background: var(--sc-bg-3) !important;
+}
+[class*="backdrop_"] { backdrop-filter: blur(6px); }
+[class*="menu_"] [class*="item_"] { border-radius: 6px !important; }
+[class*="focused_"][class*="item_"] { background: var(--sc-bg-4) !important; color: var(--sc-text) !important; }
+
+/* Buttons and inputs */
+button[class*="lookFilled"][class*="colorBrand"], [class*="lookFilled"][class*="colorBrand"] {
+    background: var(--sc-accent) !important;
+    color: var(--sc-accent-text) !important;
+    border-radius: var(--sc-radius-sm) !important;
+}
+button[class*="lookFilled"][class*="colorBrand"]:hover { background: #e4e4e7 !important; }
+input[class*="input"], textarea[class*="textArea"], [class*="searchBar"] { border-radius: var(--sc-radius-sm) !important; }
+[class*="channelTextArea"] { border-radius: var(--sc-radius) !important; }
+
+/* Server list: squircles stay round, selection pill is grey */
+[class*="pill"] > span { background: var(--sc-accent) !important; }
+[class*="wrapper"][class*="selected"] [class*="svg"] foreignObject { filter: none; }
+
+/* Selected channel / DM row */
+[class*="modeSelected"] { background: var(--sc-bg-4) !important; }
+[class*="mentionsBadge"], [class*="numberBadge"] { background: var(--sc-accent) !important; color: var(--sc-accent-text) !important; }
+
+/* Messages */
+[class*="messageListItem"] [class*="mention"] { background: color-mix(in srgb, var(--sc-accent) 14%, transparent); color: var(--sc-accent); border-radius: 6px; }
+[class*="hasMention"] { background: color-mix(in srgb, var(--sc-accent) 8%, transparent) !important; }
+[class*="mentioned"]::before, [class*="mentioned"] [class*="mentioned"] { background-color: var(--sc-accent) !important; }
+[class*="embedWrapper"] { border-radius: var(--sc-radius-sm) !important; }
+[class*="codeBlockText"], pre code { border-radius: var(--sc-radius-sm); }
+
+/* Settings */
+[class*="standardSidebarView"] [class*="sidebar"] { background: var(--sc-bg-1) !important; }
+[class*="standardSidebarView"] [class*="contentRegion"] { background: var(--sc-bg-2) !important; }
+[class*="sidebarRegion"] [class*="item"][class*="selected"] { background: var(--sc-bg-4) !important; border-radius: var(--sc-radius-sm); }
+[class*="sc-"] , [class*="sc-"] * { --brand-500: var(--sc-accent); }
+
+/* Toggle switches in grey */
+[class*="control"][class*="checked"] { background-color: var(--sc-accent) !important; }
