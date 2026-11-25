@@ -33,7 +33,7 @@ Issues and discussions: https://github.com/Shutcord/Shutcord
 Thank you to everyone who supports Shutcord. Perks are listed in [docs/SPONSORS.md](docs/SPONSORS.md).
 
 <!-- sponsors:start -->
-_Be the first. See the Sponsor button on this repo._
+<a href="https://github.com/shutted"><img src="https://github.com/shutted.png?size=64" width="48" height="48" alt="shutted" title="shutted"></a>
 <!-- sponsors:end -->
 
 ## Disclaimer
