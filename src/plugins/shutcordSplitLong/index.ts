@@ -64,10 +64,11 @@ const listener: MessageSendListener = async (channelId, msg) => {
     if (msg.content.length <= limit) return;
 
     const parts = splitMessage(msg.content, limit);
-    for (const part of parts.slice(0, -1))
+    const last = parts.pop()!;
+    for (const part of parts)
         await sendMessage(channelId, { content: part });
 
-    msg.content = parts.at(-1)!;
+    msg.content = last;
 };
 
 export default definePlugin({
