@@ -61,6 +61,12 @@ You don't need the GitHub check or the `/link` page, and sponsors don't need Git
 2. When someone sponsors, find them with the search box (or paste their Discord ID), pick their tier and press **Save**.
 3. If the bot is set up and the person is **in your Discord server**, it gives them the role for that tier and takes the other tier roles away. Changing the tier changes the role, and **Remove sponsor** removes it. (Someone who isn't in the server yet gets the badge but no role. Press Save again after they join.)
 
+## Importing what you already have
+
+The dashboard only shows what is stored on the server. Sponsors you added earlier with `pnpm sponsors` live in the `sponsors.json` file on GitHub, so the dashboard starts out empty. Press **Import from GitHub file** at the top of the dashboard to copy them over. It never overwrites anything already here. Set `IMPORT_URL` to import from somewhere else.
+
+After importing, set `SHUTCORD_API` in `src/shared/api.ts` to your server address (already done in this repo) and rebuild, so Discord reads the server's list instead of the GitHub file. From then on, manage everything in the dashboard.
+
 ## Searching, editing and removing badges
 
 - **Find a person:** the search box at the top of the dashboard takes a Discord username or a user ID. It finds people who have logged in to the dashboard or `/link`, and, if the bot is set up, members of your Discord server (this needs **Server Members Intent** switched on in the Discord developer portal under Bot, Privileged Gateway Intents). A pasted ID always works, and the bot fills in the name. Typing also filters the sponsor and custom badge lists below. "Use for sponsor" and "Use for custom badge" copy the ID into the forms.

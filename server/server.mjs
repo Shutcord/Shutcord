@@ -39,6 +39,7 @@ const SPONSORS_ONLY = env.PROFILES_SPONSORS_ONLY === "1";
 const BOT_TOKEN = env.DISCORD_BOT_TOKEN || "";
 const GUILD_ID = env.DISCORD_GUILD_ID || "";
 const WEBHOOK_SECRET = env.GITHUB_WEBHOOK_SECRET || "";
+const IMPORT_URL = env.IMPORT_URL || "https://raw.githubusercontent.com/Shutcord/Shutcord/main/sponsors.json";
 const GITHUB_TOKEN = env.GITHUB_TOKEN || "";
 const GITHUB_ACCOUNT = env.GITHUB_SPONSORED_ACCOUNT || "";
 const GITHUB_GRAPHQL = env.GITHUB_GRAPHQL || "https://api.github.com/graphql";
@@ -425,6 +426,26 @@ const server = createServer(async (req, res) => {
                 return send(res, 200, out(d));
             }
 
+            if (path === "/admin/api/import" && req.method === "POST") {
+                let src;
+                try { src = await fetch(IMPORT_URL, { headers: { "cache-control": "no-cache" } }).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }); }
+                catch (e) { return send(res, 502, { error: "Could not download " + IMPORT_URL + " (" + e.message + ")" }); }
+                let added = 0, skipped = 0;
+                for (const [id, s] of Object.entries(src.sponsors ?? {})) {
+                    if (!ID.test(id) || !d.tiers[s?.tier] || d.sponsors[id]) { skipped++; continue; }
+                    d.sponsors[id] = { tier: s.tier, ...(s.github ? { github: String(s.github) } : {}), badges: (s.badges ?? []).slice(0, d.tiers[s.tier].badges) };
+                    added++;
+                }
+                for (const [id, list] of Object.entries(src.custom ?? {})) {
+                    if (!ID.test(id) || !Array.isArray(list) || d.custom?.[id]) { skipped++; continue; }
+                    (d.custom ??= {})[id] = list.filter(b => b && typeof b.badge === "string").slice(0, 10);
+                    added++;
+                }
+                writeJson(F.sponsors, d);
+                for (const id of Object.keys(d.sponsors)) await resolveUser(id);
+                return send(res, 200, { ...out(d), imported: { added, skipped } });
+            }
+
             if (path === "/admin/api/sponsor" && req.method === "POST") {
                 const b = await body(req);
                 if (!ID.test(b.id || "")) return send(res, 400, { error: "Discord ID must be 15-22 digits" });
@@ -600,6 +621,7 @@ const ADMIN_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport conte
 <div id=app hidden>
 <div id=adminsCard class=card hidden><b>Admins</b> <small>(only you, the owner, can change this)</small><div id=admins></div><div class=row><input id=aid placeholder="Discord user ID" size=22><button id=aadd>Make admin</button></div></div>
 <div id=integCard class=card hidden><b>Discord roles and GitHub Sponsors</b> <small>(owner only)</small><div id=integ></div></div>
+<div class=card><b>Import</b> <small>(copies sponsors and badges that are in the GitHub file but not here yet; nothing is overwritten)</small><div class=row><button id=imp>Import from GitHub file</button><span id=impmsg></span></div></div>
 <div class=card><b>Find a person</b> <small>(Discord username or user ID)</small><div class=row><input id=q placeholder="Search…" size=30></div><div id=results></div></div>
 <div class=card><b>Add or change a sponsor</b><div class=row><input id=id placeholder="Discord user ID" size=22><select id=tier></select><input id=gh placeholder="GitHub name (optional)"><button id=add>Save</button></div></div>
 <div class=card><b>Custom badges</b> <small>(for anyone: staff, testers, friends. Not tied to a tier, up to 10 each)</small>
@@ -618,7 +640,7 @@ const sv=document.createElement('button');sv.textContent='Save';sv.title='Save t
 sv.onclick=()=>{const file=f.files[0];const go=data=>run(()=>api(base,'PATCH',{tooltip:tt.value,data}));if(!file)return go();const fr=new FileReader();fr.onload=()=>go(fr.result.split(',')[1]);fr.readAsDataURL(file)};
 const x=document.createElement('button');x.className='x';x.textContent='Remove';x.onclick=()=>confirm('Remove this badge?')&&run(()=>api(base,'DELETE'));r.append(im,tt,f,sv,x);return r}
 function draw(){$('app').hidden=false;$('tier').innerHTML=Object.entries(D.tiers).map(([k,t])=>'<option value='+k+'>'+esc(t.name)+' ($'+t.usd+', '+t.badges+' badges)</option>').join('');
-drawCustom();$('list').innerHTML='';for(const [id,s] of Object.entries(D.sponsors)){if(!hit(id,(s.github||'')+' '+s.tier))continue;const t=D.tiers[s.tier]||{name:'?',badges:0};const c=document.createElement('div');c.className='card';
+drawCustom();$('list').innerHTML=Object.keys(D.sponsors).length?'':'<div class=card><small>No sponsors in this list yet. If you added some earlier with pnpm sponsors, press Import above.</small></div>';for(const [id,s] of Object.entries(D.sponsors)){if(!hit(id,(s.github||'')+' '+s.tier))continue;const t=D.tiers[s.tier]||{name:'?',badges:0};const c=document.createElement('div');c.className='card';
 c.innerHTML='<div class=row>'+who(id)+'<small>'+esc(t.name)+(s.github?' · '+esc(s.github):'')+' · '+(s.badges||[]).length+'/'+t.badges+' badges</small></div>';
 (s.badges||[]).forEach((b,i)=>c.append(badgeRow(b,'sponsor/'+id+'/badge/'+i)));
 const r=document.createElement('div');r.className='row';
@@ -647,6 +669,7 @@ if(!ME.role){$('top').innerHTML='Logged in as '+esc(ME.name||ME.id)+', but you a
 $('top').innerHTML='Logged in as <b>'+esc(ME.name||ME.id)+'</b> <small>('+ME.role+')</small> <a href=/logout><small>Log out</small></a>';
 D=await api('data');draw();if(ME.role==='owner'){drawAdmins(await api('admins'));drawInteg(await api('integration'));$('aadd').onclick=()=>runA(()=>api('admins','POST',{id:$('aid').value.trim()}))}
 $('cadd').onclick=()=>{const file=$('cfile').files[0];if(!file)return msg('pick an image first');const fr=new FileReader();fr.onload=()=>run(()=>api('custom','POST',{id:$('cid').value.trim(),tooltip:$('ctip').value,data:fr.result.split(',')[1]}));fr.readAsDataURL(file)};
+$('imp').onclick=async()=>{try{msg();D=await api('import','POST',{});$('impmsg').textContent='Added '+D.imported.added+', skipped '+D.imported.skipped+' (already here or invalid).';draw()}catch(e){msg(e.message)}};
 $('add').onclick=()=>run(()=>api('sponsor','POST',{id:$('id').value.trim(),tier:$('tier').value,github:$('gh').value.trim()}))})();
 </script></main>`;
 
