@@ -14,7 +14,7 @@
 }
 
 .sc-switch-checked {
-    background: var(--brand-500);
+    background: #71717a;
     border-color: var(--control-primary-border-default);
 }
 
