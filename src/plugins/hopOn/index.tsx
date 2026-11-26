@@ -19,6 +19,7 @@
 // Ported from Equicord (GPL-3.0). Original authors are listed in `authors`.
 
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { Message } from "@vencord/discord-types";
 import { RelationshipStore, SelectedChannelStore } from "@webpack/common";
@@ -47,7 +48,7 @@ export default definePlugin({
     origin: "equicord",
     description: "Hop on! Opens a configurable URL when a message matches a custom regex in the current channel.",
     tags: ["Fun"],
-    authors: [{ name: "lillith <3", id: 799319081723232267n }],
+    authors: [Devs.ImLvna],
     settings,
     flux: {
         async MESSAGE_CREATE({ optimistic, type, message, channelId }: IMessageCreate) {

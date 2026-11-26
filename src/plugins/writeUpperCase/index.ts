@@ -20,6 +20,7 @@
 
 import { addMessagePreSendListener, MessageSendListener, removeMessagePreSendListener } from "@api/MessageEvents";
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 const settings = definePluginSettings(
@@ -52,7 +53,7 @@ export default definePlugin({
     origin: "equicord",
     description: "Changes the first Letter of each Sentence in Message Inputs to Uppercase",
     tags: ["Appearance", "Customisation", "Chat"],
-    authors: [{ name: "Samwich", id: 976176454511509554n }, { name: "krystalskullofficial", id: 929208515883569182n }],
+    authors: [Devs.Samwich, Devs.PortKrystalskullofficial],
     settings,
 
     start() {
