@@ -19,6 +19,7 @@
 // Ported from Equicord (GPL-3.0). Original authors are listed in `authors`.
 
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { ChannelRouter, ChannelStore, UserGuildSettingsStore } from "@webpack/common";
 
@@ -35,7 +36,7 @@ export default definePlugin({
     origin: "equicord",
     description: "Automatically opens the channel from new messages.",
     tags: ["Chat", "Utility"],
-    authors: [{ name: "k304", id: 255004979637649408n }],
+    authors: [Devs.PortK304],
     settings,
     flux: {
         RPC_NOTIFICATION_CREATE({ channelId }) {

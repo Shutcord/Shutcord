@@ -719,6 +719,34 @@ export const Devs = /* #__PURE__*/ Object.freeze({
     Cramber: {
         name: "Cramber",
         id: 342564015974907914n
+    },
+    PortCortex: {
+        name: "Cortex",
+        id: 913205935319691335n
+    },
+    PortK304: {
+        name: "k304",
+        id: 255004979637649408n
+    },
+    PortKrystalskullofficial: {
+        name: "krystalskullofficial",
+        id: 929208515883569182n
+    },
+    PortMochie: {
+        name: "mochie",
+        id: 1043599230247374869n
+    },
+    PortPort: {
+        name: "port",
+        id: 1318383159645311009n
+    },
+    PortDKA: {
+        name: "DKA",
+        id: 119386840624005121n
+    },
+    PortTolgchu: {
+        name: "✨Tolgchu✨",
+        id: 329671025312923648n
     }
 } satisfies Record<string, Dev>);
 

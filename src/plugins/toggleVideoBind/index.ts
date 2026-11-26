@@ -19,6 +19,7 @@
 // Ported from Equicord (GPL-3.0). Original authors are listed in `authors`.
 
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { FluxDispatcher, MediaEngineStore } from "@webpack/common";
 
@@ -71,7 +72,7 @@ export default definePlugin({
     origin: "equicord",
     description: "Adds a customizable bind to toggle webcam.",
     tags: ["Utility", "Voice"],
-    authors: [{ name: "mochie", id: 1043599230247374869n }],
+    authors: [Devs.PortMochie],
     settings,
     start() {
         document.addEventListener("keydown", handleKeydown);

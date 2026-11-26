@@ -19,6 +19,7 @@
 // Ported from Equicord (GPL-3.0). Original authors are listed in `authors`.
 
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 import { FluxDispatcher } from "@webpack/common";
 
@@ -70,7 +71,7 @@ export default definePlugin({
     name: "SilenceUsers",
     origin: "equicord",
     description: "Silences @mention pings and server badge counts from specific users. Regular messages and DMs are untouched.",
-    authors: [{ name: "DKA", id: 119386840624005121n }],
+    authors: [Devs.PortDKA],
     tags: ["Notifications"],
     settings,
     start() {

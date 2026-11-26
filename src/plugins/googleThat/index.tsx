@@ -20,6 +20,7 @@
 
 import { ApplicationCommandOptionType, findOption } from "@api/Commands";
 import { definePluginSettings } from "@api/Settings";
+import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 function getMessage(opts) {
@@ -91,7 +92,7 @@ export default definePlugin({
     description: "Adds a command to send a internet search link",
     dependencies: ["CommandsAPI"],
     tags: ["Commands", "Utility"],
-    authors: [{ name: "Samwich", id: 976176454511509554n }, { name: "krystalskullofficial", id: 929208515883569182n }],
+    authors: [Devs.Samwich, Devs.PortKrystalskullofficial],
     searchTerms: ["search", "google", "query", "duckduckgo", "command"],
     settings,
     commands: [
