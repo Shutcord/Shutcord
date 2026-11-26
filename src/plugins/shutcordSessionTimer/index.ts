@@ -41,7 +41,7 @@ const settings = definePluginSettings({
             { label: "Top right", value: "top-right" },
             { label: "Top left", value: "top-left" }
         ],
-        onChange: (c: Corner) => pill && placePill(pill, c)
+        onChange: (c: string) => pill && placePill(pill, c as Corner)
     }
 });
 
@@ -54,7 +54,7 @@ export default definePlugin({
 
     start() {
         startedAt = Date.now();
-        pill = createPill("sc-session-timer", settings.store.corner);
+        pill = createPill("sc-session-timer", settings.store.corner as Corner);
         draw();
         timer = setInterval(draw, 15000);
     },

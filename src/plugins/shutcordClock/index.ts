@@ -42,7 +42,7 @@ const settings = definePluginSettings({
             { label: "Top right", value: "top-right" },
             { label: "Top left", value: "top-left" }
         ],
-        onChange: (c: Corner) => pill && placePill(pill, c)
+        onChange: (c: string) => pill && placePill(pill, c as Corner)
     },
     hour24: { type: OptionType.BOOLEAN, description: "Use the 24 hour clock", default: true, onChange: draw },
     seconds: { type: OptionType.BOOLEAN, description: "Show seconds", default: false, onChange: draw }
@@ -56,7 +56,7 @@ export default definePlugin({
     settings,
 
     start() {
-        pill = createPill("sc-clock", settings.store.corner);
+        pill = createPill("sc-clock", settings.store.corner as Corner);
         draw();
         timer = setInterval(draw, 1000);
     },
