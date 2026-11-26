@@ -40,6 +40,7 @@ import { SettingsRouter } from "@webpack/common";
 import { get as dsGet } from "./api/DataStore";
 import { NotificationData, showNotification } from "./api/Notifications";
 import { initPluginManager, PMLogger, startAllPlugins } from "./api/PluginManager";
+import { loadUserPlugins } from "./api/UserPlugins";
 import { PlainSettings, Settings, SettingsStore } from "./api/Settings";
 import { areLocalSettingsDirty, getCloudSettings, getCloudSyncDirection, markLocalSettingsDirty, putCloudSettings, shouldCloudSync } from "./api/SettingsSync/cloudSync";
 import { relaunch } from "./utils/native";
@@ -173,6 +174,7 @@ async function init() {
     }
 }
 
+loadUserPlugins();
 initPluginManager();
 initStyles();
 startAllPlugins(StartAt.Init);

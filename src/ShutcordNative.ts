@@ -52,6 +52,11 @@ export default {
         getRepo: () => invoke<IpcRes<string>>(IpcEvents.GET_REPO),
     },
 
+    userPlugins: {
+        get: () => sendSync<{ file: string; code: string; }[]>(IpcEvents.GET_USER_PLUGINS),
+        openFolder: () => invoke<void>(IpcEvents.OPEN_PLUGINS_FOLDER),
+    },
+
     settings: {
         get: () => sendSync<Settings>(IpcEvents.GET_SETTINGS),
         set: (settings: Settings, pathToNotify?: string) => invoke<void>(IpcEvents.SET_SETTINGS, settings, pathToNotify),

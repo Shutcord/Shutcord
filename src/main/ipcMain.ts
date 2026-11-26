@@ -23,14 +23,14 @@ import "./settings";
 import { debounce } from "@shared/debounce";
 import { IpcEvents } from "@shared/IpcEvents";
 import { BrowserWindow, ipcMain, nativeImage, nativeTheme, net, shell, systemPreferences, WebContents } from "electron";
-import { FSWatcher, mkdirSync, readFileSync, watch, writeFileSync } from "fs";
+import { existsSync, FSWatcher, mkdirSync, readdirSync, readFileSync, watch, writeFileSync } from "fs";
 import { open, readdir, readFile } from "fs/promises";
 import { release } from "os";
 import { join } from "path";
 
 import { registerCspIpcHandlers } from "./csp/manager";
 import { getThemeInfo, stripBOM, UserThemeHeader } from "./themes";
-import { ALLOWED_PROTOCOLS, QUICK_CSS_PATH, SETTINGS_DIR, THEMES_DIR } from "./utils/constants";
+import { ALLOWED_PROTOCOLS, QUICK_CSS_PATH, SETTINGS_DIR, THEMES_DIR, USER_PLUGINS_DIR } from "./utils/constants";
 import { ensureSafePath } from "./utils/ensureSafePath";
 import { makeLinksOpenExternally } from "./utils/externalLinks";
 import editorHtml from "file://quickCssEditor.html";
@@ -38,6 +38,36 @@ import editorHtml from "file://quickCssEditor.html";
 const RENDERER_CSS_PATH = join(__dirname, IS_VESKTOP ? "shutcordDesktopRenderer.css" : "renderer.css");
 
 mkdirSync(THEMES_DIR, { recursive: true });
+mkdirSync(USER_PLUGINS_DIR, { recursive: true });
+
+const EXAMPLE_PLUGIN_PATH = join(USER_PLUGINS_DIR, "_example.js");
+if (!existsSync(EXAMPLE_PLUGIN_PATH)) {
+    writeFileSync(EXAMPLE_PLUGIN_PATH, `// Your own Shutcord plugins live in this folder as plain .js files. No build needed.
+// Copy this file, remove the leading underscore, edit it, then restart Discord (Ctrl+R) and
+// switch the plugin on in Settings > Plugins > Custom plugins.
+// Files that start with _ or . are ignored.
+
+module.exports = definePlugin({
+    name: "HelloCustom",
+    description: "Example custom plugin. Adds the /hello command.",
+    authors: ["You"],
+    usage: "Type /hello in any chat and press Enter.",
+
+    commands: [{
+        name: "hello",
+        description: "Says hello",
+        execute: () => ({ content: "Hello from my own Shutcord plugin!" })
+    }],
+
+    start() {
+        console.log("[HelloCustom] started");
+    },
+    stop() {
+        console.log("[HelloCustom] stopped");
+    }
+});
+`);
+}
 
 registerCspIpcHandlers();
 
@@ -105,6 +135,16 @@ ipcMain.handle(IpcEvents.GET_THEME_SYSTEM_VALUES, () => {
 });
 
 ipcMain.handle(IpcEvents.OPEN_THEMES_FOLDER, () => shell.openPath(THEMES_DIR));
+ipcMain.handle(IpcEvents.OPEN_PLUGINS_FOLDER, () => shell.openPath(USER_PLUGINS_DIR));
+ipcMain.on(IpcEvents.GET_USER_PLUGINS, e => {
+    try {
+        e.returnValue = readdirSync(USER_PLUGINS_DIR)
+            .filter(file => file.endsWith(".js") && !file.startsWith("_") && !file.startsWith("."))
+            .map(file => ({ file, code: readFileSync(join(USER_PLUGINS_DIR, file), "utf-8") }));
+    } catch {
+        e.returnValue = [];
+    }
+});
 ipcMain.handle(IpcEvents.OPEN_SETTINGS_FOLDER, () => shell.openPath(SETTINGS_DIR));
 
 let fsWatchers = [] as FSWatcher[];

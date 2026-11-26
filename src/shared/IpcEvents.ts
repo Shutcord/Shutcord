@@ -34,6 +34,8 @@ export const enum IpcEvents {
 
     OPEN_EXTERNAL = "ShutcordOpenExternal",
     OPEN_THEMES_FOLDER = "ShutcordOpenThemesFolder",
+    OPEN_PLUGINS_FOLDER = "ShutcordOpenPluginsFolder",
+    GET_USER_PLUGINS = "ShutcordGetUserPlugins",
     OPEN_SETTINGS_FOLDER = "ShutcordOpenSettingsFolder",
 
     GET_UPDATES = "ShutcordGetUpdates",

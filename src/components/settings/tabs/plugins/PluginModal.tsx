@@ -238,6 +238,26 @@ export default function PluginModal({ plugin, onRestartNeeded, onClose, transiti
                     </div>
                 )}
 
+                {(!!plugin.usage || !!plugin.commands?.length) && (
+                    <section>
+                        <Heading tag="h3" className={classes(Margins.top16, Margins.bottom8)}>How to use</Heading>
+                        {!!plugin.usage && <Paragraph>{plugin.usage}</Paragraph>}
+                        {!!plugin.commands?.length && (
+                            <>
+                                <Paragraph className={Margins.top8}>
+                                    Type the command in any chat, pick it from the popup that appears above the message box,
+                                    fill in the option and press Enter.
+                                </Paragraph>
+                                <ul className={Margins.top8}>
+                                    {plugin.commands.map(c => (
+                                        <li key={c.name}><code>/{c.name}</code> {c.description}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                    </section>
+                )}
+
                 <section>
                     <Heading tag="h3" className={classes(Margins.top16, Margins.bottom8)}>Settings</Heading>
                     {renderSettings()}
