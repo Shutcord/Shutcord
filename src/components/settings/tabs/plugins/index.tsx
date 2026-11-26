@@ -109,7 +109,7 @@ function ExcludedPluginsList({ search }: { search: string; }) {
     );
 }
 
-function PluginSettings() {
+function PluginSettings({ onlyEnabled = false }: { onlyEnabled?: boolean; }) {
     const settings = useSettings();
     const changeRef = useRef<ChangeList<string>>(null);
     const changes = changeRef.current ??= new ChangeList<string>();
@@ -227,8 +227,8 @@ function PluginSettings() {
             customPlugins.push(makeCard(p));
         } else if (searchValue.view === "custom") {
             continue;
-        } else if (isPluginEnabled(p.name)) {
-            enabledPlugins.push(makeCard(p));
+        } else if (onlyEnabled) {
+            if (isPluginEnabled(p.name)) enabledPlugins.push(makeCard(p));
         } else if (inSource(origin, searchValue.source)) {
             plugins.push(makeCard(p));
         }
@@ -275,14 +275,17 @@ function PluginSettings() {
                 </div>
             </ErrorBoundary>
 
-            {searchValue.view === "all" && <>
+            {onlyEnabled && <>
             <Heading tag="h4" className={Margins.top20}>Enabled plugins ({enabledPlugins.length})</Heading>
             <div className={cl("grid")}>
                 {enabledPlugins.length
                     ? enabledPlugins
-                    : <Paragraph>{search ? "No enabled plugins meet the search criteria." : "Nothing enabled yet. Turn a plugin on below."}</Paragraph>
+                    : <Paragraph>{search ? "No enabled plugins meet the search criteria." : "Nothing enabled yet. Turn a plugin on in the Plugins tab."}</Paragraph>
                 }
             </div>
+            </>}
+
+            {!onlyEnabled && searchValue.view === "all" && <>
 
             <Heading tag="h4" className={classes(Margins.top20, Margins.bottom8)}>Plugins ({plugins.length})</Heading>
 
@@ -341,4 +344,5 @@ function makeDependencyList(deps: string[]) {
     );
 }
 
-export default wrapTab(PluginSettings, "Plugins");
+export default wrapTab(() => <PluginSettings />, "Plugins");
+export const EnabledPluginsTab = wrapTab(() => <PluginSettings onlyEnabled />, "Enabled Plugins");

@@ -18,7 +18,7 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { BackupRestoreIcon, CloudIcon, MainSettingsIcon, PaintbrushIcon, PatchHelperIcon, PlaceholderIcon, PluginsIcon, UpdaterIcon, VesktopSettingsIcon } from "@components/Icons";
-import { BackupAndRestoreTab, CloudTab, PatchHelperTab, PluginsTab, ThemesTab, UpdaterTab, ShutcordTab } from "@components/settings/tabs";
+import { BackupAndRestoreTab, CloudTab, PatchHelperTab, PluginsTab, EnabledPluginsTab, ThemesTab, UpdaterTab, ShutcordTab } from "@components/settings/tabs";
 import { Devs } from "@utils/constants";
 import { isTruthy } from "@utils/guards";
 import definePlugin, { IconProps, OptionType } from "@utils/types";
@@ -179,6 +179,12 @@ export default definePlugin({
                 key: "shutcord_plugins",
                 title: "Plugins",
                 Component: PluginsTab,
+                Icon: PluginsIcon
+            }),
+            buildEntry({
+                key: "shutcord_enabled_plugins",
+                title: "Enabled Plugins",
+                Component: EnabledPluginsTab,
                 Icon: PluginsIcon
             }),
             buildEntry({
