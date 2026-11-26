@@ -77,9 +77,83 @@
     --control-primary-background-hover: color-mix(in srgb, var(--sc-accent) 88%, #fff);
     --control-primary-border-default: transparent;
     --control-primary-border-hover: transparent;
+    --brand-05a: var(--sc-accent);
+    --brand-10a: var(--sc-accent);
+    --brand-15a: var(--sc-accent);
+    --brand-20a: var(--sc-accent);
+    --brand-25a: var(--sc-accent);
+    --brand-30a: var(--sc-accent);
+    --brand-35a: var(--sc-accent);
+    --brand-40a: var(--sc-accent);
+    --brand-45a: var(--sc-accent);
+    --brand-50a: var(--sc-accent);
+    --brand-55a: var(--sc-accent);
+    --brand-60a: var(--sc-accent);
+    --brand-65a: var(--sc-accent);
+    --brand-70a: var(--sc-accent);
+    --brand-75a: var(--sc-accent);
+    --brand-80a: var(--sc-accent);
+    --brand-85a: var(--sc-accent);
+    --brand-90a: var(--sc-accent);
+    --brand-95a: var(--sc-accent);
+    --brand-100: var(--sc-accent);
+    --brand-130: var(--sc-accent);
+    --brand-160: var(--sc-accent);
+    --brand-200: var(--sc-accent);
+    --brand-230: var(--sc-accent);
+    --brand-260: var(--sc-accent);
+    --brand-300: var(--sc-accent);
+    --brand-330: var(--sc-accent);
+    --brand-345: var(--sc-accent);
+    --brand-360: var(--sc-accent);
+    --brand-400: var(--sc-accent);
+    --brand-430: var(--sc-accent);
+    --brand-460: var(--sc-accent);
+    --brand-500: var(--sc-accent);
+    --brand-530: var(--sc-accent);
+    --brand-560: var(--sc-accent);
+    --brand-600: var(--sc-accent);
+    --brand-630: var(--sc-accent);
+    --brand-660: var(--sc-accent);
+    --brand-700: var(--sc-accent);
+    --brand-730: var(--sc-accent);
+    --brand-760: var(--sc-accent);
+    --brand-800: var(--sc-accent);
+    --brand-830: var(--sc-accent);
+    --brand-860: var(--sc-accent);
+    --brand-900: var(--sc-accent);
+    --brand-experiment: var(--sc-accent);
+    --brand-experiment-560: var(--sc-accent);
+    --bg-brand: var(--sc-accent);
+    --background-brand: var(--sc-accent);
+    --background-accent: var(--sc-accent);
+    --background-mod-accent: var(--sc-bg-5);
+    --control-brand-foreground: var(--sc-accent);
+    --control-brand-foreground-new: var(--sc-accent);
+    --button-filled-brand-background: var(--sc-accent);
+    --button-filled-brand-background-hover: color-mix(in srgb, var(--sc-accent) 85%, #fff);
+    --button-filled-brand-background-active: color-mix(in srgb, var(--sc-accent) 75%, #000);
+    --button-filled-brand-text: var(--sc-bg-0);
+    --button-outline-brand-border: var(--sc-accent);
+    --button-outline-brand-text: var(--sc-accent);
+    --switch-brand-background: var(--sc-accent);
+    --interactive-text-active: var(--sc-text);
+    --mention-foreground: var(--sc-text);
     --border-focus: var(--sc-accent);
     --focus-primary: var(--sc-accent);
 }
+
+/* text sitting on the grey accent has to be dark */
+[class*="colorBrand"], [class*="lookFilled"][class*="colorBrand"] {
+    color: var(--sc-bg-0) !important;
+}
+
+/* old inline blurple and switches that hard-code it */
+[style*="rgb(88, 101, 242)"], [style*="#5865f2"], [style*="#5865F2"] {
+    background-color: var(--sc-accent) !important;
+    border-color: var(--sc-accent) !important;
+}
+[class*="switch"][class*="checked"] { background-color: var(--sc-accent) !important; }
 
 /* ---------- popups, menus, modals ---------- */
 [class*="layer_"] [class*="menu_"],

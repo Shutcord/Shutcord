@@ -55,6 +55,11 @@ window.ShutcordNative = {
         openFolder: async () => Promise.reject("themes:openFolder is not supported on web"),
     },
 
+    userPlugins: {
+        get: () => [],
+        openFolder: async () => Promise.reject("userPlugins:openFolder is not supported on web"),
+    },
+
     native: {
         getVersions: () => ({}),
         supportsWindowsMaterial: () => false,

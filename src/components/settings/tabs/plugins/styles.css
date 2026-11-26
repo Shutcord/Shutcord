@@ -94,6 +94,12 @@
 
 .sc-plugins-source-row {
     display: flex;
+    align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+}
+
+.sc-plugins-source-select {
+    flex: 1 1 220px;
+    min-width: 200px;
 }

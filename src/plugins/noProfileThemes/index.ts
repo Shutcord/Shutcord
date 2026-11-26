@@ -29,9 +29,8 @@ export default definePlugin({
         {
             find: "canEditThemes(){",
             replacement: {
-                // FakeProfileThemes patches the same function to always return true. If both are enabled, the final code will be
-                // `return $self.isCurrentUser(this?.userId) && true`, which still works
-                // This relies on the fact that FakeProfileThemes is applied first due to alphabetical order
+                // ShutcordProfileColors patches the same function to always return true. Both orders still work,
+                // the colour hook on the profile itself does not depend on this getter
                 match: /get canEditThemes\(\){return /,
                 replace: "$&$self.isCurrentUser(this?.userId)&&"
             }

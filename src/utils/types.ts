@@ -130,6 +130,8 @@ export interface PluginDef {
     description: string;
     /** Where the plugin comes from, shown in the plugin list filter. Defaults to Shutcord for Shutcord-authored plugins and Vencord for everything else */
     origin?: PluginOrigin;
+    /** Short how-to shown in the plugin window. Commands are listed automatically. */
+    usage?: string;
     /** Additional search terms that will bring up your plugin */
     searchTerms?: string[];
     tags?: PluginTag[];

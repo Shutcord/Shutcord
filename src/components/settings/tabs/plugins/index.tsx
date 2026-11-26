@@ -37,7 +37,7 @@ import { getPluginOrigin } from "@utils/pluginOrigin";
 import { PluginTarget } from "@utils/pluginTargets";
 import { promptToRestart } from "@utils/promptToRestart";
 import { useAwaiter, useCleanupEffect } from "@utils/react";
-import { PluginOrigin, PluginTag, PluginTags } from "@utils/types";
+import { PluginOrigin } from "@utils/types";
 import { lodash, React, SearchableSelect, TextInput, Tooltip, useMemo, useRef, useState } from "@webpack/common";
 import { JSX } from "react";
 
@@ -144,16 +144,12 @@ function PluginSettings() {
     )
         .toSorted((a, b) => Number(settings.plugins[b.name]?.isFavorite ?? false) - Number(settings.plugins[a.name]?.isFavorite ?? false));
 
-    const [searchValue, setSearchValue] = useState({ value: "", tags: [] as PluginTag[], source: "vencord+equicord" as Source });
+    const [searchValue, setSearchValue] = useState({ value: "", source: "vencord+equicord" as Source, view: "all" as "all" | "custom" });
 
     const search = searchValue.value.toLowerCase();
     const onSearch = (query: string) => setSearchValue(prev => ({ ...prev, value: query }));
 
     const pluginFilter = (plugin: typeof Plugins[keyof typeof Plugins]) => {
-        const { tags } = searchValue;
-
-        if (tags.length && tags.some(t => !plugin.tags?.includes(t))) return false;
-
         if (!search.length) return true;
 
         return (
@@ -229,6 +225,8 @@ function PluginSettings() {
             );
         } else if (PluginMeta[p.name]?.userPlugin) {
             customPlugins.push(makeCard(p));
+        } else if (searchValue.view === "custom") {
+            continue;
         } else if (isPluginEnabled(p.name)) {
             enabledPlugins.push(makeCard(p));
         } else if (inSource(origin, searchValue.source)) {
@@ -251,46 +249,38 @@ function PluginSettings() {
             </ErrorBoundary>
 
             <ErrorBoundary noop>
-                <div className={classes(Margins.top8, cl("source-row"))}>
-                    {SOURCES.map(({ value, label }) => {
-                        const count = Object.entries(sourceCounts)
-                            .reduce((n, [origin, c]) => n + (inSource(origin as PluginOrigin, value) ? c : 0), 0);
-                        return (
-                            <Button
-                                key={value}
-                                variant={searchValue.source === value ? "primary" : "secondary"}
-                                onClick={() => setSearchValue(prev => ({ ...prev, source: value }))}
-                            >
-                                {label} ({count})
-                            </Button>
-                        );
-                    })}
-                </div>
-                <div className={classes(Margins.bottom20, Margins.top8, cl("filter-controls"))}>
-                    <SearchableSelect
-                        options={PluginTags.map(tag => ({ label: tag, value: tag }))}
-                        value={searchValue.tags}
-                        onChange={tags => setSearchValue(prev => ({ ...prev, tags }))}
-                        closeOnSelect={false}
-                        placeholder="Filter by Tags"
-                        multi
-                    />
+                <div className={classes(Margins.top8, Margins.bottom8, cl("source-row"))}>
+                    <div className={cl("source-select")}>
+                        <SearchableSelect
+                            options={SOURCES.map(({ value, label }) => {
+                                const count = Object.entries(sourceCounts)
+                                    .reduce((n, [origin, c]) => n + (inSource(origin as PluginOrigin, value) ? c : 0), 0);
+                                return { label: `${label} (${count})`, value };
+                            })}
+                            value={searchValue.source}
+                            onChange={(source: Source) => setSearchValue(prev => ({ ...prev, source, view: "all" }))}
+                            isClearable={false}
+                            placeholder="Plugin source"
+                        />
+                    </div>
+                    <Button
+                        variant={searchValue.view === "custom" ? "primary" : "secondary"}
+                        onClick={() => setSearchValue(prev => ({ ...prev, view: prev.view === "custom" ? "all" : "custom" }))}
+                    >
+                        Custom plugins ({customPlugins.length})
+                    </Button>
+                    <Button variant="secondary" onClick={() => ShutcordNative.userPlugins?.openFolder()}>
+                        Open plugins folder
+                    </Button>
                 </div>
             </ErrorBoundary>
 
+            {searchValue.view === "all" && <>
             <Heading tag="h4" className={Margins.top20}>Enabled plugins ({enabledPlugins.length})</Heading>
             <div className={cl("grid")}>
                 {enabledPlugins.length
                     ? enabledPlugins
-                    : <Paragraph>{search || searchValue.tags.length ? "No enabled plugins meet the search criteria." : "Nothing enabled yet. Turn a plugin on below."}</Paragraph>
-                }
-            </div>
-
-            <Heading tag="h4" className={classes(Margins.top20, Margins.bottom8)}>Custom plugins ({customPlugins.length})</Heading>
-            <div className={cl("grid")}>
-                {customPlugins.length
-                    ? customPlugins
-                    : <Paragraph>Your own plugins show up here. Put them in <code>src/userplugins</code> when building Shutcord from source.</Paragraph>
+                    : <Paragraph>{search ? "No enabled plugins meet the search criteria." : "Nothing enabled yet. Turn a plugin on below."}</Paragraph>
                 }
             </div>
 
@@ -320,6 +310,22 @@ function PluginSettings() {
                     : <Paragraph>No plugins meet the search criteria.</Paragraph>
                 }
             </div>
+
+            </>}
+
+            {searchValue.view === "custom" && <>
+            <Heading tag="h4" className={classes(Margins.top20, Margins.bottom8)}>Custom plugins ({customPlugins.length})</Heading>
+            <div className={cl("grid")}>
+                {customPlugins.length
+                    ? customPlugins
+                    : <Paragraph>
+                        Nothing here yet. Press Open plugins folder, drop a .js file in it (a ready-made _example.js is already there),
+                        restart Discord with Ctrl+R and your plugin shows up here. No building needed.
+                    </Paragraph>
+                }
+            </div>
+
+            </>}
 
             <UIElementsButton />
         </SettingsTab >
