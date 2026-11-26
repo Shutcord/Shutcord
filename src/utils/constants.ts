@@ -747,6 +747,455 @@ export const Devs = /* #__PURE__*/ Object.freeze({
     PortTolgchu: {
         name: "✨Tolgchu✨",
         id: 329671025312923648n
+    },
+    // ---- authors of ported Equicord / Nightcord plugins ----
+    BachLe2000: {
+        name: "BachLe2000",
+        id: 624091967625625610n
+    },
+    BioTomateDE: {
+        name: "BioTomateDE",
+        id: 553499669226061844n
+    },
+    Buzzy: {
+        name: "Buzzy",
+        id: 1273353654644117585n
+    },
+    Cortex: {
+        name: "Cortex",
+        id: 913205935319691335n
+    },
+    Crxa: {
+        name: "Crxa",
+        id: 711604934201704469n
+    },
+    DiabeloDEV: {
+        name: "DiabeloDEV",
+        id: 1231342375465390100n
+    },
+    ELJoOker: {
+        name: "ELJoOker",
+        id: 605894319408283678n
+    },
+    Etorix: {
+        name: "Etorix",
+        id: 94597845868355584n
+    },
+    Fafa: {
+        name: "Fafa",
+        id: 428188716641812481n
+    },
+    Fres: {
+        name: "fres",
+        id: 843448897737064448n
+    },
+    Gir0fa: {
+        name: "gir0fa",
+        id: 1282734265955520545n
+    },
+    GroupXyz: {
+        name: "GroupXyz",
+        id: 950033410229944331n
+    },
+    Hen: {
+        name: "Hen",
+        id: 279266228151779329n
+    },
+    Jahsohsani: {
+        name: "jahsohsani",
+        id: 806442568564604968n
+    },
+    Jaxx: {
+        name: "Jaxx",
+        id: 901016640253227059n
+    },
+    KamiRu: {
+        name: "KamiRu",
+        id: 819191621676695563n
+    },
+    KawaiianPizza: {
+        name: "KawaiianPizza",
+        id: 501000986735673347n
+    },
+    Kiri: {
+        name: "Kiri",
+        id: 310525496771346434n
+    },
+    KrystalSkull: {
+        name: "krystalskullofficial",
+        id: 929208515883569182n
+    },
+    Kurt: {
+        name: "Kurt",
+        id: 112222963276750848n
+    },
+    Leko: {
+        name: "Leko",
+        id: 108153734541942784n
+    },
+    Leon135: {
+        name: "Leon135",
+        id: 309275452231385088n
+    },
+    Loukios: {
+        name: "Loukios",
+        id: 211461918127292416n
+    },
+    Mocha: {
+        name: "Mocha",
+        id: 808802000224518264n
+    },
+    Moowi: {
+        name: "Moowi",
+        id: 246128594756173824n
+    },
+    MrDiamond: {
+        name: "MrDiamond",
+        id: 523338295644782592n
+    },
+    Naibuu: {
+        name: "hs50",
+        id: 1120045713867423835n
+    },
+    NassCT: {
+        name: "NassCT",
+        id: 354996937868705793n
+    },
+    Nyro: {
+        name: "zeyno36",
+        id: 1325431712406179962n
+    },
+    PWall: {
+        name: "PWall",
+        id: 0n
+    },
+    Panniku: {
+        name: "Panniku",
+        id: 703634705152606318n
+    },
+    Prince527: {
+        name: "Prince527",
+        id: 364105797162237952n
+    },
+    Reycko: {
+        name: "Reycko",
+        id: 1123725368004726794n
+    },
+    SSnowly: {
+        name: "Snowy",
+        id: 1183482753375809537n
+    },
+    ShadyGoat: {
+        name: "Shady Goat",
+        id: 376079696489742338n
+    },
+    Skully: {
+        name: "Skully",
+        id: 150298098516754432n
+    },
+    SobakinTech: {
+        name: "sobakintech",
+        id: 745203026335236178n
+    },
+    SpikeHD: {
+        name: "SpikeHD",
+        id: 221757857836564485n
+    },
+    Star123451: {
+        name: "Star123451",
+        id: 1037526188039618560n
+    },
+    SteelTech: {
+        name: "SteelTech",
+        id: 1344190786476183643n
+    },
+    Suffocate: {
+        name: "Suffocate",
+        id: 772601756776923187n
+    },
+    Synth: {
+        name: "synthxcx",
+        id: 1116836557396119613n
+    },
+    TheArmagan: {
+        name: "TheArmagan",
+        id: 707309693449535599n
+    },
+    ThePirateStoner: {
+        name: "ThePirateStoner",
+        id: 1196220620376121381n
+    },
+    Tolgchu: {
+        name: "\u2728Tolgchu\u2728",
+        id: 329671025312923648n
+    },
+    VillainsRule: {
+        name: "VillainsRule",
+        id: 0n
+    },
+    WKoA: {
+        name: "WKoA",
+        id: 724416180097384498n
+    },
+    Willow: {
+        name: "Willow",
+        id: 965933914092888074n
+    },
+    Wolfie: {
+        name: "wolfieeeeeeee",
+        id: 347096063569559553n
+    },
+    Z1xus: {
+        name: "Z1xus",
+        id: 377450600797044746n
+    },
+    ZcraftElite: {
+        name: "ZcraftElite",
+        id: 926788037785047050n
+    },
+    auggeeo: {
+        name: "August (auggeeo)",
+        id: 594864203102158859n
+    },
+    bastih18: {
+        name: "bastih18",
+        id: 273797150880563201n
+    },
+    benjas333: {
+        name: "benjas333",
+        id: 456577284464443394n
+    },
+    benjii: {
+        name: "Benjii",
+        id: 463702169443368970n
+    },
+    bep: {
+        name: "bep",
+        id: 0n
+    },
+    camila314: {
+        name: "camila314",
+        id: 738592270617542716n
+    },
+    cassie: {
+        name: "cassie",
+        id: 280411966126948353n
+    },
+    catcraft: {
+        name: "catcraft",
+        id: 290162449213292546n
+    },
+    dat_insanity: {
+        name: "dat_insanity",
+        id: 0n
+    },
+    davidkra230: {
+        name: "davidkra230",
+        id: 652699312631054356n
+    },
+    davri: {
+        name: "davri",
+        id: 0n
+    },
+    dawn: {
+        name: "dawn",
+        id: 604653220341743618n
+    },
+    dhopcs: {
+        name: "dhopcs",
+        id: 206309860038410240n
+    },
+    dzshn: {
+        name: "dzshn",
+        id: 0n
+    },
+    examplegit: {
+        name: "example.user",
+        id: 175411535357673473n
+    },
+    heart_menace: {
+        name: "heart_menace",
+        id: 281162701303185408n
+    },
+    itzmeshadow999: {
+        name: "ItzMeShadow999",
+        id: 1065604516399026176n
+    },
+    justjxke: {
+        name: "justjxke",
+        id: 852558183087472640n
+    },
+    kat: {
+        name: "kat",
+        id: 665120188047556609n
+    },
+    keifufu: {
+        name: "keifufu",
+        id: 469588398110146590n
+    },
+    keircn: {
+        name: "Key",
+        id: 1230319937155760131n
+    },
+    korzi: {
+        name: "korzi",
+        id: 740966310875365416n
+    },
+    lethied: {
+        name: "lethied",
+        id: 892246841016590386n
+    },
+    lucabeyer: {
+        name: "luca.beyer",
+        id: 405090676771127317n
+    },
+    luqenov: {
+        name: "luqenov",
+        id: 279448683672502274n
+    },
+    mart: {
+        name: "mja00",
+        id: 108698087769260032n
+    },
+    meowabyte: {
+        name: "meowabyte",
+        id: 105170831130234880n
+    },
+    mmeta: {
+        name: "mmeta",
+        id: 297075664530440192n
+    },
+    mochienya: {
+        name: "mochie",
+        id: 1043599230247374869n
+    },
+    neoarz: {
+        name: "neoarz",
+        id: 218675193592283137n
+    },
+    nexpid: {
+        name: "Nexpid",
+        id: 853550207039832084n
+    },
+    nickwoah: {
+        name: "nickwoah",
+        id: 644298972420374528n
+    },
+    nicola02nb: {
+        name: "nicola02nb",
+        id: 257900031351193600n
+    },
+    nvhhr: {
+        name: "nvhhr",
+        id: 165098921071345666n
+    },
+    omaw: {
+        name: "omaw",
+        id: 1155026301791514655n
+    },
+    pandaptable: {
+        name: "pandaptable",
+        id: 97153209843335168n
+    },
+    qdnx: {
+        name: "qdnx",
+        id: 1374803023506702508n
+    },
+    qouesm: {
+        name: "qouesm",
+        id: 130388483494641664n
+    },
+    rot: {
+        name: "rot",
+        id: 1021210809164111932n
+    },
+    ryanamay: {
+        name: "ryanamay",
+        id: 1262793452236570667n
+    },
+    secp192k1: {
+        name: "secp192k1",
+        id: 477497542205243392n
+    },
+    sketchmyname: {
+        name: "sketchmyname",
+        id: 1412164910443663491n
+    },
+    sliwka: {
+        name: "sliwka",
+        id: 1165286199628419129n
+    },
+    smuki: {
+        name: "smuki",
+        id: 691517398523576331n
+    },
+    soapphia: {
+        name: "soap phia",
+        id: 1012095822957133976n
+    },
+    square: {
+        name: "square",
+        id: 219363409097916416n
+    },
+    talhakf: {
+        name: "talhakf",
+        id: 1140716160560676976n
+    },
+    tie: {
+        name: "tie",
+        id: 783087994419675201n
+    },
+    tt: {
+        name: "_.tt",
+        id: 497966466617049089n
+    },
+    vappstar: {
+        name: "vappstar",
+        id: 747192967311261748n
+    },
+    vei: {
+        name: "Vei",
+        id: 239414094799699968n
+    },
+    veygax: {
+        name: "veygax",
+        id: 1119938236245094521n
+    },
+    vmohammad: {
+        name: "vMohammad",
+        id: 840854894881538079n
+    },
+    voidbbg: {
+        name: "voidbbg",
+        id: 117126234588184582n
+    },
+    x3rt: {
+        name: "x3rt",
+        id: 131602100332396544n
+    },
+    xijexo: {
+        name: "xijexo",
+        id: 1284113557201620995n
+    },
+    yafyx: {
+        name: "kiniyaku",
+        id: 658209494609821699n
+    },
+    yash: {
+        name: "yash",
+        id: 889150838658977874n
+    },
+    yonn2222: {
+        name: "yonn2222",
+        id: 821835831844012103n
+    },
+    zoodogood: {
+        name: "zoodogood",
+        id: 921403577539387454n
+    },
+    zyqunix: {
+        name: "zyqunix",
+        id: 1201415921802170388n
     }
 } satisfies Record<string, Dev>);
 

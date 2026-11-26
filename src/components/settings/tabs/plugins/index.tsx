@@ -63,17 +63,18 @@ function ReloadRequiredCard() {
     );
 }
 
-type Source = "vencord" | "vencord+equicord" | "shutcord" | "equicord";
+type Source = "all" | PluginOrigin;
 
 const SOURCES: { value: Source; label: string; }[] = [
+    { value: "all", label: "All plugins" },
     { value: "vencord", label: "Vencord" },
-    { value: "vencord+equicord", label: "Vencord + Equicord" },
     { value: "shutcord", label: "Shutcord" },
-    { value: "equicord", label: "Equicord" }
+    { value: "equicord", label: "Equicord" },
+    { value: "nightcord", label: "Nightcord" }
 ];
 
 const inSource = (origin: PluginOrigin, source: Source) =>
-    source === "vencord+equicord" ? origin !== "shutcord" : origin === source;
+    source === "all" || origin === source;
 
 function ExcludedPluginsList({ search }: { search: string; }) {
     const matchingExcludedPlugins = search
@@ -144,7 +145,7 @@ function PluginSettings({ onlyEnabled = false }: { onlyEnabled?: boolean; }) {
     )
         .toSorted((a, b) => Number(settings.plugins[b.name]?.isFavorite ?? false) - Number(settings.plugins[a.name]?.isFavorite ?? false));
 
-    const [searchValue, setSearchValue] = useState({ value: "", source: "vencord+equicord" as Source, view: "all" as "all" | "custom" });
+    const [searchValue, setSearchValue] = useState({ value: "", source: "all" as Source, view: "all" as "all" | "custom" });
 
     const search = searchValue.value.toLowerCase();
     const onSearch = (query: string) => setSearchValue(prev => ({ ...prev, value: query }));
@@ -181,7 +182,7 @@ function PluginSettings({ onlyEnabled = false }: { onlyEnabled?: boolean; }) {
     const customPlugins = [] as JSX.Element[];
     const plugins = [] as JSX.Element[];
     const requiredPlugins = [] as JSX.Element[];
-    const sourceCounts: Record<PluginOrigin, number> = { vencord: 0, equicord: 0, shutcord: 0 };
+    const sourceCounts: Record<PluginOrigin, number> = { vencord: 0, equicord: 0, nightcord: 0, shutcord: 0 };
 
     const makeCard = (p: typeof sortedPlugins[number]) => (
         <PluginCard

@@ -20,6 +20,7 @@ export * from "./Icons";
 export * from "./LegacyHeading";
 export * from "./Link";
 export * from "./margins";
+export * from "./Notice";
 export * from "./Paragraph";
 export * from "./settings";
 export * from "./Span";

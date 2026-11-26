@@ -10,3 +10,5 @@ import gitRemote from "~git-remote";
 export { gitHash, gitRemote };
 
 export const SHUTCORD_USER_AGENT = `Shutcord/${gitHash}${gitRemote ? ` (https://github.com/${gitRemote})` : ""}`;
+export const gitHashShort = gitHash.slice(0, 9);
+export const SHUTCORD_USER_AGENT_HASHLESS = `Shutcord${gitRemote ? ` (https://github.com/${gitRemote})` : ""}`;

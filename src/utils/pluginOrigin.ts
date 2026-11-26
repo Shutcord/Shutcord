@@ -19,8 +19,11 @@
 import { Devs } from "@utils/constants";
 import type { PluginDef, PluginOrigin } from "@utils/types";
 
+import { PORTED_ORIGINS } from "./portedOrigins";
+
 export function getPluginOrigin(plugin: Pick<PluginDef, "name" | "authors" | "origin">): PluginOrigin {
     if (plugin.origin) return plugin.origin;
+    if (PORTED_ORIGINS[plugin.name]) return PORTED_ORIGINS[plugin.name];
     if (plugin.name.startsWith("Shutcord") || plugin.authors.some(a => a.id === Devs.Shutcord.id)) return "shutcord";
     return "vencord";
 }

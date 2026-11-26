@@ -35,7 +35,7 @@ export function loadUserPlugins() {
             const returned = new Function(
                 "module", "exports", "definePlugin", "definePluginSettings", "OptionType", "StartAt", "Devs",
                 code + `\n//# sourceURL=shutcord-plugin://${file}`
-            )(module, module.exports, definePlugin, definePluginSettings, OptionType, StartAt, Devs);
+            )(module, module.exports, definePlugin, definePluginSettings, { STRING: OptionType.STRING, NUMBER: OptionType.NUMBER, BIGINT: OptionType.BIGINT, BOOLEAN: OptionType.BOOLEAN, SELECT: OptionType.SELECT, SLIDER: OptionType.SLIDER, COMPONENT: OptionType.COMPONENT, CUSTOM: OptionType.CUSTOM }, { Init: StartAt.Init, DOMContentLoaded: StartAt.DOMContentLoaded, WebpackReady: StartAt.WebpackReady }, Devs);
 
             const raw = module.exports?.default ?? (Object.keys(module.exports).length ? module.exports : returned);
             if (!raw || typeof raw.name !== "string" || typeof raw.description !== "string")
