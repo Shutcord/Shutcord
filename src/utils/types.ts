@@ -123,7 +123,7 @@ export interface Plugin extends PluginDef {
 
 export type IconComponent = (props: IconProps & Record<string, any>) => ReactNode;
 export type IconProps = { height?: number | string; width?: number | string; className?: string; };
-export type PluginOrigin = "vencord" | "equicord" | "shutcord";
+export type PluginOrigin = "vencord" | "equicord" | "nightcord" | "shutcord";
 
 export interface PluginDef {
     name: string;
