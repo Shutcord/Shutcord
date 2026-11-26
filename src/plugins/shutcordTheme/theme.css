@@ -1,7 +1,7 @@
 /*
  * Shutcord base theme: flat, one-color grey, rounded, calm.
  * Only colors, borders, radii, shadows and motion are changed. No layout rules, so Discord updates can't break it.
- * Variables --sc-accent, --sc-radius come from the plugin settings (index.tsx).
+ * --sc-radius and --sc-blur come from the plugin settings (index.ts). There is no colour setting on purpose.
  */
 
 :root {
@@ -16,6 +16,9 @@
     --sc-text: #e4e4e7;
     --sc-text-dim: #a1a1aa;
     --sc-text-faint: #71717a;
+    --sc-accent: #d4d4d8;
+    --sc-radius: 12px;
+    --sc-blur: 14px;
 }
 
 /* ---------- color tokens (dark themes only) ---------- */
@@ -87,7 +90,8 @@
     border-radius: var(--sc-radius) !important;
     border: 1px solid var(--sc-line-strong) !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, .45) !important;
-    background: var(--sc-bg-3) !important;
+    background: color-mix(in srgb, var(--sc-bg-3) 88%, transparent) !important;
+    backdrop-filter: blur(var(--sc-blur)) saturate(1.2);
 }
 
 [class*="root_"][class*="modal"],
@@ -164,3 +168,29 @@ button[class*="button_"]:active { transform: scale(.98); }
 
 /* ---------- selection ---------- */
 ::selection { background: color-mix(in srgb, var(--sc-accent) 45%, transparent); }
+
+
+/* ---------- polish ---------- */
+:focus-visible { outline: 2px solid color-mix(in srgb, var(--sc-accent) 55%, transparent) !important; outline-offset: 2px; }
+
+[class*="avatar_"] img, [class*="avatarWrapper"] img { transition: transform .15s ease, filter .15s ease; }
+[class*="avatar_"]:hover img { filter: brightness(1.08); }
+
+[class*="guildIcon"], [class*="wrapper_"][class*="guild"] { transition: border-radius .18s ease, transform .12s ease; }
+
+[class*="scroller_"] { scrollbar-width: thin; scrollbar-color: var(--sc-bg-5) transparent; }
+
+[class*="markup_"] code, [class*="codeBlock"], pre code.hljs {
+    border-radius: calc(var(--sc-radius) - 4px) !important;
+    border: 1px solid var(--sc-line) !important;
+}
+
+[class*="markup_"] blockquote { border-radius: 4px; }
+
+[class*="reaction_"] { border-radius: calc(var(--sc-radius) - 2px) !important; transition: background-color .15s ease, border-color .15s ease; }
+
+[class*="toast"], [class*="notice_"] { border-radius: var(--sc-radius) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

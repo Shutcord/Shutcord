@@ -23,8 +23,8 @@ import { contextBridge, webFrame } from "electron/renderer";
 import ShutcordNative, { invoke, sendSync } from "./ShutcordNative";
 
 
-// Monaco popout
-if (location.href === DESKTOP_MONACO_EDITOR_URL) {
+// QuickCSS editor window
+if (process.argv.includes("--shutcord-editor")) {
     contextBridge.exposeInMainWorld("setCss", debounce(ShutcordNative.quickCss.set));
     contextBridge.exposeInMainWorld("getCurrentCss", ShutcordNative.quickCss.get);
     contextBridge.exposeInMainWorld("getTheme", ShutcordNative.quickCss.getEditorTheme);

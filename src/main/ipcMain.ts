@@ -22,7 +22,7 @@ import "./settings";
 
 import { debounce } from "@shared/debounce";
 import { IpcEvents } from "@shared/IpcEvents";
-import { BrowserWindow, ipcMain, nativeTheme, shell, systemPreferences } from "electron";
+import { BrowserWindow, ipcMain, nativeImage, nativeTheme, net, shell, systemPreferences, WebContents } from "electron";
 import { FSWatcher, mkdirSync, readFileSync, watch, writeFileSync } from "fs";
 import { open, readdir, readFile } from "fs/promises";
 import { release } from "os";
@@ -33,6 +33,7 @@ import { getThemeInfo, stripBOM, UserThemeHeader } from "./themes";
 import { ALLOWED_PROTOCOLS, QUICK_CSS_PATH, SETTINGS_DIR, THEMES_DIR } from "./utils/constants";
 import { ensureSafePath } from "./utils/ensureSafePath";
 import { makeLinksOpenExternally } from "./utils/externalLinks";
+import editorHtml from "file://quickCssEditor.html";
 
 const RENDERER_CSS_PATH = join(__dirname, IS_VESKTOP ? "shutcordDesktopRenderer.css" : "renderer.css");
 
@@ -145,8 +146,24 @@ ipcMain.on(IpcEvents.GET_MONACO_THEME, e => {
     e.returnValue = nativeTheme.shouldUseDarkColors ? "vs-dark" : "vs-light";
 });
 
-ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
-    const title = "Shutcord QuickCSS Editor";
+async function setEditorIcon(win: BrowserWindow, from: WebContents) {
+    try {
+        const raw: string | null = await from.executeJavaScript(
+            "(() => { const u = Shutcord.Webpack.Common.UserStore.getCurrentUser(); return u ? u.getAvatarURL(undefined, 128, false) : null; })()"
+        );
+        if (!raw) return;
+
+        const url = new URL(raw, "https://discord.com");
+        url.pathname = url.pathname.replace(/\.(webp|gif)$/, ".png");
+
+        const res = await net.fetch(url.toString());
+        const icon = nativeImage.createFromBuffer(Buffer.from(await res.arrayBuffer()));
+        if (!icon.isEmpty() && !win.isDestroyed()) win.setIcon(icon);
+    } catch { }
+}
+
+ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async e => {
+    const title = "Shutcord QuickCSS";
     const existingWindow = BrowserWindow.getAllWindows().find(w => w.title === title);
     if (existingWindow && !existingWindow.isDestroyed()) {
         existingWindow.focus();
@@ -155,22 +172,24 @@ ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
 
     const win = new BrowserWindow({
         title,
+        width: 900,
+        height: 640,
         autoHideMenuBar: true,
         darkTheme: true,
-        backgroundColor: nativeTheme.shouldUseDarkColors ? "#1e1e1e" : "white",
+        backgroundColor: "#121214",
         webPreferences: {
             preload: join(__dirname, IS_DISCORD_DESKTOP ? "preload.js" : "shutcordDesktopPreload.js"),
+            additionalArguments: ["--shutcord-editor"],
             contextIsolation: true,
             nodeIntegration: false,
             sandbox: false
         }
     });
 
-    // the hosted editor page sets its own title, keep ours
-    win.on("page-title-updated", e => e.preventDefault());
+    win.on("page-title-updated", ev => ev.preventDefault());
 
     // Intercept quit shortcuts so they don't quit the main application
-    win.webContents.on("before-input-event", (e, input) => {
+    win.webContents.on("before-input-event", (ev, input) => {
         if (input.type !== "keyDown") return;
 
         const key = input.key.toLowerCase();
@@ -178,17 +197,15 @@ ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
             || (input.alt && !input.control && !input.shift && key === "f4");
 
         if (isQuit) {
-            e.preventDefault();
+            ev.preventDefault();
             win.close();
         }
     });
 
     makeLinksOpenExternally(win);
+    setEditorIcon(win, e.sender);
 
-    await win.loadURL(DESKTOP_MONACO_EDITOR_URL);
-    win.webContents.executeJavaScript(
-        `document.title=${JSON.stringify(title)};document.querySelectorAll("#title-bar").forEach(e=>{e.textContent=${JSON.stringify(title)}})`
-    ).catch(() => { });
+    await win.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(editorHtml));
 });
 
 ipcMain.handle(IpcEvents.GET_RENDERER_CSS, () => readFile(RENDERER_CSS_PATH, "utf-8"));

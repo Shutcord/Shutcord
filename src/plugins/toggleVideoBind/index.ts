@@ -1,0 +1,82 @@
+/*
+ * Shutcord, a modification for Discord's desktop app
+ * Copyright (c) 2026 Shutcord and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+// Ported from Equicord (GPL-3.0). Original authors are listed in `authors`.
+
+import { definePluginSettings } from "@api/Settings";
+import definePlugin, { OptionType } from "@utils/types";
+import { FluxDispatcher, MediaEngineStore } from "@webpack/common";
+
+const validKeycodes = [
+    "Backspace", "Tab", "Enter", "ShiftLeft", "ShiftRight", "ControlLeft", "ControlRight", "AltLeft", "AltRight", "Pause", "CapsLock",
+    "Escape", "Space", "PageUp", "PageDown", "End", "Home", "ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown", "PrintScreen", "Insert",
+    "Delete", "Digit0", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9", "KeyA", "KeyB", "KeyC",
+    "KeyD", "KeyE", "KeyF", "KeyG", "KeyH", "KeyI", "KeyJ", "KeyK", "KeyL", "KeyM", "KeyN", "KeyO", "KeyP", "KeyQ", "KeyR", "KeyS", "KeyT",
+    "KeyU", "KeyV", "KeyW", "KeyX", "KeyY", "KeyZ", "MetaLeft", "MetaRight", "ContextMenu", "Numpad0", "Numpad1", "Numpad2", "Numpad3",
+    "Numpad4", "Numpad5", "Numpad6", "Numpad7", "Numpad8", "Numpad9", "NumpadMultiply", "NumpadAdd", "NumpadSubtract", "NumpadDecimal",
+    "NumpadDivide", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "NumLock", "ScrollLock",
+];
+
+const settings = definePluginSettings({
+    keyBind: {
+        description: "The key to toggle webcam when pressed.",
+        type: OptionType.STRING,
+        default: "KeyX",
+        isValid: (value: string) => validKeycodes.includes(value),
+    },
+    reqCtrl: {
+        description: "Require control to be held.",
+        type: OptionType.BOOLEAN,
+        default: true,
+    },
+    reqShift: {
+        description: "Require shift to be held.",
+        type: OptionType.BOOLEAN,
+        default: true,
+    },
+    reqAlt: {
+        description: "Require alt to be held.",
+        type: OptionType.BOOLEAN,
+        default: false,
+    },
+});
+
+function handleKeydown({ code, ctrlKey, shiftKey, altKey }: KeyboardEvent) {
+    const { keyBind, reqCtrl, reqShift, reqAlt } = settings.store;
+    if (keyBind !== code || ctrlKey !== reqCtrl || shiftKey !== reqShift || altKey !== reqAlt) { return; } // please don't think about it
+
+    FluxDispatcher.dispatch({
+        type: "MEDIA_ENGINE_SET_VIDEO_ENABLED",
+        enabled: !MediaEngineStore.isVideoEnabled(),
+    });
+}
+
+export default definePlugin({
+    name: "ToggleVideoBind",
+    origin: "equicord",
+    description: "Adds a customizable bind to toggle webcam.",
+    tags: ["Utility", "Voice"],
+    authors: [{ name: "mochie", id: 1043599230247374869n }],
+    settings,
+    start() {
+        document.addEventListener("keydown", handleKeydown);
+    },
+    stop() {
+        document.removeEventListener("keydown", handleKeydown);
+    },
+});
