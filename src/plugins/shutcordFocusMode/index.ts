@@ -28,7 +28,7 @@ function onKey(e: KeyboardEvent) {
     e.preventDefault();
     on = !on;
     sheet.set(on
-        ? `nav[aria-label="Servers sidebar"], div[class^="sidebar_"], [class*="membersWrap"] { display: none !important; }`
+        ? "nav[aria-label=\"Servers sidebar\"], div[class^=\"sidebar_\"], [class*=\"membersWrap\"] { display: none !important; }"
         : "");
 }
 

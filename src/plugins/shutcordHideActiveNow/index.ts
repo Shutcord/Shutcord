@@ -22,7 +22,7 @@ import definePlugin from "@utils/types";
 
 const sheet = createSheet("sc-hideactivenow");
 
-const CSS = `[class*="nowPlayingColumn"], [class*="activityFeed"] { display: none !important; }`;
+const CSS = "[class*=\"nowPlayingColumn\"], [class*=\"activityFeed\"] { display: none !important; }";
 
 export default definePlugin({
     name: "ShutcordHideActiveNow",
