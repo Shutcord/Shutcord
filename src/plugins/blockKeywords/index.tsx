@@ -70,7 +70,7 @@ function RegexHelper() {
                     results.map(({ pattern, matches, error }, i) => (
                         <Card
                             key={`vc-pattern-card-${i}`}
-                            variant={error ? "danger" : matches ? "success" : "primary"}
+                            variant={error ? "danger" : matches ? "success" : "normal"}
                             className={classes(cl("card"), Margins.top8)}
                         >
                             <code>{pattern}</code>

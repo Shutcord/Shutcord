@@ -47,7 +47,7 @@ function Watching({ userIds, guildId }: WatchingProps): JSX.Element {
                         <Heading>{getIntlMessage("SPECTATORS", { numViewers: userIds.length })}</Heading>
                         <Flex flexDirection="column" gap="6" >
                             {users.map(user => (
-                                <Flex key={user.id} flexDirection="row" gap="6" alignContent="center">
+                                <Flex key={user.id} flexDirection="row" gap="6" alignItems="center">
                                     <img className={cl("user-avatar")} src={getUserAvatarUrl(user, guildId, true, 80)} alt="" />
                                     {getUsername(user)}
                                 </Flex>

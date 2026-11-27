@@ -89,7 +89,7 @@ function GuildRow({ guild }) {
 
 function Group({ folderName, guilds }) {
     return (
-        <Card variant="primary" className={cl("folder-group")}>
+        <Card variant="normal" className={cl("folder-group")}>
             <div className={cl("folder-header")}>
                 <Heading tag="h4">{folderName}</Heading>
                 <Button

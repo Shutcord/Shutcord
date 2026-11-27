@@ -33,7 +33,7 @@ export function SettingsCard({ children }: { children: ReactNode; }): JSX.Elemen
     React.useEffect(() => registerSettingsSearchTerms(id, terms), [id, terms]);
 
     return (
-        <Card variant="primary" className={q("setting")} hidden={hidden} style={{ display: hidden ? "none" : undefined, order: query.trim() ? score ?? 0 : undefined }}>
+        <Card variant="normal" className={q("setting")} hidden={hidden} style={{ display: hidden ? "none" : undefined, order: query.trim() ? score ?? 0 : undefined }}>
             {children}
         </Card>
     );

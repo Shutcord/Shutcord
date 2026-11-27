@@ -8,7 +8,7 @@ import { showNotification } from "@api/Notifications";
 import { Settings } from "@api/Settings";
 import { gitHashShort } from "@shared/shutcordUserAgent";
 import { copyToClipboard } from "@utils/clipboard";
-import { relaunch, showItemInFolder } from "@utils/native";
+import { relaunch } from "@utils/native";
 import { checkForUpdates, getRepo } from "@utils/updater";
 import { GuildStore, NavigationRouter, SettingsRouter, showToast } from "@webpack/common";
 
@@ -34,7 +34,7 @@ export const actions: ButtonAction[] = [
     { id: "openBackupSettings", label: "Open Backup & Restore tab", callback: () => SettingsRouter.openUserSettings("equicord_backup_restore_panel"), registrar: "Equicord" },
     { id: "restartClient", label: "Restart Client", callback: () => relaunch(), registrar: "Equicord" },
     { id: "openQuickCSSFile", label: "Open Quick CSS File", callback: () => ShutcordNative.quickCss.openEditor(), registrar: "Equicord" },
-    { id: "openSettingsFolder", label: "Open Settings Folder", callback: async () => showItemInFolder(await ShutcordNative.settings.getSettingsDir()), registrar: "Equicord" },
+    { id: "openSettingsFolder", label: "Open Settings Folder", callback: () => ShutcordNative.settings.openFolder(), registrar: "Equicord" },
     { id: "openInGithub", label: "Open in Github", callback: async () => ShutcordNative.native.openExternal(await getRepo()), registrar: "Equicord" },
 
     {

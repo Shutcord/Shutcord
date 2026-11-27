@@ -195,7 +195,7 @@ export async function sendAttachment(attachment: MessageAttachment, channel: Cha
     if (!file) return;
 
     // Using promptToUpload instead of addFiles directly since it has file size checks with error popups
-    await UploadHandler.promptToUpload([file], channel, DraftType.ChannelMessage).catch(() =>
+    await Promise.resolve(UploadHandler.promptToUpload([file], channel, DraftType.ChannelMessage)).catch(() =>
         showToast({ text: `Couldn't upload ${filename}`, variant: "critical" })
     );
 
