@@ -237,7 +237,7 @@ export class Message extends BasicMessage {
     userHasReactedWithEmoji(emoji: ReactionEmoji, burst?: boolean): boolean;
     addReactionBatch(reactions: { emoji: ReactionEmoji; users: string[]; }[], burstReactions: { emoji: ReactionEmoji; users: string[]; }[]): Message;
 
-    /** Shutcord added */
+    /** Vencord added */
     deleted?: boolean;
 }
 
@@ -294,6 +294,8 @@ export interface MessageAttachment {
     content_type?: string;
     width?: number;
     height?: number;
+    title?: string;
+    description?: string;
 }
 
 export interface ReactionEmoji {

@@ -16,14 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import type { AudioProcessor } from "@api/AudioPlayer";
 import { ProfileBadge } from "@api/Badges";
 import { ChatBarButtonData } from "@api/ChatButtons";
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
+import type { HeaderBarButtonData } from "@api/HeaderBar";
 import { MemberListDecoratorFactory } from "@api/MemberListDecorators";
 import { MessageAccessoryFactory } from "@api/MessageAccessories";
 import { MessageDecorationFactory } from "@api/MessageDecorations";
 import { MessageClickListener, MessageEditListener, MessageSendListener } from "@api/MessageEvents";
 import { MessagePopoverButtonData } from "@api/MessagePopover";
+import type { UserAreaButtonData } from "@api/UserArea";
 import { Command, FluxEvents } from "@vencord/discord-types";
 import { ReactNode } from "react";
 import { LiteralUnion } from "type-fest";
@@ -214,6 +217,9 @@ export interface PluginDef {
     userProfileBadge?: ProfileBadge;
 
     messagePopoverButton?: MessagePopoverButtonData;
+    headerBarButton?: HeaderBarButtonData;
+    audioProcessor?: AudioProcessor;
+    userAreaButton?: UserAreaButtonData;
     chatBarButton?: ChatBarButtonData;
 
     onMessageClick?: MessageClickListener;

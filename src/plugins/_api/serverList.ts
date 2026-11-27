@@ -1,5 +1,5 @@
 /*
- * Shutcord, a modification for Discord's desktop app
+ * Vencord, a modification for Discord's desktop app
  * Copyright (c) 2022 Vendicated and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Devs } from "@utils/constants";
+import { Devs, Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 
 export default definePlugin({
     name: "ServerListAPI",
     authors: [Devs.kemo],
-    description: "Api required for plugins that modify the server list",
+    description: "API required for plugins that modify the server list.",
+
     patches: [
+        {
+            // Exports Discord's guildless item for the shared server-list component.
+            find: '="DOWNLOAD_APPS"',
+            replacement: {
+                match: /(?<=\i\.\i\(\i,\{)(?=\i:\(\)=>\i.{0,30000}?let (\i)=function\(\i\)\{let\{ref:)/,
+                replace: "GuildlessServerListItemComponent:()=>$1,"
+            }
+        },
         {
             find: "#{intl::DISCODO_DISABLED}",
             replacement: {
@@ -33,10 +42,16 @@ export default definePlugin({
         },
         {
             find: ".setGuildsTree(",
-            replacement: {
-                match: /(?<=#{intl::SERVERS}\),gap:"xs",children:)\i\.map\(.{0,50}\.length\)/,
-                replace: "Shutcord.Api.ServerList.renderAll(Shutcord.Api.ServerList.ServerListRenderPosition.In).concat($&)"
-            }
+            replacement: [
+                {
+                    match: /(?<=#{intl::SERVERS}\),gap:"xs",children:)\i\.map\(.{0,50}\.length\)/,
+                    replace: "Shutcord.Api.ServerList.renderAll(Shutcord.Api.ServerList.ServerListRenderPosition.In).concat($&)"
+                },
+                {
+                    match: /lastTargetNode.{0,25}\?null:\i,/,
+                    replace: "$&...Shutcord.Api.ServerList.renderAll(Shutcord.Api.ServerList.ServerListRenderPosition.Below),"
+                }
+            ]
         }
     ]
 });
