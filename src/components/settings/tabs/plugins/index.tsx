@@ -260,7 +260,7 @@ function PluginSettings({ onlyEnabled = false }: { onlyEnabled?: boolean; }) {
                             })}
                             value={searchValue.source}
                             onChange={(source: Source) => setSearchValue(prev => ({ ...prev, source, view: "all" }))}
-                            isClearable={false}
+                            clearable={false}
                             placeholder="Plugin source"
                         />
                     </div>

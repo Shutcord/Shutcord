@@ -18,7 +18,7 @@
 
 import { definePluginSettings } from "@api/Settings";
 import { BackupRestoreIcon, CloudIcon, MainSettingsIcon, PaintbrushIcon, PatchHelperIcon, PlaceholderIcon, PluginsIcon, UpdaterIcon, VesktopSettingsIcon } from "@components/Icons";
-import { BackupAndRestoreTab, CloudTab, PatchHelperTab, PluginsTab, EnabledPluginsTab, ThemesTab, UpdaterTab, ShutcordTab } from "@components/settings/tabs";
+import { BackupAndRestoreTab, CloudTab, EnabledPluginsTab, PatchHelperTab, PluginsTab, ShutcordTab, ThemesTab, UpdaterTab } from "@components/settings/tabs";
 import { Devs } from "@utils/constants";
 import { isTruthy } from "@utils/guards";
 import definePlugin, { IconProps, OptionType } from "@utils/types";

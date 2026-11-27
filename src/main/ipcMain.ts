@@ -23,6 +23,7 @@ import "./settings";
 import { debounce } from "@shared/debounce";
 import { IpcEvents } from "@shared/IpcEvents";
 import { BrowserWindow, ipcMain, nativeImage, nativeTheme, net, shell, systemPreferences, WebContents } from "electron";
+import editorHtml from "file://quickCssEditor.html";
 import { existsSync, FSWatcher, mkdirSync, readdirSync, readFileSync, watch, writeFileSync } from "fs";
 import { open, readdir, readFile } from "fs/promises";
 import { release } from "os";
@@ -33,7 +34,6 @@ import { getThemeInfo, stripBOM, UserThemeHeader } from "./themes";
 import { ALLOWED_PROTOCOLS, QUICK_CSS_PATH, SETTINGS_DIR, THEMES_DIR, USER_PLUGINS_DIR } from "./utils/constants";
 import { ensureSafePath } from "./utils/ensureSafePath";
 import { makeLinksOpenExternally } from "./utils/externalLinks";
-import editorHtml from "file://quickCssEditor.html";
 
 const RENDERER_CSS_PATH = join(__dirname, IS_VESKTOP ? "shutcordDesktopRenderer.css" : "renderer.css");
 

@@ -1,5 +1,5 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -7,10 +7,10 @@
 import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
 import { SettingsTab, wrapTab } from "@components/settings";
+import { cl } from "@plugins/profileSets/index";
+import { PresetSection } from "@plugins/profileSets/utils/storage";
 import { GuildStore, React, SearchableSelect, SelectedGuildStore, useStateFromStores } from "@webpack/common";
 
-import { cl } from "../index";
-import { PresetSection } from "../utils/storage";
 import { PresetManager } from "./presetManager";
 
 function ProfileSetsTab() {

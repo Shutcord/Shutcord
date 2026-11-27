@@ -1,18 +1,17 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { cl } from "@plugins/profileSets";
+import { deletePreset, movePreset, renamePreset, updatePresetField } from "@plugins/profileSets/utils/actions";
+import { getCurrentProfile } from "@plugins/profileSets/utils/profile";
+import { PresetSection, type ProfilePresetEx } from "@plugins/profileSets/utils/storage";
 import { isNonNullish } from "@utils/guards";
 import { classes } from "@utils/misc";
 import { ProfilePreset } from "@vencord/discord-types";
 import { ContextMenuApi, Menu, React, TextInput } from "@webpack/common";
-
-import { cl } from "..";
-import { deletePreset, movePreset, renamePreset, updatePresetField } from "../utils/actions";
-import { getCurrentProfile } from "../utils/profile";
-import { PresetSection, type ProfilePresetEx } from "../utils/storage";
 
 interface PresetListProps {
     presets: ProfilePresetEx[];

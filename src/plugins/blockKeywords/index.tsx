@@ -1,5 +1,5 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -70,7 +70,7 @@ function RegexHelper() {
                     results.map(({ pattern, matches, error }, i) => (
                         <Card
                             key={`vc-pattern-card-${i}`}
-                            variant={error ? "danger" : matches ? "success" : "primary"}
+                            variant={error ? "danger" : matches ? "success" : "normal"}
                             className={classes(cl("card"), Margins.top8)}
                         >
                             <code>{pattern}</code>

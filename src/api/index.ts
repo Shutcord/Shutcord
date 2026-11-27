@@ -16,11 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+import * as $AudioPlayer from "./AudioPlayer";
 import * as $Badges from "./Badges";
 import * as $ChatButtons from "./ChatButtons";
 import * as $Commands from "./Commands";
 import * as $ContextMenu from "./ContextMenu";
 import * as $DataStore from "./DataStore";
+import * as $HeaderBar from "./HeaderBar";
 import * as $MemberListDecorators from "./MemberListDecorators";
 import * as $MessageAccessories from "./MessageAccessories";
 import * as $MessageDecorations from "./MessageDecorations";
@@ -29,6 +31,8 @@ import * as $MessagePopover from "./MessagePopover";
 import * as $MessageUpdater from "./MessageUpdater";
 import * as $Notices from "./Notices";
 import * as $Notifications from "./Notifications";
+import * as $SurfaceClasses from "./SurfaceClasses";
+import * as $UserArea from "./UserArea";
 export * as PluginManager from "./PluginManager";
 import * as $ServerList from "./ServerList";
 import * as $Settings from "./Settings";
@@ -129,3 +133,8 @@ export const UserSettings = $UserSettings;
  * Don't use this
  */
 export const Themes = $Themes;
+
+export const AudioPlayer = $AudioPlayer;
+export const HeaderBar = $HeaderBar;
+export const SurfaceClasses = $SurfaceClasses;
+export const UserArea = $UserArea;

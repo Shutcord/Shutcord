@@ -18,9 +18,8 @@
 
 import "./fixDiscordBadgePadding.css";
 
-import { Settings } from "@api/Settings";
-import { SHUTCORD_API } from "@shared/api";
 import { _getBadges, BadgePosition, BadgeRarity, BadgeUserArgs, DirectoryBadge, ProfileBadge } from "@api/Badges";
+import { Settings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Flex } from "@components/Flex";
 import { Heart } from "@components/Heart";
@@ -30,6 +29,7 @@ import DonateButton from "@components/settings/DonateButton";
 import { openContributorModal } from "@components/settings/tabs";
 import { LOGO_IMAGE } from "@components/settings/tabs/shutcord/art";
 import { Text } from "@components/Text";
+import { SHUTCORD_API } from "@shared/api";
 import { Devs } from "@utils/constants";
 import { copyWithToast } from "@utils/discord";
 import { Logger } from "@utils/Logger";

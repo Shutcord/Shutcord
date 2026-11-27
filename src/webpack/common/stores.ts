@@ -188,3 +188,15 @@ waitForStore("ThemeStore", m => {
     // For this reason, use a non import access here.
     Shutcord.Api.Themes.initQuickCssThemeStore(m);
 });
+
+// ---- additions for ported Equicord / Nightcord plugins ----
+export let SoundpackStore: t.SoundpackStore;
+export let ApplicationStreamingSettingsStore: t.ApplicationStreamingSettingsStore;
+export let BasicGuildStore: t.BasicGuildStore;
+export let GuildProfileStore: t.GuildProfileStore;
+export let QuestStore: t.QuestStore;
+waitForStore("SoundpackStore", s => SoundpackStore = s);
+waitForStore("ApplicationStreamingSettingsStore", s => ApplicationStreamingSettingsStore = s);
+waitForStore("BasicGuildStore", s => BasicGuildStore = s);
+waitForStore("GuildProfileStore", s => GuildProfileStore = s);
+waitForStore("QuestStore", s => QuestStore = s);

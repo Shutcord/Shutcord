@@ -1,20 +1,8 @@
 /*
- * Vencord, a modification for Discord's desktop app
+ * Shutcord, a Discord client mod
  * Copyright (c) 2022 Vendicated and contributors
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
 
 import "./spotifyStyles.css";
 
@@ -22,6 +10,7 @@ import { Flex } from "@components/Flex";
 import { CopyIcon, ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
 import { Paragraph } from "@components/Paragraph";
 import { Span } from "@components/Span";
+import { settings } from "@plugins/musicControls/settings";
 import { debounce } from "@shared/debounce";
 import { classNameFactory } from "@utils/css";
 import { copyWithToast, openImageModal } from "@utils/discord";
@@ -29,7 +18,6 @@ import { classes } from "@utils/misc";
 import { formatDuration } from "@utils/text";
 import { ContextMenuApi, FluxDispatcher, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
-import { settings } from "../settings";
 import { SeekBar } from "./SeekBar";
 import { SpotifyStore, Track } from "./SpotifyStore";
 

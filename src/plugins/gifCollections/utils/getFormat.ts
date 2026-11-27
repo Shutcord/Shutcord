@@ -1,10 +1,11 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Format } from "../types";
+import { Format } from "@plugins/gifCollections/types";
+
 import { getUrlExtension } from "./getUrlExtension";
 
 const videoExtensions = ["mp4", "ogg", "webm", "avi", "wmv", "flv", "mov", "mkv", "m4v"];

@@ -1,5 +1,5 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -8,14 +8,13 @@ import { Button } from "@components/Button";
 import { Flex } from "@components/Flex";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
+import { settings } from "@plugins/gifCollections/settings";
+import { Collection, Gif } from "@plugins/gifCollections/types";
+import { cache_collections, createCollection, getItemCollectionNameFromId, moveGifToCollection, renameCollection } from "@plugins/gifCollections/utils/collectionManager";
+import { cl, stripPrefix } from "@plugins/gifCollections/utils/misc";
 import { classes } from "@utils/misc";
 import { RenderModalProps } from "@vencord/discord-types";
 import { FluxDispatcher, Modal, openModal, TextInput, useCallback, useState } from "@webpack/common";
-
-import { settings } from "../settings";
-import { Collection, Gif } from "../types";
-import { cache_collections, createCollection, getItemCollectionNameFromId, moveGifToCollection, renameCollection } from "../utils/collectionManager";
-import { cl, stripPrefix } from "../utils/misc";
 
 export function openCollectionInfoModal(collection: Collection) {
     openModal(props => (

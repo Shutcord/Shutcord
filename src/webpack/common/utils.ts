@@ -155,3 +155,27 @@ export const DateUtils: t.DateUtils = mapMangledModuleLazy("millisecondsInUnit:"
 });
 
 export const MessageTypeSets: t.MessageTypeSets = findByPropsLazy("REPLYABLE", "FORWARDABLE");
+
+// ---- additions for ported Equicord / Nightcord plugins ----
+export const VoiceActions = findByPropsLazy("toggleSelfMute");
+export const GuildActions = findByPropsLazy("setServerMute", "setServerDeaf");
+export const ChannelActions = findByPropsLazy("selectChannel", "selectVoiceChannel");
+export const useDrag = findByCodeLazy("useDrag::spec.begin was deprecated");
+export const useDrop = findByCodeLazy(".disconnectDropTarget()", ".dropTargetOptions=");
+export const CloudUploader = findLazy(m => m.prototype?.trackUploadFinished) as any;
+export const Humanize = findByPropsLazy("filesize", "relativeTime", "ordinal") as any;
+
+export const ColorUtils = mapMangledModuleLazy("Invalid hex color format", {
+    rgbToHex: filters.byCode(".toString(16).slice(1)"),
+    hexToRgba: filters.byCode("`rgba(${"),
+    hexToRgb: filters.byCode(".rgb();return"),
+    rgbToHsl: filters.byCode("saturation:", "lightness:"),
+    mixColors: filters.byCode(".substring(1,3),16)"),
+    hexWithAlpha: filters.byCode("Invalid hex color format"),
+    getDominantColor: filters.byCode("hex:", "hsv:"),
+    generatePalette: filters.byCode("360/("),
+}) as any;
+
+export const ReadStateUtils = mapMangledModuleLazy('type:"ENABLE_AUTOMATIC_ACK",', {
+    ackChannel: filters.byCode(".isForumLikeChannel(")
+}) as any;

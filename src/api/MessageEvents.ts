@@ -43,6 +43,7 @@ export interface SendMessageOptions {
     // If you end up using these, update their type
     scheduledTimestamp?: unknown;
     mediaMention?: unknown;
+    uploads?: any[];
 }
 
 export interface SendMessageProps {

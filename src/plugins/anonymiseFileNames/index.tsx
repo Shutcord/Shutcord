@@ -33,7 +33,7 @@ const enum Methods {
 }
 
 const ANONYMISE_UPLOAD_SYMBOL = Symbol("scAnonymise");
-const tarExtMatcher = /\.tar\.\w+$/;
+export const tarExtMatcher = /\.tar\.\w+$/;
 
 const settings = definePluginSettings({
     anonymiseByDefault: {

@@ -1,18 +1,18 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
+import { cl, settings } from "@plugins/profileSets/index";
+import { exportPresets, ImportDecision, importPresets, savePreset } from "@plugins/profileSets/utils/actions";
+import { loadPresetAsPending } from "@plugins/profileSets/utils/profile";
+import { loadPresets, presets, PresetSection, setCurrentPresetIndex } from "@plugins/profileSets/utils/storage";
 import { classes } from "@utils/misc";
 import { openModal, React, SelectedGuildStore, TextInput, useStateFromStores } from "@webpack/common";
 
-import { cl, settings } from "../index";
-import { exportPresets, ImportDecision, importPresets, savePreset } from "../utils/actions";
-import { loadPresetAsPending } from "../utils/profile";
-import { loadPresets, presets, PresetSection, setCurrentPresetIndex } from "../utils/storage";
 import { ImportProfilesModal } from "./confirmModal";
 import { PresetList } from "./presetList";
 

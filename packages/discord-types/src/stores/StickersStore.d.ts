@@ -28,7 +28,6 @@ export interface StickerPack extends StickerPackMeta {
     stickers: Sticker[];
 }
 
-
 export interface StickerCategoryType {
     id: string;
     name: string;

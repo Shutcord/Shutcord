@@ -26,7 +26,7 @@ import { Flex } from "@components/Flex";
 import { Link } from "@components/Link";
 import { Paragraph } from "@components/Paragraph";
 import { openSettingsTabModal, UpdaterTab } from "@components/settings";
-import { CONTRIB_ROLE_ID, Devs, DONOR_ROLE_ID, KNOWN_ISSUES_CHANNEL_ID, REGULAR_ROLE_ID, SUPPORT_CATEGORY_ID, SUPPORT_CHANNEL_ID, VENBOT_USER_ID, SHUTCORD_GUILD_ID } from "@utils/constants";
+import { CONTRIB_ROLE_ID, Devs, DONOR_ROLE_ID, KNOWN_ISSUES_CHANNEL_ID, REGULAR_ROLE_ID, SHUTCORD_GUILD_ID, SUPPORT_CATEGORY_ID, SUPPORT_CHANNEL_ID, VENBOT_USER_ID } from "@utils/constants";
 import { sendMessage } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { Margins } from "@utils/margins";
@@ -67,6 +67,26 @@ async function forceUpdate() {
     }
 
     return outdated;
+}
+
+interface ClientData {
+    name: string;
+    version?: string | null;
+    info?: string | boolean | null;
+    spoofed?: string | null;
+    shortHash?: string | null;
+    hash?: string | null;
+    dev?: boolean | null;
+}
+
+export function detectClient(): ClientData {
+    if (IS_DISCORD_DESKTOP) return { name: "Discord Desktop", version: DiscordNative.app.getVersion() };
+    if (IS_VESKTOP) return { name: "Vesktop", version: VesktopNative.app.getVersion() };
+    if ("legcord" in window) return { name: "LegCord", version: (window as any).legcord.version };
+
+    // @ts-expect-error
+    const name = typeof unsafeWindow !== "undefined" ? "UserScript" : "Web";
+    return { name, info: navigator.userAgent };
 }
 
 async function generateDebugInfoMessage() {

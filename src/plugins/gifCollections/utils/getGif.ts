@@ -1,14 +1,14 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { settings } from "@plugins/gifCollections/settings";
+import { Gif } from "@plugins/gifCollections/types";
 import { Message } from "@vencord/discord-types";
 import { MessageStore, SnowflakeUtils } from "@webpack/common";
 
-import { settings } from "../settings";
-import { Gif } from "../types";
 import { cleanUrl } from "./cleanUrl";
 import { isAudio } from "./isAudio";
 import { uuidv4 } from "./uuidv4";

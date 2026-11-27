@@ -78,6 +78,7 @@ export function identity<T>(value: T): T {
 }
 
 export const isPluginDev = (id: string) => Object.hasOwn(DevsById, id);
+export const isEquicordPluginDev = (id: string) => isPluginDev(id);
 export const shouldShowContributorBadge = (id: string) => isPluginDev(id) && DevsById[id].badge !== false;
 
 export function pluralise(amount: number, singular: string, plural = singular + "s") {

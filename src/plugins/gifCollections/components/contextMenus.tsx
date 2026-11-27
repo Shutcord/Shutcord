@@ -1,20 +1,20 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { findGroupChildrenByChildId, NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { FolderIcon, InfoIcon, LinkIcon, PencilIcon, PlusIcon, RemixIcon, TrashIcon } from "@components/Icons";
+import { settings } from "@plugins/gifCollections/settings";
+import { Gif } from "@plugins/gifCollections/types";
+import { addToCollection, cache_collections, deleteCollection, getGifById, getItemCollectionNameFromId, removeFromCollection } from "@plugins/gifCollections/utils/collectionManager";
+import { getGif } from "@plugins/gifCollections/utils/getGif";
+import { stripPrefix } from "@plugins/gifCollections/utils/misc";
+import { uuidv4 } from "@plugins/gifCollections/utils/uuidv4";
 import { copyToClipboard } from "@utils/clipboard";
 import { Alerts, FluxDispatcher, Menu, showToast } from "@webpack/common";
 
-import { settings } from "../settings";
-import { Gif } from "../types";
-import { addToCollection, cache_collections, deleteCollection, getGifById, getItemCollectionNameFromId, removeFromCollection } from "../utils/collectionManager";
-import { getGif } from "../utils/getGif";
-import { stripPrefix } from "../utils/misc";
-import { uuidv4 } from "../utils/uuidv4";
 import { openCollectionInfoModal, openCreateCollectionModal, openGifInfoModal, openMoveToCollectionModal, openRenameCollectionModal } from "./modals";
 
 function dispatchRefresh(collectionName: string) {
