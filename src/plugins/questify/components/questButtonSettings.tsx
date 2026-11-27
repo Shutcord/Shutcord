@@ -1,18 +1,18 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { enabledOnStartup } from "@plugins/questify";
+import { getQuestifySettings, useQuestifySettings } from "@plugins/questify/settings/access";
+import { type QuestButtonAction, type QuestButtonDisplayMode, type QuestButtonIncludedTypes, type QuestButtonIndicatorMode } from "@plugins/questify/settings/def";
+import { startAutoFetchingQuests } from "@plugins/questify/settings/fetching";
+import { validateIgnoredQuests } from "@plugins/questify/settings/ignoredQuests";
+import { canShowBadge, canShowButton, canShowPill } from "@plugins/questify/utils/ui";
 import { QuestRewardType, QuestTaskType } from "@vencord/discord-types/enums";
 import type { JSX } from "react";
 
-import { enabledOnStartup } from "..";
-import { getQuestifySettings, useQuestifySettings } from "../settings/access";
-import { type QuestButtonAction, type QuestButtonDisplayMode, type QuestButtonIncludedTypes, type QuestButtonIndicatorMode } from "../settings/def";
-import { startAutoFetchingQuests } from "../settings/fetching";
-import { validateIgnoredQuests } from "../settings/ignoredQuests";
-import { canShowBadge, canShowButton, canShowPill } from "../utils/ui";
 import { DummyQuestButton } from "./questButton";
 import { type ManaSelectOption, SettingsCard, SettingsColorPicker, SettingsDescription, SettingsHeader, SettingsRow, SettingsRowItem, SettingsSelect, SettingsSubheader } from "./shared";
 

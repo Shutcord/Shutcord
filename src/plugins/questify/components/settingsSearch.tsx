@@ -1,17 +1,16 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import "../settings.css";
+import "@plugins/questify/settings.css";
 
+import { getQuestifySettings } from "@plugins/questify/settings/access";
+import { setSettingsSearchQuery, useSettingsSearchMatchCount, useSettingsSearchQuery } from "@plugins/questify/settings/search";
+import { q } from "@plugins/questify/utils/ui";
 import { showToast, TextInput, useEffect, useState } from "@webpack/common";
 import type { JSX, KeyboardEvent } from "react";
-
-import { getQuestifySettings } from "../settings/access";
-import { setSettingsSearchQuery, useSettingsSearchMatchCount, useSettingsSearchQuery } from "../settings/search";
-import { q } from "../utils/ui";
 
 const KONAMI_CODE_LABEL = "Konami Code";
 const KONAMI_ARROWS: Record<string, string> = { ArrowUp: "↑", ArrowDown: "↓", ArrowLeft: "←", ArrowRight: "→" };

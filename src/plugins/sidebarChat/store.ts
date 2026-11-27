@@ -1,5 +1,5 @@
 /*
- * Vencord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2024 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -7,12 +7,7 @@
 import { definePluginSettings } from "@api/Settings";
 import { proxyLazy } from "@utils/lazy";
 import { OptionType } from "@utils/types";
-import { Flux as TFlux } from "@vencord/discord-types";
 import { ChannelActionCreators, Flux as FluxWP, FluxDispatcher, PopoutActions, PopoutWindowStore } from "@webpack/common";
-
-interface IFlux extends TFlux {
-    PersistedStore: TFlux["Store"];
-}
 
 export const settings = definePluginSettings({
     persistSidebar: {

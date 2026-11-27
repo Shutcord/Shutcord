@@ -1,18 +1,18 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import "./VoiceChannelLogEntryComponent.css";
 
+import { getCallStartTime } from "@plugins/voiceChannelLog/logs";
+import { VoiceChannelLogEntry } from "@plugins/voiceChannelLog/types";
+import { cl, downloadSound, formatElapsedTime, getEmojiUrl, playSound } from "@plugins/voiceChannelLog/utils";
 import { openUserProfile } from "@utils/discord";
 import { Channel } from "@vencord/discord-types";
 import { ApplicationStore, Clickable, closeAllModals,IconUtils, NavigationRouter, Timestamp, Tooltip, UserStore } from "@webpack/common";
 
-import { getCallStartTime } from "../logs";
-import { VoiceChannelLogEntry } from "../types";
-import { cl, downloadSound, formatElapsedTime, getEmojiUrl, playSound } from "../utils";
 import EventIcon from "./VoiceChannelLogEntryIcons";
 
 function getEventDescription(entry: VoiceChannelLogEntry): string {

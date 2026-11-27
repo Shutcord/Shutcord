@@ -1,13 +1,12 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getExcludedLanguages, settings } from "@plugins/messageTranslate/settings";
+import { CachedTranslation, TranslateResponse } from "@plugins/messageTranslate/types";
 import { Logger } from "@utils/Logger";
-
-import { getExcludedLanguages, settings } from "../settings";
-import { CachedTranslation, TranslateResponse } from "../types";
 
 const logger = new Logger("MessageTranslate");
 

@@ -1,5 +1,5 @@
 /*
- * Vencord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2025 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -11,6 +11,7 @@ import { Margins } from "@components/margins";
 import { Paragraph } from "@components/Paragraph";
 import { Text } from "@components/Text";
 import { TooltipContainer } from "@components/TooltipContainer";
+import { cssColors, getCssColorKeys, iconSizes, iconSizesInPx } from "@plugins/iconViewer/utils";
 import { copyWithToast, getIntlMessage } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { saveFile } from "@utils/web";
@@ -28,8 +29,6 @@ import {
     useMemo,
     useState
 } from "@webpack/common";
-
-import { cssColors, getCssColorKeys, iconSizes, iconSizesInPx } from "../utils";
 
 const logger = new Logger("IconViewer");
 const BugIcon = findComponentByCodeLazy("1.1.27.1.37 0a6.66 6.6");

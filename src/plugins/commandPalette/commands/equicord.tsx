@@ -1,11 +1,12 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import type { PaletteCommand } from "../api/types";
-import { BoltIcon, GearIcon, PaintIcon, RestartIcon } from "../ui/icons";
+import type { PaletteCommand } from "@plugins/commandPalette/api/types";
+import { BoltIcon, GearIcon, PaintIcon, RestartIcon } from "@plugins/commandPalette/ui/icons";
+
 import { openSettingsPage } from "./openSettings";
 
 const SECTION = "Equicord";

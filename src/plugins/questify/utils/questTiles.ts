@@ -1,15 +1,15 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getQuestifySettings, useQuestifySettings } from "@plugins/questify/settings/access";
+import { defaultClaimedSubsort, defaultExpiredSubsort, defaultIgnoredSubsort, defaultQuestOrder, defaultUnclaimedSubsort, type QuestOrderStatus, type QuestSubsort, type QuestTileColorSetting, type QuestTileGradient } from "@plugins/questify/settings/def";
+import { getIgnoredQuestIDs } from "@plugins/questify/settings/ignoredQuests";
 import type { Quest, QuestTaskWatchVideo, QuestTaskWatchVideoOnMobile } from "@vencord/discord-types";
 import { QuestTaskType } from "@vencord/discord-types/enums";
 
-import { getQuestifySettings, useQuestifySettings } from "../settings/access";
-import { defaultClaimedSubsort, defaultExpiredSubsort, defaultIgnoredSubsort, defaultQuestOrder, defaultUnclaimedSubsort, type QuestOrderStatus, type QuestSubsort, type QuestTileColorSetting, type QuestTileGradient } from "../settings/def";
-import { getIgnoredQuestIDs } from "../settings/ignoredQuests";
 import { getQuestStatus, isQuestHidden, QuestStatus } from "./questState";
 import { adjustRGB, decimalToRGB, isDarkish, q, type RGB } from "./ui";
 

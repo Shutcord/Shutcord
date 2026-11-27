@@ -1,13 +1,13 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { PaletteAction } from "@plugins/commandPalette/api/types";
 import { classNameFactory } from "@utils/css";
 import { useEffect, useRef } from "@webpack/common";
 
-import type { PaletteAction } from "../api/types";
 import { PaletteIcon } from "./PaletteIcon";
 
 const cl = classNameFactory("vc-cmdpal-");

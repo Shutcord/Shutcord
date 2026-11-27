@@ -1,17 +1,16 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { FormField, FormFieldOption, FormPageSpec, FormSubmitExtras, FormValues, PaletteContext } from "@plugins/commandPalette/api/types";
+import { tryMaskedLinkPaste } from "@plugins/commandPalette/ui/markdownPaste";
+import { MessageMarkdownPreview } from "@plugins/commandPalette/ui/MessageMarkdownPreview";
+import { PaletteIcon } from "@plugins/commandPalette/ui/PaletteIcon";
 import { classNameFactory } from "@utils/css";
 import { ChannelStore, useEffect, useLayoutEffect, useMemo, useRef, useState } from "@webpack/common";
 import type { KeyboardEvent } from "react";
-
-import type { FormField, FormFieldOption, FormPageSpec, FormSubmitExtras, FormValues, PaletteContext } from "../../api/types";
-import { tryMaskedLinkPaste } from "../markdownPaste";
-import { MessageMarkdownPreview } from "../MessageMarkdownPreview";
-import { PaletteIcon } from "../PaletteIcon";
 
 const cl = classNameFactory("vc-cmdpal-");
 

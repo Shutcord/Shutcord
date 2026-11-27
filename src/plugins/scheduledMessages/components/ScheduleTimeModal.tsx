@@ -1,5 +1,5 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -7,13 +7,13 @@
 import { Button } from "@components/Button";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Heading } from "@components/Heading";
+import { ScheduledAttachment } from "@plugins/scheduledMessages/types";
+import { addScheduledMessage, getChannelDisplayInfo } from "@plugins/scheduledMessages/utils";
 import { classNameFactory } from "@utils/css";
 import { RenderModalProps } from "@vencord/discord-types";
 import { findByPropsLazy } from "@webpack";
 import { ChannelStore, closeModal, DraftType, Modal, openModal, showToast, TextInput, UploadManager, useState } from "@webpack/common";
 
-import { ScheduledAttachment } from "../types";
-import { addScheduledMessage, getChannelDisplayInfo } from "../utils";
 import { ErrorIcon } from "./Icons";
 
 const cl = classNameFactory("vc-scheduled-msg-");

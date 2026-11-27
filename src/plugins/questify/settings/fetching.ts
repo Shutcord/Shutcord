@@ -1,13 +1,13 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { fetchAndAlertQuests } from "@plugins/questify/utils/fetching";
+import { QL } from "@plugins/questify/utils/logging";
 import type { Quest } from "@vencord/discord-types";
 
-import { fetchAndAlertQuests } from "../utils/fetching";
-import { QL } from "../utils/logging";
 import { getCurrentUserId, getQuestifySettings } from "./access";
 
 let autoFetchInterval: null | ReturnType<typeof setInterval> = null;

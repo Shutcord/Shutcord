@@ -1,12 +1,11 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { PaletteIconProps } from "@plugins/commandPalette/api/types";
 import type { JSX } from "react";
-
-import type { PaletteIconProps } from "../api/types";
 
 function makeIcon(children: () => JSX.Element) {
     return function PaletteSvgIcon({ className }: PaletteIconProps) {

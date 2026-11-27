@@ -1,5 +1,5 @@
 /*
- * Shutcord, a modification for Discord's desktop app
+ * Shutcord, a Discord client mod
  * Copyright (c) 2025 Shutcord contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -7,7 +7,8 @@
 import type { PluginOrigin } from "./types";
 
 /** Plugins brought over from Equicord and Nightcord (both GPL-3.0). Maps plugin name to where it came from. */
-export const PORTED_ORIGINS: Record<string, PluginOrigin> = {    "AdvancedPermissions": "equicord",
+export const PORTED_ORIGINS: Record<string, PluginOrigin> = {
+    "AdvancedPermissions": "equicord",
     "AltKrispSwitch": "equicord",
     "AlwaysExpandProfiles": "equicord",
     "Animalese": "equicord",
@@ -64,7 +65,6 @@ export const PORTED_ORIGINS: Record<string, PluginOrigin> = {    "AdvancedPermis
     "ExitSounds": "equicord",
     "ExportMessages": "equicord",
     "ExpressionCloner": "nightcord",
-    "FakeProfileThemes": "nightcord",
     "FastDeleteChannels": "equicord",
     "FavoriteAnything": "equicord",
     "FavoriteGifSearch": "nightcord",

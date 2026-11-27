@@ -1,14 +1,14 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { QuestIncludedTypes } from "@plugins/questify/utils/filtering";
+import { countIncludedUnclaimedQuests, getQuestStatus, QuestStatus } from "@plugins/questify/utils/questState";
 import type { Quest } from "@vencord/discord-types";
 import { QuestStore } from "@webpack/common";
 
-import type { QuestIncludedTypes } from "../utils/filtering";
-import { countIncludedUnclaimedQuests, getQuestStatus, QuestStatus } from "../utils/questState";
 import { getQuestifySettings } from "./access";
 import { ignoredQuestIDsKey } from "./def";
 import { rerenderQuests } from "./rerender";

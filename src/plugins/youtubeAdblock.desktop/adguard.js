@@ -1,3 +1,9 @@
+/*
+ * Shutcord, a Discord client mod
+ * Copyright (c) 2026 Shutcord contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 /* oxlint-disable */
 
 /**

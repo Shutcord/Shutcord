@@ -1,13 +1,13 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { HeaderBarButton } from "@api/HeaderBar";
+import { cl } from "@plugins/voiceChannelLog/utils";
 import { ChannelStore, SelectedChannelStore, useStateFromStores } from "@webpack/common";
 
-import { cl } from "../utils";
 import { openVoiceChannelLog } from "./VoiceChannelLogModal";
 
 function LogIcon({ height = 24, width = 24 }: { height?: number; width?: number; }) {

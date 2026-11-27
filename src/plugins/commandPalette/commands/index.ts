@@ -1,10 +1,11 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { registerCommands } from "../api/registry";
+import { registerCommands } from "@plugins/commandPalette/api/registry";
+
 import { loadCustomCommands, registerCustomCommands } from "./custom";
 import { discordCommands } from "./discordActions";
 import { equicordCommands } from "./equicord";

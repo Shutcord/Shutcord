@@ -1,18 +1,17 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import ErrorBoundary from "@components/ErrorBoundary";
+import { CarouselControls } from "@plugins/betterActivities/components/CarouselControls";
+import { settings } from "@plugins/betterActivities/settings";
+import { AllActivitiesProps } from "@plugins/betterActivities/types";
+import { ActivityView, getActivityApplication } from "@plugins/betterActivities/utils";
 import { Activity } from "@vencord/discord-types";
 import { PresenceStore, React, useEffect, useMemo, UserStore, useState, useStateFromStores } from "@webpack/common";
 import { JSX } from "react";
-
-import { CarouselControls } from "../components/CarouselControls";
-import { settings } from "../settings";
-import { AllActivitiesProps } from "../types";
-import { ActivityView, getActivityApplication } from "../utils";
 
 export function showAllActivitiesComponent({ activity, user, ...props }: Readonly<AllActivitiesProps>): JSX.Element | null {
     const currentUser = UserStore.getCurrentUser();

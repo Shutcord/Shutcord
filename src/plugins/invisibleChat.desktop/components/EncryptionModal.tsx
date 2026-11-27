@@ -1,16 +1,15 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { FormSwitch } from "@components/FormSwitch";
 import { Heading } from "@components/Heading";
+import { encrypt } from "@plugins/invisibleChat.desktop/index";
 import { insertTextIntoChatInputBox } from "@utils/discord";
 import { RenderModalProps } from "@vencord/discord-types";
 import { Modal, openModal, React, TextInput } from "@webpack/common";
-
-import { encrypt } from "../index";
 
 function EncModal(props: RenderModalProps) {
     const [secret, setSecret] = React.useState("");

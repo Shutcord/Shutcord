@@ -1,5 +1,5 @@
 /*
- * Vencord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2025 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -9,6 +9,7 @@ import { Heading } from "@components/Heading";
 import { SettingsTab, wrapTab } from "@components/settings";
 import { TooltipContainer } from "@components/TooltipContainer";
 import { iconsModule } from "@plugins/_core/concatenatedModules";
+import { IconsDef } from "@plugins/iconViewer/types";
 import { debounce } from "@shared/debounce";
 import { Margins } from "@utils/margins";
 import { classes } from "@utils/misc";
@@ -16,7 +17,6 @@ import { useIntersection } from "@utils/react";
 import { Icon } from "@vencord/discord-types";
 import { Clickable, TextInput, useCallback, useEffect, useMemo, useState } from "@webpack/common";
 
-import { IconsDef } from "../types";
 import { openIconModal } from "./Modals";
 
 let cachedIcons: IconsDef | null = null;

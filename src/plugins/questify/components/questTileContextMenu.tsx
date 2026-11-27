@@ -1,19 +1,18 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { addIgnoredQuest, questIsIgnored, removeIgnoredQuest } from "@plugins/questify/settings/ignoredQuests";
+import { rerenderQuests } from "@plugins/questify/settings/rerender";
+import { canAutoCompleteQuest, enrollAndLaunchQuestActivity, enrollAndStartQuestAutoComplete, ensureQuestEnrolled, getQuestActivityApplicationId, getQuestAutoCompleteEntry, isQuestEnrollmentCompatible, stopQuestAutoComplete } from "@plugins/questify/utils/completion";
+import { getQuestStatus, QuestStatus, refreshQuest } from "@plugins/questify/utils/questState";
+import { q } from "@plugins/questify/utils/ui";
 import { copyToClipboard } from "@utils/clipboard";
 import type { Quest } from "@vencord/discord-types";
 import { Menu } from "@webpack/common";
 import type { ReactNode } from "react";
-
-import { addIgnoredQuest, questIsIgnored, removeIgnoredQuest } from "../settings/ignoredQuests";
-import { rerenderQuests } from "../settings/rerender";
-import { canAutoCompleteQuest, enrollAndLaunchQuestActivity, enrollAndStartQuestAutoComplete, ensureQuestEnrolled, getQuestActivityApplicationId, getQuestAutoCompleteEntry, isQuestEnrollmentCompatible, stopQuestAutoComplete } from "../utils/completion";
-import { getQuestStatus, QuestStatus, refreshQuest } from "../utils/questState";
-import { q } from "../utils/ui";
 
 export function QuestTileContextMenu(
     children: ReactNode[],

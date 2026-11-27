@@ -1,14 +1,14 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import * as DataStore from "@api/DataStore";
+import { API_URL } from "@plugins/streaks/constants";
 import { proxyLazy } from "@utils/lazy";
 import { UserStore, zustandCreate } from "@webpack/common";
 
-import { API_URL } from "../constants";
 import { useAuthorizationStore } from "./AuthorizationStore";
 
 export interface RemoteStreak {

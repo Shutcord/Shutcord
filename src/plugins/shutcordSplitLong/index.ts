@@ -60,7 +60,7 @@ function splitMessage(content: string, limit: number) {
 }
 
 const listener: MessageSendListener = async (channelId, msg) => {
-    const limit = settings.store.limit;
+    const { limit } = settings.store;
     if (msg.content.length <= limit) return;
 
     const parts = splitMessage(msg.content, limit);

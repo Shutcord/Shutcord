@@ -1,14 +1,13 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { LogEventType } from "@plugins/voiceChannelLog/types";
+import { cl } from "@plugins/voiceChannelLog/utils";
 import { classes } from "@utils/misc";
 import { React } from "@webpack/common";
-
-import { LogEventType } from "../types";
-import { cl } from "../utils";
 
 const iconProps = { xmlns: "http://www.w3.org/2000/svg", height: "18", width: "18" };
 

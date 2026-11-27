@@ -1,5 +1,5 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -7,11 +7,10 @@
 import { isPluginEnabled, pluginRequiresRestart, plugins, startDependenciesRecursive, startPlugin, stopPlugin } from "@api/PluginManager";
 import { Settings } from "@api/Settings";
 import { openPluginModal } from "@components/settings/tabs/plugins/PluginModal";
+import type { PaletteCommand, PaletteListItem } from "@plugins/commandPalette/api/types";
+import { GearIcon, PlugIcon } from "@plugins/commandPalette/ui/icons";
 import type { Plugin } from "@utils/types";
 import { showToast } from "@webpack/common";
-
-import type { PaletteCommand, PaletteListItem } from "../api/types";
-import { GearIcon, PlugIcon } from "../ui/icons";
 
 function togglePlugin(plugin: Plugin) {
     const wasEnabled = isPluginEnabled(plugin.name);

@@ -1,21 +1,21 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { createQuestEnrollmentGuard } from "@plugins/questify/index";
+import { getCurrentUserId, getQuestifySettings } from "@plugins/questify/settings/access";
+import { autoCompleteQuestTaskTypes, isAutoCompleteCompatible, isEnrollmentCompatible } from "@plugins/questify/settings/def";
+import { resetQuestsToResume } from "@plugins/questify/settings/fetching";
+import { getIgnoredQuestIDs } from "@plugins/questify/settings/ignoredQuests";
+import { rerenderQuests } from "@plugins/questify/settings/rerender";
 import type { PluginNative } from "@utils/types";
 import type { Quest, User } from "@vencord/discord-types";
 import { QuestTargetedContent, QuestTaskJoinOperator, QuestTaskType } from "@vencord/discord-types/enums";
 import { findByCodeLazy, findByPropsLazy, findLazy } from "@webpack";
 import { FluxDispatcher, QuestStore, RestAPI, showToast, SnowflakeUtils, UserStore } from "@webpack/common";
 
-import { createQuestEnrollmentGuard } from "../index";
-import { getCurrentUserId, getQuestifySettings } from "../settings/access";
-import { autoCompleteQuestTaskTypes, isAutoCompleteCompatible, isEnrollmentCompatible } from "../settings/def";
-import { resetQuestsToResume } from "../settings/fetching";
-import { getIgnoredQuestIDs } from "../settings/ignoredQuests";
-import { rerenderQuests } from "../settings/rerender";
 import { normalizeQuestName, type QuestIncludedTypes, questMatchesIncludedTypes } from "./filtering";
 import { QL } from "./logging";
 import { getQuestStatus, getQuestStoredProgress, isQuestHidden, isVideoQuestTask, QuestStatus, QuestTask, refreshQuest } from "./questState";

@@ -1,12 +1,11 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import * as DataStore from "@api/DataStore";
-
-import { notifyPaletteChange } from "../api/registry";
+import { notifyPaletteChange } from "@plugins/commandPalette/api/registry";
 
 export function createPersistedValue<T>(key: string, fallback: T) {
     const fullKey = `CommandPalette_${key}`;

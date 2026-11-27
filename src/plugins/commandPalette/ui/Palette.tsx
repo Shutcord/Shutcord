@@ -1,24 +1,24 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { getVisibleCommands, subscribePalette } from "@plugins/commandPalette/api/registry";
+import type { PageEntry, PaletteAction, PaletteCommand, PaletteContext, PaletteListItem } from "@plugins/commandPalette/api/types";
+import { evaluateExpression } from "@plugins/commandPalette/commands/calculator/evaluator";
+import { fuzzyScore, rankCommands } from "@plugins/commandPalette/search/ranker";
+import { settings } from "@plugins/commandPalette/settings";
+import { getAlias, setAlias } from "@plugins/commandPalette/state/aliases";
+import { recordUse, topFrecent } from "@plugins/commandPalette/state/frecency";
+import { getHotkey, setHotkey } from "@plugins/commandPalette/state/hotkeys";
+import { getPins, isPinned, togglePin } from "@plugins/commandPalette/state/pins";
 import { IS_MAC } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
 import { copyWithToast } from "@utils/discord";
 import { Logger } from "@utils/Logger";
 import { useEffect, useRef, useState } from "@webpack/common";
 
-import { getVisibleCommands, subscribePalette } from "../api/registry";
-import type { PageEntry, PaletteAction, PaletteCommand, PaletteContext, PaletteListItem } from "../api/types";
-import { evaluateExpression } from "../commands/calculator/evaluator";
-import { fuzzyScore, rankCommands } from "../search/ranker";
-import { settings } from "../settings";
-import { getAlias, setAlias } from "../state/aliases";
-import { recordUse, topFrecent } from "../state/frecency";
-import { getHotkey, setHotkey } from "../state/hotkeys";
-import { getPins, isPinned, togglePin } from "../state/pins";
 import { ActionBar, Shortcut } from "./ActionBar";
 import { ActionsPanel } from "./ActionsPanel";
 import { CalculatorIcon, ChevronLeftIcon, CopyIcon, KeyboardIcon, PencilIcon, PinIcon, SearchIcon } from "./icons";

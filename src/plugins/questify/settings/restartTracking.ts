@@ -1,13 +1,12 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { SettingsStore } from "@api/Settings";
+import { Alerts } from "@plugins/questify/utils/ui";
 import type { DefinedSettings, SettingsDefinition } from "@utils/types";
-
-import { Alerts } from "../utils/ui";
 
 type RestartTrackingSettings = Pick<DefinedSettings<SettingsDefinition>, "def" | "pluginName">;
 

@@ -1,16 +1,15 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { getUserSettingLazy } from "@api/UserSettings";
+import type { PaletteCommand } from "@plugins/commandPalette/api/types";
+import { CircleIcon, HeadphonesIcon, MicIcon, MoonIcon } from "@plugins/commandPalette/ui/icons";
 import type { Theme } from "@vencord/discord-types";
 import { findByCodeLazy } from "@webpack";
 import { showToast, ThemeStore, VoiceActions } from "@webpack/common";
-
-import type { PaletteCommand } from "../api/types";
-import { CircleIcon, HeadphonesIcon, MicIcon, MoonIcon } from "../ui/icons";
 
 const SECTION = "Discord";
 

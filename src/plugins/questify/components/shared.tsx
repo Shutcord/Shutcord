@@ -1,20 +1,19 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import "../settings.css";
+import "@plugins/questify/settings.css";
 
 import { Card } from "@components/Card";
 import { Heading } from "@components/Heading";
 import { Paragraph } from "@components/Paragraph";
+import { collectSettingsSearchTerms, getSettingsSearchMatchScore, registerSettingsSearchTerms, SettingsSearchPriority, useSettingsSearchQuery } from "@plugins/questify/settings/search";
+import { q } from "@plugins/questify/utils/ui";
 import { findComponentByCodeLazy } from "@webpack";
 import { ColorPicker, React, Slider } from "@webpack/common";
 import type { ComponentProps, ComponentType, JSX, ReactElement, ReactNode } from "react";
-
-import { collectSettingsSearchTerms, getSettingsSearchMatchScore, registerSettingsSearchTerms, SettingsSearchPriority, useSettingsSearchQuery } from "../settings/search";
-import { q } from "../utils/ui";
 
 const searchComponentPriorities = new Map<ReactElement["type"], SettingsSearchPriority>([
     [SettingsHeader, SettingsSearchPriority.Title],

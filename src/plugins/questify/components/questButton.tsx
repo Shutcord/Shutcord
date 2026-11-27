@@ -1,23 +1,23 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 import { plugins } from "@api/PluginManager";
 import { ServerListItem, type ServerListItemBadgeProps } from "@api/ServerList";
+import { useQuestifySettings } from "@plugins/questify/settings/access";
+import type { QuestButtonAction, QuestButtonDisplayMode, QuestButtonIndicatorMode } from "@plugins/questify/settings/def";
+import { getIgnoredQuestIDs, ignoreAllQuests, resetIgnoredQuests } from "@plugins/questify/settings/ignoredQuests";
+import { rerenderQuests, useQuestRerender } from "@plugins/questify/settings/rerender";
+import { initialQuestDataFetched } from "@plugins/questify/state";
+import { getActiveAutoCompletes, getQueueableAutoCompleteQuests, isProcessingQuests, isQuestEnrollmentRateLimited, processQuests, stopAllAutoCompletes } from "@plugins/questify/utils/completion";
+import { fetchAndAlertQuests } from "@plugins/questify/utils/fetching";
+import { QL } from "@plugins/questify/utils/logging";
+import { decimalToRGB, isDarkish, leftClick, middleClick, q, QUEST_PAGE, rightClick } from "@plugins/questify/utils/ui";
 import { ContextMenuApi, Menu, NavigationRouter, useState } from "@webpack/common";
 import type { JSX, MouseEvent } from "react";
 
-import { useQuestifySettings } from "../settings/access";
-import type { QuestButtonAction, QuestButtonDisplayMode, QuestButtonIndicatorMode } from "../settings/def";
-import { getIgnoredQuestIDs, ignoreAllQuests, resetIgnoredQuests } from "../settings/ignoredQuests";
-import { rerenderQuests, useQuestRerender } from "../settings/rerender";
-import { initialQuestDataFetched } from "../state";
-import { getActiveAutoCompletes, getQueueableAutoCompleteQuests, isProcessingQuests, isQuestEnrollmentRateLimited, processQuests, stopAllAutoCompletes } from "../utils/completion";
-import { fetchAndAlertQuests } from "../utils/fetching";
-import { QL } from "../utils/logging";
-import { decimalToRGB, isDarkish, leftClick, middleClick, q, QUEST_PAGE, rightClick } from "../utils/ui";
 import { openQuestifySettingsModal } from "./settingsModal";
 
 interface QuestButtonViewProps {

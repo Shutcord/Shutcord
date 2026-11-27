@@ -1,14 +1,14 @@
 /*
- * Nightcord, a Discord client mod
+ * Shutcord, a Discord client mod
  * Copyright (c) 2026 Vendicated and contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import type { PaletteCommand, PaletteListItem } from "@plugins/commandPalette/api/types";
+import { CompassIcon, GearIcon, HashIcon, HomeIcon, ServerIcon, UserIcon } from "@plugins/commandPalette/ui/icons";
 import { openPrivateChannel } from "@utils/discord";
 import { ChannelRouter, GuildChannelStore, GuildStore, IconUtils, NavigationRouter, RelationshipStore, SelectedGuildStore, UserStore } from "@webpack/common";
 
-import type { PaletteCommand, PaletteListItem } from "../api/types";
-import { CompassIcon, GearIcon, HashIcon, HomeIcon, ServerIcon, UserIcon } from "../ui/icons";
 import { DISCORD_SETTINGS_ROUTES, openSettingsPage } from "./openSettings";
 
 const SECTION = "Navigation";
