@@ -8,7 +8,8 @@ import "./styles.css";
 
 export * from "./BaseTab";
 export { default as PatchHelperTab } from "./patchHelper";
-export { default as PluginsTab, EnabledPluginsTab } from "./plugins";
+export { default as PluginsTab } from "./plugins";
+export { EnabledPluginsTab } from "./plugins";
 export { openContributorModal } from "./plugins/ContributorModal";
 export { openPluginModal } from "./plugins/PluginModal";
 export { default as ShutcordTab } from "./shutcord";

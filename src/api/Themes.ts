@@ -22,7 +22,7 @@ import { isNonNullish } from "@utils/guards";
 import { ThemeStore } from "@vencord/discord-types";
 import { PopoutWindowStore } from "@webpack/common";
 
-import { userStyleRootNode, shutcordRootNode } from "./Styles";
+import { shutcordRootNode, userStyleRootNode } from "./Styles";
 
 let style: HTMLStyleElement;
 let themesStyle: HTMLStyleElement;
