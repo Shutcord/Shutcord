@@ -32,17 +32,62 @@ function draw() {
     });
 }
 
+/** Position, size and the title bar takeover all live here so a setting change just calls it again */
+function layout() {
+    if (!pill) return;
+    const { corner, size, coverTitle } = settings.store;
+    placePill(pill, corner as Corner);
+
+    const px = Math.round(size);
+    pill.style.fontSize = `${px}px`;
+    pill.style.padding = `${Math.round(px * 0.4)}px ${Math.round(px * 0.85)}px`;
+
+    // the top center spot is where Discord writes the page name (the "Friends" text), so the clock takes its place
+    if (corner === "top-center" && coverTitle) {
+        pill.style.top = "0";
+        pill.style.borderRadius = "0 0 12px 12px";
+        pill.style.minWidth = "260px";
+        pill.style.textAlign = "center";
+        pill.style.background = "var(--sc-bg-0, #0d0d0f)";
+        pill.style.border = "0";
+        pill.style.zIndex = "99999";
+    } else {
+        pill.style.borderRadius = "999px";
+        pill.style.minWidth = "";
+        pill.style.textAlign = "";
+        pill.style.background = "rgba(24, 24, 27, .85)";
+        pill.style.border = "1px solid rgba(255, 255, 255, .1)";
+        pill.style.zIndex = "9990";
+    }
+}
+
 const settings = definePluginSettings({
     corner: {
         type: OptionType.SELECT,
         description: "Where the clock sits",
         options: [
             { label: "Bottom right", value: "bottom-right", default: true },
+            { label: "Bottom center", value: "bottom-center" },
             { label: "Bottom left", value: "bottom-left" },
             { label: "Top right", value: "top-right" },
+            { label: "Top center", value: "top-center" },
             { label: "Top left", value: "top-left" }
         ],
-        onChange: (c: string) => pill && placePill(pill, c as Corner)
+        onChange: layout
+    },
+    size: {
+        type: OptionType.SLIDER,
+        description: "Size of the clock",
+        markers: [10, 12, 14, 18, 22, 28, 36],
+        default: 12,
+        stickToMarkers: false,
+        onChange: layout
+    },
+    coverTitle: {
+        type: OptionType.BOOLEAN,
+        description: "At top center, replace the page name in the title bar (the Friends text) instead of floating over it",
+        default: true,
+        onChange: layout
     },
     hour24: { type: OptionType.BOOLEAN, description: "Use the 24 hour clock", default: true, onChange: draw },
     seconds: { type: OptionType.BOOLEAN, description: "Show seconds", default: false, onChange: draw }
@@ -57,6 +102,7 @@ export default definePlugin({
 
     start() {
         pill = createPill("sc-clock", settings.store.corner as Corner);
+        layout();
         draw();
         timer = setInterval(draw, 1000);
     },
