@@ -32,19 +32,19 @@ export * as WebpackPatcher from "./webpack/patchWebpack";
 export { PlainSettings, Settings };
 
 import { enableStyle, initStyles } from "@api/Styles";
-import { openSettingsTabModal, UpdaterTab } from "@components/settings";
 import { debounce } from "@shared/debounce";
 import { StartAt } from "@utils/types";
 import { SettingsRouter } from "@webpack/common";
 
 import { get as dsGet } from "./api/DataStore";
-import { NotificationData, showNotification } from "./api/Notifications";
+import { showNotification } from "./api/Notifications";
 import { initPluginManager, PMLogger, startAllPlugins } from "./api/PluginManager";
 import { PlainSettings, Settings, SettingsStore } from "./api/Settings";
 import { areLocalSettingsDirty, getCloudSettings, getCloudSyncDirection, markLocalSettingsDirty, putCloudSettings, shouldCloudSync } from "./api/SettingsSync/cloudSync";
 import { loadUserPlugins } from "./api/UserPlugins";
 import { relaunch } from "./utils/native";
-import { checkForUpdates, update, UpdateLogger } from "./utils/updater";
+import { showUpdatePopup } from "./utils/updatePopup";
+import { changes, checkForUpdates, update, UpdateLogger } from "./utils/updater";
 import { onceReady } from "./webpack";
 import { patches } from "./webpack/patchWebpack";
 
@@ -103,43 +103,43 @@ async function syncSettings() {
     });
 }
 
-let notifiedForUpdatesThisSession = false;
+let popupShownForBuild: string | undefined;
 
 async function runUpdateCheck() {
     if (IS_UPDATER_DISABLED) return;
-
-    const notify = (data: NotificationData) => {
-        if (notifiedForUpdatesThisSession) return;
-        notifiedForUpdatesThisSession = true;
-
-        setTimeout(() => showNotification({
-            permanent: true,
-            noPersist: true,
-            ...data
-        }), 10_000);
-    };
 
     try {
         const isOutdated = await checkForUpdates();
         if (!isOutdated) return;
 
+        // one popup per new build, so the 30 minute re-check does not nag
+        const buildKey = changes?.[0]?.hash ?? "unknown";
+        if (popupShownForBuild === buildKey) return;
+
+        const lines = (changes ?? []).map(c => c.message);
+
         if (Settings.autoUpdate) {
             await update();
-            if (Settings.autoUpdateNotification) {
-                notify({
-                    title: "Shutcord has been updated!",
-                    body: "Click here to restart",
-                    onClick: relaunch
-                });
-            }
+            popupShownForBuild = buildKey;
+            setTimeout(() => showUpdatePopup({
+                title: "Shutcord has been updated",
+                lines,
+                action: "Restart now",
+                onAction: relaunch
+            }), 4000);
             return;
         }
 
-        notify({
-            title: "A Shutcord update is available!",
-            body: "Click here to view the update",
-            onClick: () => openSettingsTabModal(UpdaterTab!)
-        });
+        popupShownForBuild = buildKey;
+        setTimeout(() => showUpdatePopup({
+            title: "A Shutcord update is ready",
+            lines,
+            action: "Update and restart",
+            onAction: async () => {
+                await update();
+                relaunch();
+            }
+        }), 4000);
     } catch (err) {
         UpdateLogger.error("Failed to check for updates", err);
     }
@@ -153,11 +153,7 @@ async function init() {
 
     if (!IS_WEB && !IS_UPDATER_DISABLED) {
         runUpdateCheck();
-
-        // this tends to get really annoying, so only do this if the user has auto-update without notification enabled
-        if (Settings.autoUpdate && !Settings.autoUpdateNotification) {
-            setInterval(runUpdateCheck, 1000 * 60 * 30); // 30 minutes
-        }
+        setInterval(runUpdateCheck, 1000 * 60 * 30); // 30 minutes, the popup only shows once per build
     }
 
     if (IS_DEV) {

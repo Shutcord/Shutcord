@@ -1,6 +1,6 @@
 # Shutcord logo
 
-Two overlapping heavy letters, "S" (mid grey) behind "C" (light/dark), slightly tilted. Letters come from the Archivo Black font (SIL OFL license, free to use). Flat, grey only.
+Two overlapping heavy letters, a mid grey "S" at the top left and a light (or dark) "C" in front at the bottom right, both slightly tilted. Letters come from the Archivo Black font (SIL OFL license, free to use). Flat, grey only.
 
 | File | Use |
 |---|---|

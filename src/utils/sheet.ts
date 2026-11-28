@@ -36,7 +36,7 @@ export function createSheet(id: string) {
     };
 }
 
-export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+export type Corner = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
 
 /** A small floating label that sits in one corner of the window */
 export function createPill(id: string, corner: Corner) {
@@ -63,6 +63,12 @@ export function createPill(id: string, corner: Corner) {
 export function placePill(el: HTMLElement, corner: Corner) {
     const [v, h] = corner.split("-");
     el.style.top = el.style.bottom = el.style.left = el.style.right = "auto";
+    el.style.transform = "";
     el.style[v as "top" | "bottom"] = "12px";
-    el.style[h as "left" | "right"] = "12px";
+    if (h === "center") {
+        el.style.left = "50%";
+        el.style.transform = "translateX(-50%)";
+    } else {
+        el.style[h as "left" | "right"] = "12px";
+    }
 }
