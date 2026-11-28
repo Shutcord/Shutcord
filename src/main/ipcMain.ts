@@ -22,8 +22,9 @@ import "./settings";
 
 import { debounce } from "@shared/debounce";
 import { IpcEvents } from "@shared/IpcEvents";
-import { BrowserWindow, ipcMain, nativeImage, nativeTheme, net, shell, systemPreferences, WebContents } from "electron";
+import { BrowserWindow, ipcMain, nativeImage, nativeTheme, shell, systemPreferences } from "electron";
 import editorHtml from "file://quickCssEditor.html";
+import editorIcon from "file://../../assets/logo-dark-128.png?base64";
 import { existsSync, FSWatcher, mkdirSync, readdirSync, readFileSync, watch, writeFileSync } from "fs";
 import { open, readdir, readFile } from "fs/promises";
 import { release } from "os";
@@ -186,23 +187,14 @@ ipcMain.on(IpcEvents.GET_MONACO_THEME, e => {
     e.returnValue = nativeTheme.shouldUseDarkColors ? "vs-dark" : "vs-light";
 });
 
-async function setEditorIcon(win: BrowserWindow, from: WebContents) {
+function setEditorIcon(win: BrowserWindow) {
     try {
-        const raw: string | null = await from.executeJavaScript(
-            "(() => { const u = Shutcord.Webpack.Common.UserStore.getCurrentUser(); return u ? u.getAvatarURL(undefined, 128, false) : null; })()"
-        );
-        if (!raw) return;
-
-        const url = new URL(raw, "https://discord.com");
-        url.pathname = url.pathname.replace(/\.(webp|gif)$/, ".png");
-
-        const res = await net.fetch(url.toString());
-        const icon = nativeImage.createFromBuffer(Buffer.from(await res.arrayBuffer()));
-        if (!icon.isEmpty() && !win.isDestroyed()) win.setIcon(icon);
+        const icon = nativeImage.createFromDataURL("data:image/png;base64," + editorIcon);
+        if (!icon.isEmpty()) win.setIcon(icon);
     } catch { }
 }
 
-ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async e => {
+ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async () => {
     const title = "Shutcord QuickCSS";
     const existingWindow = BrowserWindow.getAllWindows().find(w => w.title === title);
     if (existingWindow && !existingWindow.isDestroyed()) {
@@ -243,7 +235,7 @@ ipcMain.handle(IpcEvents.OPEN_MONACO_EDITOR, async e => {
     });
 
     makeLinksOpenExternally(win);
-    setEditorIcon(win, e.sender);
+    setEditorIcon(win);
 
     await win.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(editorHtml));
 });

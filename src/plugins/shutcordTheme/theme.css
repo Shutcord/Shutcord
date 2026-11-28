@@ -93,8 +93,10 @@
 }
 
 /* ---------- inputs, buttons, cards ---------- */
-input[type="text"], input[type="search"], input[type="number"], input[type="password"], textarea,
-[class*="inputWrapper"], [class*="searchBar"] {
+/* only the outer box gets rounded, inner inputs inside a wrapper drew a second outline */
+:is(input[type="text"], input[type="search"], input[type="number"], input[type="password"]):not([class*="inputWrapper"] *, [class*="searchBar"] *, [class*="channelTextArea"] *),
+[class*="inputWrapper"]:not([class*="inputWrapper"] *, [class*="searchBar"] *),
+[class*="searchBar"]:not([class*="searchBar"] *) {
     border-radius: calc(var(--sc-radius) - 2px) !important;
 }
 
@@ -152,7 +154,9 @@ button[class*="button_"]:active { transform: scale(.98); }
 
 
 /* ---------- polish ---------- */
-:focus-visible { outline: 2px solid color-mix(in srgb, var(--sc-accent) 55%, transparent) !important; outline-offset: 2px; }
+/* text fields keep Discord's own focus ring, an extra outline there showed up as stray lines */
+:is(button, a, [role="button"], [role="tab"], [role="menuitem"]):focus-visible { outline: 2px solid color-mix(in srgb, var(--sc-accent) 55%, transparent) !important; outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible, [contenteditable]:focus-visible, [role="textbox"]:focus-visible, [role="combobox"]:focus-visible { outline: none !important; }
 
 [class*="avatar_"] img, [class*="avatarWrapper"] img { transition: transform .15s ease, filter .15s ease; }
 [class*="avatar_"]:hover img { filter: brightness(1.08); }
