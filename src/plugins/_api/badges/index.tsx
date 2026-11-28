@@ -48,7 +48,10 @@ const ContributorBadge: ProfileBadge = {
     largeIconSrc: "https://raw.githubusercontent.com/Shutcord/Shutcord/main/badges/shutcord@2x.png",
     position: BadgePosition.START,
     shouldShow: ({ userId }) => shouldShowContributorBadge(userId),
-    onClick: (_, { userId }) => openContributorModal(UserStore.getUser(userId))
+    onClick: (_, { userId }) => openContributorModal(UserStore.getUser(userId)),
+    onContextMenu(event, badge) {
+        ContextMenuApi.openContextMenu(event, () => <BadgeContextMenu badge={badge} />);
+    }
 };
 
 
@@ -97,7 +100,15 @@ function toDirectoryBadge(b: ProfileBadge, userId: string): DirectoryBadge {
     };
 }
 
+function hideBadge(id: string, name: string) {
+    Settings.hiddenBadges = { ...Settings.hiddenBadges, [id]: name };
+    showToast({ text: `Hid "${name}". You can show it again in Shutcord settings`, variant: "success" });
+}
+
 function BadgeContextMenu({ badge }: { badge: Omit<ProfileBadge, "id"> & BadgeUserArgs; }) {
+    const isOwn = badge.userId === UserStore.getCurrentUser()?.id;
+    const id = (badge as ProfileBadge).id;
+
     return (
         <Menu.Menu
             navId="sc-badge-context"
@@ -110,6 +121,13 @@ function BadgeContextMenu({ badge }: { badge: Omit<ProfileBadge, "id"> & BadgeUs
                     label="Copy Badge Name"
                     action={() => copyWithToast(badge.description!)}
                     leadingAccessory={{ type: "icon", icon: CopyIcon }}
+                />
+            )}
+            {isOwn && id && (
+                <Menu.MenuItem
+                    id="sc-badge-hide"
+                    label="Hide Badge"
+                    action={() => hideBadge(id, badge.description ?? id)}
                 />
             )}
             {badge.iconSrc && (
@@ -215,7 +233,11 @@ export default definePlugin({
         if (!profile) return [];
 
         try {
-            return _getBadges(profile);
+            const badges = _getBadges(profile);
+            if (profile.userId !== UserStore.getCurrentUser()?.id) return badges;
+
+            const hidden = Settings.hiddenBadges;
+            return badges.filter(b => !(b.id in hidden));
         } catch (e) {
             new Logger("BadgeAPI#getBadges").error(e);
             return [];
