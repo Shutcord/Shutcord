@@ -17,7 +17,8 @@
 */
 
 import { openNotificationLogModal } from "@api/Notifications/notificationLog";
-import { useSettings } from "@api/Settings";
+import { Settings, useSettings } from "@api/Settings";
+import { Button } from "@components/Button";
 import { Divider } from "@components/Divider";
 import { FormSwitch } from "@components/FormSwitch";
 import { Heading } from "@components/Heading";
@@ -145,6 +146,37 @@ function Switches() {
     });
 }
 
+function HiddenBadges() {
+    const { hiddenBadges } = useSettings(["hiddenBadges"]);
+    const entries = Object.entries(hiddenBadges ?? {});
+
+    if (!entries.length) return null;
+
+    return (
+        <div style={{ marginTop: 16 }}>
+            <Heading>Hidden badges</Heading>
+            <Paragraph className={Margins.bottom8}>
+                Badges you hid on your own profile. Right click one of your badges and pick Hide Badge to add it here
+            </Paragraph>
+            {entries.map(([id, name]) => (
+                <div key={id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "6px 0" }}>
+                    <span style={{ flex: 1 }}>{name}</span>
+                    <Button
+                        size="small"
+                        variant="secondary"
+                        onClick={() => {
+                            const { [id]: _removed, ...rest } = Settings.hiddenBadges;
+                            Settings.hiddenBadges = rest;
+                        }}
+                    >
+                        Show
+                    </Button>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function ShutcordSettings() {
     const user = UserStore?.getCurrentUser();
 
@@ -251,6 +283,7 @@ function ShutcordSettings() {
                 <div className="sc-settings-switches">
                     <Switches />
                 </div>
+                <HiddenBadges />
             </section>
 
 

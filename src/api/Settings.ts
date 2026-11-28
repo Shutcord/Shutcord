@@ -66,6 +66,8 @@ export interface Settings {
     disableMinSize: boolean;
     hideSponsorBadges: boolean;
     hideOwnSponsorBadges: boolean;
+    /** Badge id to its name, for badges the user hid on their own profile */
+    hiddenBadges: Record<string, string>;
     nativeTitleBar: boolean;
     plugins: {
         [plugin: string]: {
@@ -111,6 +113,7 @@ const DefaultSettings: Settings = {
     disableMinSize: false,
     hideSponsorBadges: false,
     hideOwnSponsorBadges: false,
+    hiddenBadges: {},
     nativeTitleBar: false,
     plugins: {},
 
