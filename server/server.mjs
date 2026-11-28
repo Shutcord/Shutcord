@@ -50,7 +50,7 @@ if (!env.DISCORD_CLIENT_ID || !env.DISCORD_CLIENT_SECRET)
 
 mkdirSync(join(DATA, "badges"), { recursive: true });
 const BANNER_HOSTS = ["cdn.discordapp.com", "media.discordapp.net", "i.imgur.com", "i.ibb.co"];
-const F = { sponsors: join(DATA, "sponsors.json"), profiles: join(DATA, "profiles.json"), admins: join(DATA, "admins.json"), integ: join(DATA, "integration.json"), users: join(DATA, "users.json"), secret: join(DATA, "secret") };
+const F = { sponsors: join(DATA, "sponsors.json"), profiles: join(DATA, "profiles.json"), admins: join(DATA, "admins.json"), integ: join(DATA, "integration.json"), users: join(DATA, "users.json"), hidden: join(DATA, "hidden-badges.json"), secret: join(DATA, "secret") };
 if (!existsSync(F.sponsors)) {
     const seed = join(here, "..", "sponsors.json");
     writeFileSync(F.sponsors, existsSync(seed) ? readFileSync(seed) : JSON.stringify({ tiers: {}, sponsors: {} }));
@@ -58,6 +58,7 @@ if (!existsSync(F.sponsors)) {
 if (!existsSync(F.profiles)) writeFileSync(F.profiles, "{}");
 if (!existsSync(F.admins)) writeFileSync(F.admins, "[]");
 if (!existsSync(F.users)) writeFileSync(F.users, "{}");
+if (!existsSync(F.hidden)) writeFileSync(F.hidden, "{}");
 if (!existsSync(F.integ)) writeFileSync(F.integ, "{\"tierRoles\":{}}");
 if (!existsSync(F.secret)) writeFileSync(F.secret, randomBytes(32).toString("hex"));
 const SECRET = readFileSync(F.secret, "utf8").trim();
@@ -156,6 +157,27 @@ const userNames = () => Object.fromEntries(Object.entries(readJson(F.users)).map
 const userHandles = () => Object.fromEntries(Object.entries(readJson(F.users)).map(([id, u]) => [id, u.handle || ""]));
 const out = d => ({ ...d, names: userNames(), handles: userHandles() });
 
+// badges a person chose to hide are left out of the public file, so nobody else sees them
+function hiddenFor(id) { return new Set(readJson(F.hidden)[id] ?? []); }
+
+function publicSponsors() {
+    const d = readJson(F.sponsors), hidden = readJson(F.hidden);
+    const keep = (id, list) => (list ?? []).filter(b => !(hidden[id] ?? []).includes(b.badge));
+    for (const [id, s] of Object.entries(d.sponsors ?? {})) if (s.badges) s.badges = keep(id, s.badges);
+    for (const id of Object.keys(d.custom ?? {})) {
+        d.custom[id] = keep(id, d.custom[id]);
+        if (!d.custom[id].length) delete d.custom[id];
+    }
+    return JSON.stringify(d);
+}
+
+function badgesOf(id) {
+    const d = readJson(F.sponsors), hidden = hiddenFor(id);
+    const row = (kind, b) => ({ kind, url: b.badge, tooltip: b.tooltip || "", hidden: hidden.has(b.badge) });
+    return [...(d.sponsors?.[id]?.badges ?? []).map(b => row("sponsor", b)), ...(d.custom?.[id] ?? []).map(b => row("custom", b))];
+}
+
+
 function rememberUser(user) {
     if (!user?.id) return;
     const users = readJson(F.users);
@@ -199,7 +221,7 @@ const server = createServer(async (req, res) => {
         if (limited(req, req.method === "GET" ? 240 : 40)) return send(res, 429, { error: "slow down" });
 
         // public
-        if (path === "/sponsors.json") return send(res, 200, readFileSync(F.sponsors), { "content-type": "application/json", "cache-control": "public, max-age=60" });
+        if (path === "/sponsors.json") return send(res, 200, publicSponsors(), { "content-type": "application/json", "cache-control": "public, max-age=60" });
         if (path === "/profiles.json") return send(res, 200, readFileSync(F.profiles), { "content-type": "application/json", "cache-control": "public, max-age=60" });
         if (path === "/profiles") {
             const ids = (url.searchParams.get("ids") || "").split(",").filter(i => ID.test(i)).slice(0, 100);
@@ -435,6 +457,23 @@ const server = createServer(async (req, res) => {
                 return send(res, 200, { id, profile: all[id] ?? {} });
             }
         }
+        if (path === "/me/badges") {
+            const id = readSession(req);
+            if (!id) return send(res, 401, { error: "not logged in" });
+            if (req.method === "GET") return send(res, 200, { badges: badgesOf(id) });
+            if (req.method === "POST") {
+                if (req.headers["x-requested-with"] !== "shutcord") return send(res, 403, { error: "missing header" });
+                const b = await body(req, 2000);
+                const mine = badgesOf(id);
+                if (!mine.some(x => x.url === b.url)) return send(res, 404, { error: "that badge is not yours" });
+                const all = readJson(F.hidden);
+                const list = new Set(all[id] ?? []);
+                if (b.hidden) list.add(b.url); else list.delete(b.url);
+                if (list.size) all[id] = [...list]; else delete all[id];
+                writeJson(F.hidden, all);
+                return send(res, 200, { badges: badgesOf(id) });
+            }
+        }
         if (path === "/me/banner" && req.method === "POST") {
             const id = readSession(req);
             if (!id) return send(res, 401, { error: "not logged in" });
@@ -471,7 +510,7 @@ const ADMIN_PAGE = `<!doctype html><meta charset=utf-8><meta name=viewport conte
 <div class=card><b>Find a person</b> <small>(Discord username or user ID)</small><div class=row><input id=q placeholder="Search…" size=30></div><div id=results></div></div>
 <div class=card><b>Add or change a sponsor</b><div class=row><input id=id placeholder="Discord user ID" size=22><select id=tier></select><button id=add>Save</button></div></div>
 <div class=card><b>Custom badges</b> <small>(for anyone: staff, testers, friends. Not tied to a tier, up to 10 each)</small>
-<div class=row><input id=cid placeholder="Discord user ID" size=22><input id=ctip placeholder="Tooltip, e.g. Staff" size=18><input id=cfile type=file accept="image/*"><button id=cadd>Add badge</button></div><div id=clist></div></div>
+<div class=row><input id=cid placeholder="Discord user ID" size=22><input id=ctip placeholder="Tooltip, e.g. Staff" size=18><input id=cfile type=file accept="image/*"><button id=cadd>Add badge</button></div><div id=clist></div><small>Custom badges show up inside that person's card below.</small></div>
 <div id=list></div></div>
 <script>
 const $=i=>document.getElementById(i);let D,ME;const msg=t=>$('msg').textContent=t||'';
@@ -485,16 +524,22 @@ const tt=document.createElement('input');tt.value=b.tooltip||'';tt.placeholder='
 const sv=document.createElement('button');sv.textContent='Save';sv.title='Save the tooltip and/or the new image';
 sv.onclick=()=>{const file=f.files[0];const go=data=>run(()=>api(base,'PATCH',{tooltip:tt.value,data}));if(!file)return go();const fr=new FileReader();fr.onload=()=>go(fr.result.split(',')[1]);fr.readAsDataURL(file)};
 const x=document.createElement('button');x.className='x';x.textContent='Remove';x.onclick=()=>confirm('Remove this badge?')&&run(()=>api(base,'DELETE'));r.append(im,tt,f,sv,x);return r}
+function badgeRowSafe(b,base){const r=badgeRow(b,base);const im=r.querySelector('img');im.title=b.badge;im.onerror=()=>{im.style.opacity='.3';im.alt='image missing'};return r}
 function draw(){$('app').hidden=false;$('tier').innerHTML=Object.entries(D.tiers).map(([k,t])=>'<option value='+k+'>'+esc(t.name)+' ($'+t.usd+', '+t.badges+' badges)</option>').join('');
-drawCustom();$('list').innerHTML=Object.keys(D.sponsors).length?'':'<div class=card><small>No sponsors in this list yet. If you added some earlier with pnpm sponsors, press Import above.</small></div>';for(const [id,s] of Object.entries(D.sponsors)){if(!hit(id,(s.github||'')+' '+s.tier))continue;const t=D.tiers[s.tier]||{name:'?',badges:0};const c=document.createElement('div');c.className='card';
-c.innerHTML='<div class=row>'+who(id)+'<small>'+esc(t.name)+(s.github?' · '+esc(s.github):'')+' · '+(s.badges||[]).length+'/'+t.badges+' badges</small></div>';
-(s.badges||[]).forEach((b,i)=>c.append(badgeRow(b,'sponsor/'+id+'/badge/'+i)));
+$('clist').innerHTML='';$('list').innerHTML='';
+const ids=[...new Set([...Object.keys(D.sponsors),...Object.keys(D.custom||{})])];
+if(!ids.length)$('list').innerHTML='<div class=card><small>Nobody here yet. If you added some earlier with pnpm sponsors, press Import above.</small></div>';
+for(const id of ids){const s=D.sponsors[id];const custom=(D.custom||{})[id]||[];if(!hit(id,((s&&s.github)||'')+' '+(s?s.tier:'')))continue;
+const c=document.createElement('div');c.className='card';
+const t=s?(D.tiers[s.tier]||{name:'?',badges:0}):null;
+c.innerHTML='<div class=row>'+who(id)+'<small>'+(s?esc(t.name)+(s.github?' · '+esc(s.github):'')+' · '+(s.badges||[]).length+'/'+t.badges+' tier badges':'no tier')+' · '+custom.length+' custom</small></div>';
+if(s)(s.badges||[]).forEach((b,i)=>c.append(badgeRowSafe(b,'sponsor/'+id+'/badge/'+i)));
+custom.forEach((b,i)=>{const r=badgeRowSafe(b,'custom/'+id+'/'+i);const tag=document.createElement('small');tag.textContent='custom';r.prepend(tag);c.append(r)});
 const r=document.createElement('div');r.className='row';
-if((s.badges||[]).length<t.badges){const f=document.createElement('input');f.type='file';f.accept='image/*';const tt=document.createElement('input');tt.placeholder='tooltip';const u=document.createElement('button');u.textContent='Add badge';
+if(s&&(s.badges||[]).length<t.badges){const f=document.createElement('input');f.type='file';f.accept='image/*';const tt=document.createElement('input');tt.placeholder='tooltip';const u=document.createElement('button');u.textContent='Add tier badge';
 u.onclick=()=>{const file=f.files[0];if(!file)return msg('pick an image first');const fr=new FileReader();fr.onload=()=>run(()=>api('badge','POST',{id,tooltip:tt.value,data:fr.result.split(',')[1]}));fr.readAsDataURL(file)};r.append(f,tt,u)}
-const del=document.createElement('button');del.className='x';del.textContent='Remove sponsor';del.onclick=()=>confirm('Remove '+id+'?')&&run(()=>api('sponsor/'+id,'DELETE'));r.append(del);c.append(r);$('list').append(c)}}
-function drawCustom(){$('clist').innerHTML='';for(const [id,list] of Object.entries(D.custom||{})){if(!hit(id))continue;const c=document.createElement('div');c.className='row';c.style.display='block';c.innerHTML='<div class=row>'+who(id)+'</div>';
-list.forEach((b,i)=>c.append(badgeRow(b,'custom/'+id+'/'+i)));$('clist').append(c)}}
+if(s){const del=document.createElement('button');del.className='x';del.textContent='Remove sponsor';del.onclick=()=>confirm('Remove '+id+'?')&&run(()=>api('sponsor/'+id,'DELETE'));r.append(del)}
+if(r.childNodes.length)c.append(r);$('list').append(c)}}
 function showResults(list){MATCH=new Set(list.map(u=>u.id));if(D)draw();const el=$('results');el.innerHTML='';if(!Q){return}if(!list.length){el.innerHTML='<small>No match. Search finds people who logged in here and (with the bot) members of your Discord server. Pasting a user ID always works.</small>';return}
 for(const u of list){const r=document.createElement('div');r.className='row';r.innerHTML=(u.name?'<b>'+esc(u.name)+'</b>':'<b>(unknown name)</b>')+' <small>'+esc(u.id)+'</small>';
 const a=document.createElement('button');a.className='x';a.textContent='Use for sponsor';a.onclick=()=>{$('id').value=u.id;$('id').scrollIntoView({block:'center'})};
@@ -609,11 +654,26 @@ function render(){
   +'<div class=stack>'
   +'<div class=card><div class=sw2><div><h2>Custom colours</h2><p style="margin:0">Tint your whole profile card with two colours.</p></div><label class=tg><input type=checkbox id=on><i></i></label></div><div id=cbox class=pick style="margin-top:14px"></div></div>'
   +'<div class=card><h2>Banner</h2><p>png, jpg, gif or webp, up to 2 MB. Animated gifs work.</p><div id=bbox></div></div>'
+  +'<div class=card><h2>Badges</h2><p>Switch a badge off to hide it from everyone. You can switch it back on any time.</p><div id=bgbox><small style="color:var(--dim)">Loading…</small></div></div>'
   +'<div class=bar><span class=dirty id=dirty></span><button class=g id=reset>Reset</button><button id=save>Save changes</button></div>'
   +'</div></main>';
   $('on').checked=S.on;$('on').onchange=function(){S.on=this.checked;paint()};
   $('save').onclick=save;$('reset').onclick=function(){load(true)};
-  paint(true);
+  paint(true);loadBadges();
+}
+
+function loadBadges(){
+  fetch('/me/badges').then(function(r){return r.json()}).then(function(j){drawBadges(j.badges||[])}).catch(function(){$('bgbox').textContent='Could not load your badges'});
+}
+function drawBadges(list){
+  var b=$('bgbox');if(!list.length){b.innerHTML='<small style="color:var(--dim)">You have no badges yet.</small>';return}
+  b.innerHTML='';
+  list.forEach(function(x){
+    var r=document.createElement('div');r.className='sw2';r.style.padding='6px 0';
+    r.innerHTML='<div class=row><img src="'+esc(x.url)+'" width=32 height=32 style="border-radius:50%;object-fit:cover;background:var(--soft)" alt=""><div><b>'+esc(x.tooltip||'Badge')+'</b><br><small style="color:var(--dim)">'+(x.kind==='sponsor'?'Sponsor badge':'Custom badge')+(x.hidden?' · hidden':'')+'</small></div></div><label class=tg><input type=checkbox'+(x.hidden?'':' checked')+'><i></i></label>';
+    r.querySelector('input').onchange=function(){var inp=this;fetch('/me/badges',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'shutcord'},body:JSON.stringify({url:x.url,hidden:!inp.checked})}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})}).then(function(o){if(o.ok){drawBadges(o.j.badges);toast(inp.checked?'Badge shown':'Badge hidden','ok')}else{inp.checked=!inp.checked;toast(o.j.error||'Could not save','err')}}).catch(function(){inp.checked=!inp.checked;toast('Could not reach the server','err')})};
+    b.appendChild(r)
+  })
 }
 
 function colourRow(label,key){

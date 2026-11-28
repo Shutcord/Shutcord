@@ -150,14 +150,15 @@ function HiddenBadges() {
     const { hiddenBadges } = useSettings(["hiddenBadges"]);
     const entries = Object.entries(hiddenBadges ?? {});
 
-    if (!entries.length) return null;
-
     return (
         <div style={{ marginTop: 16 }}>
             <Heading>Hidden badges</Heading>
             <Paragraph className={Margins.bottom8}>
-                Badges you hid on your own profile. Right click one of your badges and pick Hide Badge to add it here
+                Badges you hid on your own screen. Right click one of your badges and pick Hide Badge to add it here. To hide a badge from everyone else, use the Badges switches on your Shutcord profile page
             </Paragraph>
+            {!entries.length && (
+                <Paragraph>Nothing hidden right now.</Paragraph>
+            )}
             {entries.map(([id, name]) => (
                 <div key={id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "6px 0" }}>
                     <span style={{ flex: 1 }}>{name}</span>
